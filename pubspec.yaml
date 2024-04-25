@@ -1,0 +1,63 @@
+name: mbedtls
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  ffi: ^2.0.1
+  path: ^1.8.0
+
+dev_dependencies:
+  ffigen:
+    path: '../native/pkgs/ffigen'
+  lints: ^2.0.1
+
+ffigen:
+  name: mbedtls
+  ffi-native:
+    assetId: "c { library=\"mbedtls\" }"
+  description: Bindings to `mbedtls.h`.
+  output: 'mbedtls/generated.kk'
+  headers:
+    entry-points:
+      - 'deps/mbedtls/include/mbedtls/*.h'
+    include-directives:
+      - '**/mbedtls/*.h'
+      - '**/psa/*.h'
+  preamble: |
+    // Copyright (c) 2020, the Koka-Community authors. All rights reserved. 
+    // Use of this source code is governed by a
+    // MIT-style license that can be found in the LICENSE file.
+  compiler-opts:
+    - '-Ideps/mbedtls/include'
+  functions:
+    include:
+      - "mbedtls*"
+      - "psa*"
+    exclude:
+      - (_)+.*
+  structs:
+    include:
+      - "mbedtls*"
+      - "psa*"
+    exclude:
+      - (_)+.*
+    member-rename:
+      '.*':
+        '_(.*)': '$1'
+    dependency-only: opaque
+  enums:
+    exclude:
+      - (_)+.*
+  unions:
+    exclude:
+      - (_)+.*
+  globals:
+    exclude:
+      - (_)+.*
+  macros:
+    exclude:
+      - (_)+.*
+  typedefs:
+    exclude:
+      - (_)+.*
