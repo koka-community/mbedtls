@@ -756,12 +756,12 @@ pub fun int/mbedtls_operation_t(i: int): exn mbedtls_operation_t
     1 -> MBEDTLS_ENCRYPT
 
 pub type psa-driver-hash-context-t-c
-alias psa-driver-hash-context-tc = owned-c<psa-driver-hash-context-t-c>
-alias psa-driver-hash-context-tcb<s::S> = borrowed-c<s,psa-driver-hash-context-t-c>
-alias psa-driver-hash-context-tca = owned-c<c-array<psa-driver-hash-context-t-c>>
+pub alias psa-driver-hash-context-tc = owned-c<psa-driver-hash-context-t-c>
+pub alias psa-driver-hash-context-tcb<s::S> = borrowed-c<s,psa-driver-hash-context-t-c>
+pub alias psa-driver-hash-context-tca = owned-c<c-array<psa-driver-hash-context-t>>
 
 extern psa-driver-hash-context-t/size-of(c: c-null<psa-driver-hash-context-t-c>): int32
-  c inline "sizeof(psa_driver_hash_context_t)"
+  c inline "sizeof(union psa_driver_hash_context_t)"
 
 pub fun psa-driver-hash-context-tc(): psa-driver-hash-context-tc
   malloc(?size-of=psa-driver-hash-context-t/size-of)
@@ -776,7 +776,7 @@ pub fun psa-driver-hash-context-tc-array-calloc(n: int): psa-driver-hash-context
   malloc-c(n.int32, ?size-of=psa-driver-hash-context-t/size-of)
 
 inline extern psa-driver-hash-context-t-ptr/dummy(s: intptr_t): int32
-  c inline "((psa_driver_hash_context_t*)#1)->dummy"
+  c inline "(unsigned int)(((union psa_driver_hash_context_t*)#1)->dummy)"
 
 pub inline fun psa-driver-hash-context-tc/dummy(^s: psa-driver-hash-context-tc): int32
   s.with-ptr(psa-driver-hash-context-t-ptr/dummy)
@@ -785,7 +785,7 @@ pub inline fun psa-driver-hash-context-tcb/dummy(^s: psa-driver-hash-context-tcb
   s.with-ptr(psa-driver-hash-context-t-ptr/dummy)
 
 inline extern psa-driver-hash-context-t-ptr/set-dummy(s: intptr_t, dummy: int32): ()
-  c inline "((psa_driver_hash_context_t*)#1)->dummy = #2"
+  c inline "((union psa_driver_hash_context_t*)#1)->dummy = (unsigned int)#2"
 
 pub inline fun psa-driver-hash-context-tc/set-dummy(^s: psa-driver-hash-context-tc, dummy: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-hash-context-t-ptr/set-dummy(dummy))
@@ -793,8 +793,20 @@ pub inline fun psa-driver-hash-context-tc/set-dummy(^s: psa-driver-hash-context-
 pub inline fun psa-driver-hash-context-tcb/set-dummy(^s: psa-driver-hash-context-tcb<s::S>, dummy: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-hash-context-t-ptr/set-dummy(dummy))
 
+pub inline fun psa-driver-hash-context-tc-wrapper/dummy(^s: psa-driver-hash-context-tc): int
+  s.with-ptr(psa-driver-hash-context-t-ptr/dummy).int
+
+pub inline fun psa-driver-hash-context-tcb-wrapper/dummy(^s: psa-driver-hash-context-tcb<s::S>): int
+  s.with-ptr(psa-driver-hash-context-t-ptr/dummy).int
+
+pub inline fun psa-driver-hash-context-tc-wrapper/set-dummy(^s: psa-driver-hash-context-tc, dummy: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-hash-context-t-ptr/set-dummy(dummy.int32))
+
+pub inline fun psa-driver-hash-context-tcb-wrapper/set-dummy(^s: psa-driver-hash-context-tcb<s::S>, dummy: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-hash-context-t-ptr/set-dummy(dummy.int32))
+
 inline extern psa-driver-hash-context-t-ptr/mbedtls_ctx(s: intptr_t): mbedtls-psa-hash-operation-t-c
-  c inline "((psa_driver_hash_context_t*)#1)->mbedtls_ctx"
+  c inline "(mbedtls_psa_hash_operation_t)(((union psa_driver_hash_context_t*)#1)->mbedtls_ctx)"
 
 pub inline fun psa-driver-hash-context-tc/mbedtls_ctx(^s: psa-driver-hash-context-tc): mbedtls-psa-hash-operation-t-c
   s.with-ptr(psa-driver-hash-context-t-ptr/mbedtls_ctx)
@@ -803,7 +815,7 @@ pub inline fun psa-driver-hash-context-tcb/mbedtls_ctx(^s: psa-driver-hash-conte
   s.with-ptr(psa-driver-hash-context-t-ptr/mbedtls_ctx)
 
 inline extern psa-driver-hash-context-t-ptr/set-mbedtls_ctx(s: intptr_t, mbedtls_ctx: mbedtls-psa-hash-operation-t-c): ()
-  c inline "((psa_driver_hash_context_t*)#1)->mbedtls_ctx = #2"
+  c inline "((union psa_driver_hash_context_t*)#1)->mbedtls_ctx = (mbedtls_psa_hash_operation_t)#2"
 
 pub inline fun psa-driver-hash-context-tc/set-mbedtls_ctx(^s: psa-driver-hash-context-tc, mbedtls_ctx: mbedtls-psa-hash-operation-t-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-hash-context-t-ptr/set-mbedtls_ctx(mbedtls_ctx))
@@ -811,17 +823,29 @@ pub inline fun psa-driver-hash-context-tc/set-mbedtls_ctx(^s: psa-driver-hash-co
 pub inline fun psa-driver-hash-context-tcb/set-mbedtls_ctx(^s: psa-driver-hash-context-tcb<s::S>, mbedtls_ctx: mbedtls-psa-hash-operation-t-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-hash-context-t-ptr/set-mbedtls_ctx(mbedtls_ctx))
 
+pub inline fun psa-driver-hash-context-tc-wrapper/mbedtls_ctx(^s: psa-driver-hash-context-tc): mbedtls-psa-hash-operation-t
+  s.with-ptr(psa-driver-hash-context-t-ptr/mbedtls_ctx).to-koka
+
+pub inline fun psa-driver-hash-context-tcb-wrapper/mbedtls_ctx(^s: psa-driver-hash-context-tcb<s::S>): mbedtls-psa-hash-operation-t
+  s.with-ptr(psa-driver-hash-context-t-ptr/mbedtls_ctx).to-koka
+
+pub inline fun psa-driver-hash-context-tc-wrapper/set-mbedtls_ctx(^s: psa-driver-hash-context-tc, mbedtls_ctx: mbedtls-psa-hash-operation-t): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-hash-context-t-ptr/set-mbedtls_ctx((struct mbedtls_psa_hash_operation_t)(mbedtls_ctx)))
+
+pub inline fun psa-driver-hash-context-tcb-wrapper/set-mbedtls_ctx(^s: psa-driver-hash-context-tcb<s::S>, mbedtls_ctx: mbedtls-psa-hash-operation-t): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-hash-context-t-ptr/set-mbedtls_ctx((struct mbedtls_psa_hash_operation_t)(mbedtls_ctx)))
+
 pub value struct mbedtls-psa-hash-operation-t
-  private-alg: int32
-  private-ctx: unnamedunion1-c
+  private-alg: koka-psa_algorithm_t
+  private-ctx: unnamedunion1
 
 pub type mbedtls-psa-hash-operation-t-c
-alias mbedtls-psa-hash-operation-tc = owned-c<mbedtls-psa-hash-operation-t-c>
-alias mbedtls-psa-hash-operation-tcb<s::S> = borrowed-c<s,mbedtls-psa-hash-operation-t-c>
-alias mbedtls-psa-hash-operation-tca = owned-c<c-array<mbedtls-psa-hash-operation-t-c>>
+pub alias mbedtls-psa-hash-operation-tc = owned-c<mbedtls-psa-hash-operation-t-c>
+pub alias mbedtls-psa-hash-operation-tcb<s::S> = borrowed-c<s,mbedtls-psa-hash-operation-t-c>
+pub alias mbedtls-psa-hash-operation-tca = owned-c<c-array<mbedtls-psa-hash-operation-t>>
 
 extern mbedtls-psa-hash-operation-t/size-of(c: c-null<mbedtls-psa-hash-operation-t-c>): int32
-  c inline "sizeof(mbedtls_psa_hash_operation_t)"
+  c inline "sizeof(struct mbedtls_psa_hash_operation_t)"
 
 pub fun mbedtls-psa-hash-operation-tc(): mbedtls-psa-hash-operation-tc
   malloc(?size-of=mbedtls-psa-hash-operation-t/size-of)
@@ -836,7 +860,7 @@ pub fun mbedtls-psa-hash-operation-tc-array-calloc(n: int): mbedtls-psa-hash-ope
   malloc-c(n.int32, ?size-of=mbedtls-psa-hash-operation-t/size-of)
 
 inline extern mbedtls-psa-hash-operation-t-ptr/private-alg(s: intptr_t): int32
-  c inline "((mbedtls_psa_hash_operation_t*)#1)->private_alg"
+  c inline "(psa_algorithm_t)(((struct mbedtls_psa_hash_operation_t*)#1)->private_alg)"
 
 pub inline fun mbedtls-psa-hash-operation-tc/private-alg(^s: mbedtls-psa-hash-operation-tc): int32
   s.with-ptr(mbedtls-psa-hash-operation-t-ptr/private-alg)
@@ -845,7 +869,7 @@ pub inline fun mbedtls-psa-hash-operation-tcb/private-alg(^s: mbedtls-psa-hash-o
   s.with-ptr(mbedtls-psa-hash-operation-t-ptr/private-alg)
 
 inline extern mbedtls-psa-hash-operation-t-ptr/set-private-alg(s: intptr_t, private-alg: int32): ()
-  c inline "((mbedtls_psa_hash_operation_t*)#1)->private_alg = #2"
+  c inline "((struct mbedtls_psa_hash_operation_t*)#1)->private_alg = (psa_algorithm_t)#2"
 
 pub inline fun mbedtls-psa-hash-operation-tc/set-private-alg(^s: mbedtls-psa-hash-operation-tc, private-alg: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-hash-operation-t-ptr/set-private-alg(private-alg))
@@ -853,8 +877,20 @@ pub inline fun mbedtls-psa-hash-operation-tc/set-private-alg(^s: mbedtls-psa-has
 pub inline fun mbedtls-psa-hash-operation-tcb/set-private-alg(^s: mbedtls-psa-hash-operation-tcb<s::S>, private-alg: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-hash-operation-t-ptr/set-private-alg(private-alg))
 
+pub inline fun mbedtls-psa-hash-operation-tc-wrapper/private-alg(^s: mbedtls-psa-hash-operation-tc): koka-psa_algorithm_t
+  s.with-ptr(mbedtls-psa-hash-operation-t-ptr/private-alg).int
+
+pub inline fun mbedtls-psa-hash-operation-tcb-wrapper/private-alg(^s: mbedtls-psa-hash-operation-tcb<s::S>): koka-psa_algorithm_t
+  s.with-ptr(mbedtls-psa-hash-operation-t-ptr/private-alg).int
+
+pub inline fun mbedtls-psa-hash-operation-tc-wrapper/set-private-alg(^s: mbedtls-psa-hash-operation-tc, private-alg: koka-psa_algorithm_t): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-hash-operation-t-ptr/set-private-alg(private-alg.int32))
+
+pub inline fun mbedtls-psa-hash-operation-tcb-wrapper/set-private-alg(^s: mbedtls-psa-hash-operation-tcb<s::S>, private-alg: koka-psa_algorithm_t): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-hash-operation-t-ptr/set-private-alg(private-alg.int32))
+
 inline extern mbedtls-psa-hash-operation-t-ptr/private-ctx(s: intptr_t): unnamedunion1-c
-  c inline "((mbedtls_psa_hash_operation_t*)#1)->private_ctx"
+  c inline "(UnnamedUnion1)(((struct mbedtls_psa_hash_operation_t*)#1)->private_ctx)"
 
 pub inline fun mbedtls-psa-hash-operation-tc/private-ctx(^s: mbedtls-psa-hash-operation-tc): unnamedunion1-c
   s.with-ptr(mbedtls-psa-hash-operation-t-ptr/private-ctx)
@@ -863,7 +899,7 @@ pub inline fun mbedtls-psa-hash-operation-tcb/private-ctx(^s: mbedtls-psa-hash-o
   s.with-ptr(mbedtls-psa-hash-operation-t-ptr/private-ctx)
 
 inline extern mbedtls-psa-hash-operation-t-ptr/set-private-ctx(s: intptr_t, private-ctx: unnamedunion1-c): ()
-  c inline "((mbedtls_psa_hash_operation_t*)#1)->private_ctx = #2"
+  c inline "((struct mbedtls_psa_hash_operation_t*)#1)->private_ctx = (UnnamedUnion1)#2"
 
 pub inline fun mbedtls-psa-hash-operation-tc/set-private-ctx(^s: mbedtls-psa-hash-operation-tc, private-ctx: unnamedunion1-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-hash-operation-t-ptr/set-private-ctx(private-ctx))
@@ -872,7 +908,8 @@ pub inline fun mbedtls-psa-hash-operation-tcb/set-private-ctx(^s: mbedtls-psa-ha
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-hash-operation-t-ptr/set-private-ctx(private-ctx))
 
 pub fun mbedtls-psa-hash-operation-t/to-koka(s: mbedtls-psa-hash-operation-tc): mbedtls-psa-hash-operation-t
-  Mbedtls-psa-hash-operation-t(s.mbedtls-psa-hash-operation-tc/private-alg, s.mbedtls-psa-hash-operation-tc/private-ctx)
+  Mbedtls-psa-hash-operation-t(s.mbedtls-psa-hash-operation-tc/private-alg.int, s.mbedtls-psa-hash-operation-tc/private-ctx)
+
 // \brief Encoding of a cryptographic algorithm.
 // 
 // Values of this type are generally constructed by macros called
@@ -888,15 +925,15 @@ pub fun mbedtls-psa-hash-operation-t/to-koka(s: mbedtls-psa-hash-operation-tc): 
 // Any changes to existing values will require bumping the storage
 // format version and providing a translation when reading the old
 // format.
-alias psa_algorithm_t = int32
+alias psa-algorithm-t = int32
 alias koka-psa_algorithm_t = int
 pub type unnamedunion1-c
-alias unnamedunion1c = owned-c<unnamedunion1-c>
-alias unnamedunion1cb<s::S> = borrowed-c<s,unnamedunion1-c>
-alias unnamedunion1ca = owned-c<c-array<unnamedunion1-c>>
+pub alias unnamedunion1c = owned-c<unnamedunion1-c>
+pub alias unnamedunion1cb<s::S> = borrowed-c<s,unnamedunion1-c>
+pub alias unnamedunion1ca = owned-c<c-array<unnamedunion1>>
 
 extern unnamedunion1/size-of(c: c-null<unnamedunion1-c>): int32
-  c inline "sizeof(UnnamedUnion1)"
+  c inline "sizeof(union UnnamedUnion1)"
 
 pub fun unnamedunion1c(): unnamedunion1c
   malloc(?size-of=unnamedunion1/size-of)
@@ -911,7 +948,7 @@ pub fun unnamedunion1c-array-calloc(n: int): unnamedunion1ca
   malloc-c(n.int32, ?size-of=unnamedunion1/size-of)
 
 inline extern unnamedunion1-ptr/dummy(s: intptr_t): int32
-  c inline "((UnnamedUnion1*)#1)->dummy"
+  c inline "(unsigned int)(((union UnnamedUnion1*)#1)->dummy)"
 
 pub inline fun unnamedunion1c/dummy(^s: unnamedunion1c): int32
   s.with-ptr(unnamedunion1-ptr/dummy)
@@ -920,7 +957,7 @@ pub inline fun unnamedunion1cb/dummy(^s: unnamedunion1cb<s::S>): int32
   s.with-ptr(unnamedunion1-ptr/dummy)
 
 inline extern unnamedunion1-ptr/set-dummy(s: intptr_t, dummy: int32): ()
-  c inline "((UnnamedUnion1*)#1)->dummy = #2"
+  c inline "((union UnnamedUnion1*)#1)->dummy = (unsigned int)#2"
 
 pub inline fun unnamedunion1c/set-dummy(^s: unnamedunion1c, dummy: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion1-ptr/set-dummy(dummy))
@@ -928,8 +965,20 @@ pub inline fun unnamedunion1c/set-dummy(^s: unnamedunion1c, dummy: int32): ()
 pub inline fun unnamedunion1cb/set-dummy(^s: unnamedunion1cb<s::S>, dummy: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion1-ptr/set-dummy(dummy))
 
+pub inline fun unnamedunion1c-wrapper/dummy(^s: unnamedunion1c): int
+  s.with-ptr(unnamedunion1-ptr/dummy).int
+
+pub inline fun unnamedunion1cb-wrapper/dummy(^s: unnamedunion1cb<s::S>): int
+  s.with-ptr(unnamedunion1-ptr/dummy).int
+
+pub inline fun unnamedunion1c-wrapper/set-dummy(^s: unnamedunion1c, dummy: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion1-ptr/set-dummy(dummy.int32))
+
+pub inline fun unnamedunion1cb-wrapper/set-dummy(^s: unnamedunion1cb<s::S>, dummy: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion1-ptr/set-dummy(dummy.int32))
+
 inline extern unnamedunion1-ptr/md5(s: intptr_t): mbedtls-md5-context-c
-  c inline "((UnnamedUnion1*)#1)->md5"
+  c inline "(mbedtls_md5_context)(((union UnnamedUnion1*)#1)->md5)"
 
 pub inline fun unnamedunion1c/md5(^s: unnamedunion1c): mbedtls-md5-context-c
   s.with-ptr(unnamedunion1-ptr/md5)
@@ -938,7 +987,7 @@ pub inline fun unnamedunion1cb/md5(^s: unnamedunion1cb<s::S>): mbedtls-md5-conte
   s.with-ptr(unnamedunion1-ptr/md5)
 
 inline extern unnamedunion1-ptr/set-md5(s: intptr_t, md5: mbedtls-md5-context-c): ()
-  c inline "((UnnamedUnion1*)#1)->md5 = #2"
+  c inline "((union UnnamedUnion1*)#1)->md5 = (mbedtls_md5_context)#2"
 
 pub inline fun unnamedunion1c/set-md5(^s: unnamedunion1c, md5: mbedtls-md5-context-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion1-ptr/set-md5(md5))
@@ -947,7 +996,7 @@ pub inline fun unnamedunion1cb/set-md5(^s: unnamedunion1cb<s::S>, md5: mbedtls-m
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion1-ptr/set-md5(md5))
 
 inline extern unnamedunion1-ptr/ripemd160(s: intptr_t): mbedtls-ripemd160-context-c
-  c inline "((UnnamedUnion1*)#1)->ripemd160"
+  c inline "(mbedtls_ripemd160_context)(((union UnnamedUnion1*)#1)->ripemd160)"
 
 pub inline fun unnamedunion1c/ripemd160(^s: unnamedunion1c): mbedtls-ripemd160-context-c
   s.with-ptr(unnamedunion1-ptr/ripemd160)
@@ -956,7 +1005,7 @@ pub inline fun unnamedunion1cb/ripemd160(^s: unnamedunion1cb<s::S>): mbedtls-rip
   s.with-ptr(unnamedunion1-ptr/ripemd160)
 
 inline extern unnamedunion1-ptr/set-ripemd160(s: intptr_t, ripemd160: mbedtls-ripemd160-context-c): ()
-  c inline "((UnnamedUnion1*)#1)->ripemd160 = #2"
+  c inline "((union UnnamedUnion1*)#1)->ripemd160 = (mbedtls_ripemd160_context)#2"
 
 pub inline fun unnamedunion1c/set-ripemd160(^s: unnamedunion1c, ripemd160: mbedtls-ripemd160-context-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion1-ptr/set-ripemd160(ripemd160))
@@ -965,7 +1014,7 @@ pub inline fun unnamedunion1cb/set-ripemd160(^s: unnamedunion1cb<s::S>, ripemd16
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion1-ptr/set-ripemd160(ripemd160))
 
 inline extern unnamedunion1-ptr/sha1(s: intptr_t): mbedtls-sha1-context-c
-  c inline "((UnnamedUnion1*)#1)->sha1"
+  c inline "(mbedtls_sha1_context)(((union UnnamedUnion1*)#1)->sha1)"
 
 pub inline fun unnamedunion1c/sha1(^s: unnamedunion1c): mbedtls-sha1-context-c
   s.with-ptr(unnamedunion1-ptr/sha1)
@@ -974,7 +1023,7 @@ pub inline fun unnamedunion1cb/sha1(^s: unnamedunion1cb<s::S>): mbedtls-sha1-con
   s.with-ptr(unnamedunion1-ptr/sha1)
 
 inline extern unnamedunion1-ptr/set-sha1(s: intptr_t, sha1: mbedtls-sha1-context-c): ()
-  c inline "((UnnamedUnion1*)#1)->sha1 = #2"
+  c inline "((union UnnamedUnion1*)#1)->sha1 = (mbedtls_sha1_context)#2"
 
 pub inline fun unnamedunion1c/set-sha1(^s: unnamedunion1c, sha1: mbedtls-sha1-context-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion1-ptr/set-sha1(sha1))
@@ -983,7 +1032,7 @@ pub inline fun unnamedunion1cb/set-sha1(^s: unnamedunion1cb<s::S>, sha1: mbedtls
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion1-ptr/set-sha1(sha1))
 
 inline extern unnamedunion1-ptr/sha256(s: intptr_t): mbedtls-sha256-context-c
-  c inline "((UnnamedUnion1*)#1)->sha256"
+  c inline "(mbedtls_sha256_context)(((union UnnamedUnion1*)#1)->sha256)"
 
 pub inline fun unnamedunion1c/sha256(^s: unnamedunion1c): mbedtls-sha256-context-c
   s.with-ptr(unnamedunion1-ptr/sha256)
@@ -992,7 +1041,7 @@ pub inline fun unnamedunion1cb/sha256(^s: unnamedunion1cb<s::S>): mbedtls-sha256
   s.with-ptr(unnamedunion1-ptr/sha256)
 
 inline extern unnamedunion1-ptr/set-sha256(s: intptr_t, sha256: mbedtls-sha256-context-c): ()
-  c inline "((UnnamedUnion1*)#1)->sha256 = #2"
+  c inline "((union UnnamedUnion1*)#1)->sha256 = (mbedtls_sha256_context)#2"
 
 pub inline fun unnamedunion1c/set-sha256(^s: unnamedunion1c, sha256: mbedtls-sha256-context-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion1-ptr/set-sha256(sha256))
@@ -1001,7 +1050,7 @@ pub inline fun unnamedunion1cb/set-sha256(^s: unnamedunion1cb<s::S>, sha256: mbe
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion1-ptr/set-sha256(sha256))
 
 inline extern unnamedunion1-ptr/sha512(s: intptr_t): mbedtls-sha512-context-c
-  c inline "((UnnamedUnion1*)#1)->sha512"
+  c inline "(mbedtls_sha512_context)(((union UnnamedUnion1*)#1)->sha512)"
 
 pub inline fun unnamedunion1c/sha512(^s: unnamedunion1c): mbedtls-sha512-context-c
   s.with-ptr(unnamedunion1-ptr/sha512)
@@ -1010,7 +1059,7 @@ pub inline fun unnamedunion1cb/sha512(^s: unnamedunion1cb<s::S>): mbedtls-sha512
   s.with-ptr(unnamedunion1-ptr/sha512)
 
 inline extern unnamedunion1-ptr/set-sha512(s: intptr_t, sha512: mbedtls-sha512-context-c): ()
-  c inline "((UnnamedUnion1*)#1)->sha512 = #2"
+  c inline "((union UnnamedUnion1*)#1)->sha512 = (mbedtls_sha512_context)#2"
 
 pub inline fun unnamedunion1c/set-sha512(^s: unnamedunion1c, sha512: mbedtls-sha512-context-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion1-ptr/set-sha512(sha512))
@@ -1019,7 +1068,7 @@ pub inline fun unnamedunion1cb/set-sha512(^s: unnamedunion1cb<s::S>, sha512: mbe
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion1-ptr/set-sha512(sha512))
 
 inline extern unnamedunion1-ptr/sha3(s: intptr_t): mbedtls-sha3-context-c
-  c inline "((UnnamedUnion1*)#1)->sha3"
+  c inline "(mbedtls_sha3_context)(((union UnnamedUnion1*)#1)->sha3)"
 
 pub inline fun unnamedunion1c/sha3(^s: unnamedunion1c): mbedtls-sha3-context-c
   s.with-ptr(unnamedunion1-ptr/sha3)
@@ -1028,7 +1077,7 @@ pub inline fun unnamedunion1cb/sha3(^s: unnamedunion1cb<s::S>): mbedtls-sha3-con
   s.with-ptr(unnamedunion1-ptr/sha3)
 
 inline extern unnamedunion1-ptr/set-sha3(s: intptr_t, sha3: mbedtls-sha3-context-c): ()
-  c inline "((UnnamedUnion1*)#1)->sha3 = #2"
+  c inline "((union UnnamedUnion1*)#1)->sha3 = (mbedtls_sha3_context)#2"
 
 pub inline fun unnamedunion1c/set-sha3(^s: unnamedunion1c, sha3: mbedtls-sha3-context-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion1-ptr/set-sha3(sha3))
@@ -1042,12 +1091,12 @@ pub inline fun unnamedunion1cb/set-sha3(^s: unnamedunion1cb<s::S>, sha3: mbedtls
 // constitutes a security risk. We recommend considering
 // stronger message digests instead.
 pub type mbedtls-md5-context-c
-alias mbedtls-md5-contextc<s::S> = owned-c<mbedtls-md5-context-c>
-alias mbedtls-md5-contextcb<s::S> = borrowed-c<s,mbedtls-md5-context-c>
-alias mbedtls-md5-contextca<s::S> = owned-c<c-array<mbedtls-md5-context-c>>
+pub alias mbedtls-md5-contextc<s::S> = owned-c<mbedtls-md5-context-c>
+pub alias mbedtls-md5-contextcb<s::S> = borrowed-c<s,mbedtls-md5-context-c>
+pub alias mbedtls-md5-contextca<s::S> = owned-c<c-array<mbedtls-md5-context>>
 
 extern mbedtls-md5-context/size-of(c: c-null<mbedtls-md5-context-c>): int32
-  c inline "sizeof(mbedtls_md5_context)"
+  c inline "sizeof(struct mbedtls_md5_context)"
 
 pub fun mbedtls-md5-contextc(): mbedtls-md5-contextc<s::S>
   malloc(?size-of=mbedtls-md5-context/size-of)
@@ -1063,12 +1112,12 @@ pub fun mbedtls-md5-contextc-array-calloc(n: int): mbedtls-md5-contextca<s::S>
 
 // \brief          RIPEMD-160 context structure
 pub type mbedtls-ripemd160-context-c
-alias mbedtls-ripemd160-contextc<s::S> = owned-c<mbedtls-ripemd160-context-c>
-alias mbedtls-ripemd160-contextcb<s::S> = borrowed-c<s,mbedtls-ripemd160-context-c>
-alias mbedtls-ripemd160-contextca<s::S> = owned-c<c-array<mbedtls-ripemd160-context-c>>
+pub alias mbedtls-ripemd160-contextc<s::S> = owned-c<mbedtls-ripemd160-context-c>
+pub alias mbedtls-ripemd160-contextcb<s::S> = borrowed-c<s,mbedtls-ripemd160-context-c>
+pub alias mbedtls-ripemd160-contextca<s::S> = owned-c<c-array<mbedtls-ripemd160-context>>
 
 extern mbedtls-ripemd160-context/size-of(c: c-null<mbedtls-ripemd160-context-c>): int32
-  c inline "sizeof(mbedtls_ripemd160_context)"
+  c inline "sizeof(struct mbedtls_ripemd160_context)"
 
 pub fun mbedtls-ripemd160-contextc(): mbedtls-ripemd160-contextc<s::S>
   malloc(?size-of=mbedtls-ripemd160-context/size-of)
@@ -1088,12 +1137,12 @@ pub fun mbedtls-ripemd160-contextc-array-calloc(n: int): mbedtls-ripemd160-conte
 // constitutes a security risk. We recommend considering
 // stronger message digests instead.
 pub type mbedtls-sha1-context-c
-alias mbedtls-sha1-contextc<s::S> = owned-c<mbedtls-sha1-context-c>
-alias mbedtls-sha1-contextcb<s::S> = borrowed-c<s,mbedtls-sha1-context-c>
-alias mbedtls-sha1-contextca<s::S> = owned-c<c-array<mbedtls-sha1-context-c>>
+pub alias mbedtls-sha1-contextc<s::S> = owned-c<mbedtls-sha1-context-c>
+pub alias mbedtls-sha1-contextcb<s::S> = borrowed-c<s,mbedtls-sha1-context-c>
+pub alias mbedtls-sha1-contextca<s::S> = owned-c<c-array<mbedtls-sha1-context>>
 
 extern mbedtls-sha1-context/size-of(c: c-null<mbedtls-sha1-context-c>): int32
-  c inline "sizeof(mbedtls_sha1_context)"
+  c inline "sizeof(struct mbedtls_sha1_context)"
 
 pub fun mbedtls-sha1-contextc(): mbedtls-sha1-contextc<s::S>
   malloc(?size-of=mbedtls-sha1-context/size-of)
@@ -1113,12 +1162,12 @@ pub fun mbedtls-sha1-contextc-array-calloc(n: int): mbedtls-sha1-contextca<s::S>
 // checksum calculations. The choice between these two is
 // made in the call to mbedtls_sha256_starts().
 pub type mbedtls-sha256-context-c
-alias mbedtls-sha256-contextc<s::S> = owned-c<mbedtls-sha256-context-c>
-alias mbedtls-sha256-contextcb<s::S> = borrowed-c<s,mbedtls-sha256-context-c>
-alias mbedtls-sha256-contextca<s::S> = owned-c<c-array<mbedtls-sha256-context-c>>
+pub alias mbedtls-sha256-contextc<s::S> = owned-c<mbedtls-sha256-context-c>
+pub alias mbedtls-sha256-contextcb<s::S> = borrowed-c<s,mbedtls-sha256-context-c>
+pub alias mbedtls-sha256-contextca<s::S> = owned-c<c-array<mbedtls-sha256-context>>
 
 extern mbedtls-sha256-context/size-of(c: c-null<mbedtls-sha256-context-c>): int32
-  c inline "sizeof(mbedtls_sha256_context)"
+  c inline "sizeof(struct mbedtls_sha256_context)"
 
 pub fun mbedtls-sha256-contextc(): mbedtls-sha256-contextc<s::S>
   malloc(?size-of=mbedtls-sha256-context/size-of)
@@ -1133,7 +1182,7 @@ pub fun mbedtls-sha256-contextc-array-calloc(n: int): mbedtls-sha256-contextca<s
   malloc-c(n.int32, ?size-of=mbedtls-sha256-context/size-of)
 
 inline extern mbedtls-sha256-context-ptr/private_is224(s: intptr_t): int32
-  c inline "((mbedtls_sha256_context*)#1)->private_is224"
+  c inline "(int)(((struct mbedtls_sha256_context*)#1)->private_is224)"
 
 pub inline fun mbedtls-sha256-contextc/private_is224(^s: mbedtls-sha256-contextc<s::S>): int32
   s.with-ptr(mbedtls-sha256-context-ptr/private_is224)
@@ -1142,7 +1191,7 @@ pub inline fun mbedtls-sha256-contextcb/private_is224(^s: mbedtls-sha256-context
   s.with-ptr(mbedtls-sha256-context-ptr/private_is224)
 
 inline extern mbedtls-sha256-context-ptr/set-private_is224(s: intptr_t, private_is224: int32): ()
-  c inline "((mbedtls_sha256_context*)#1)->private_is224 = #2"
+  c inline "((struct mbedtls_sha256_context*)#1)->private_is224 = (int)#2"
 
 pub inline fun mbedtls-sha256-contextc/set-private_is224(^s: mbedtls-sha256-contextc<s::S>, private_is224: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-sha256-context-ptr/set-private_is224(private_is224))
@@ -1150,18 +1199,30 @@ pub inline fun mbedtls-sha256-contextc/set-private_is224(^s: mbedtls-sha256-cont
 pub inline fun mbedtls-sha256-contextcb/set-private_is224(^s: mbedtls-sha256-contextcb<s::S>, private_is224: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-sha256-context-ptr/set-private_is224(private_is224))
 
+pub inline fun mbedtls-sha256-contextc-wrapper/private_is224(^s: mbedtls-sha256-contextc<s::S>): int
+  s.with-ptr(mbedtls-sha256-context-ptr/private_is224).int
+
+pub inline fun mbedtls-sha256-contextcb-wrapper/private_is224(^s: mbedtls-sha256-contextcb<s::S>): int
+  s.with-ptr(mbedtls-sha256-context-ptr/private_is224).int
+
+pub inline fun mbedtls-sha256-contextc-wrapper/set-private_is224(^s: mbedtls-sha256-contextc<s::S>, private_is224: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-sha256-context-ptr/set-private_is224(private_is224.int32))
+
+pub inline fun mbedtls-sha256-contextcb-wrapper/set-private_is224(^s: mbedtls-sha256-contextcb<s::S>, private_is224: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-sha256-context-ptr/set-private_is224(private_is224.int32))
+
 // \brief          The SHA-512 context structure.
 // 
 // The structure is used both for SHA-384 and for SHA-512
 // checksum calculations. The choice between these two is
 // made in the call to mbedtls_sha512_starts().
 pub type mbedtls-sha512-context-c
-alias mbedtls-sha512-contextc<s::S> = owned-c<mbedtls-sha512-context-c>
-alias mbedtls-sha512-contextcb<s::S> = borrowed-c<s,mbedtls-sha512-context-c>
-alias mbedtls-sha512-contextca<s::S> = owned-c<c-array<mbedtls-sha512-context-c>>
+pub alias mbedtls-sha512-contextc<s::S> = owned-c<mbedtls-sha512-context-c>
+pub alias mbedtls-sha512-contextcb<s::S> = borrowed-c<s,mbedtls-sha512-context-c>
+pub alias mbedtls-sha512-contextca<s::S> = owned-c<c-array<mbedtls-sha512-context>>
 
 extern mbedtls-sha512-context/size-of(c: c-null<mbedtls-sha512-context-c>): int32
-  c inline "sizeof(mbedtls_sha512_context)"
+  c inline "sizeof(struct mbedtls_sha512_context)"
 
 pub fun mbedtls-sha512-contextc(): mbedtls-sha512-contextc<s::S>
   malloc(?size-of=mbedtls-sha512-context/size-of)
@@ -1176,7 +1237,7 @@ pub fun mbedtls-sha512-contextc-array-calloc(n: int): mbedtls-sha512-contextca<s
   malloc-c(n.int32, ?size-of=mbedtls-sha512-context/size-of)
 
 inline extern mbedtls-sha512-context-ptr/private_is384(s: intptr_t): int32
-  c inline "((mbedtls_sha512_context*)#1)->private_is384"
+  c inline "(int)(((struct mbedtls_sha512_context*)#1)->private_is384)"
 
 pub inline fun mbedtls-sha512-contextc/private_is384(^s: mbedtls-sha512-contextc<s::S>): int32
   s.with-ptr(mbedtls-sha512-context-ptr/private_is384)
@@ -1185,7 +1246,7 @@ pub inline fun mbedtls-sha512-contextcb/private_is384(^s: mbedtls-sha512-context
   s.with-ptr(mbedtls-sha512-context-ptr/private_is384)
 
 inline extern mbedtls-sha512-context-ptr/set-private_is384(s: intptr_t, private_is384: int32): ()
-  c inline "((mbedtls_sha512_context*)#1)->private_is384 = #2"
+  c inline "((struct mbedtls_sha512_context*)#1)->private_is384 = (int)#2"
 
 pub inline fun mbedtls-sha512-contextc/set-private_is384(^s: mbedtls-sha512-contextc<s::S>, private_is384: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-sha512-context-ptr/set-private_is384(private_is384))
@@ -1193,16 +1254,28 @@ pub inline fun mbedtls-sha512-contextc/set-private_is384(^s: mbedtls-sha512-cont
 pub inline fun mbedtls-sha512-contextcb/set-private_is384(^s: mbedtls-sha512-contextcb<s::S>, private_is384: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-sha512-context-ptr/set-private_is384(private_is384))
 
+pub inline fun mbedtls-sha512-contextc-wrapper/private_is384(^s: mbedtls-sha512-contextc<s::S>): int
+  s.with-ptr(mbedtls-sha512-context-ptr/private_is384).int
+
+pub inline fun mbedtls-sha512-contextcb-wrapper/private_is384(^s: mbedtls-sha512-contextcb<s::S>): int
+  s.with-ptr(mbedtls-sha512-context-ptr/private_is384).int
+
+pub inline fun mbedtls-sha512-contextc-wrapper/set-private_is384(^s: mbedtls-sha512-contextc<s::S>, private_is384: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-sha512-context-ptr/set-private_is384(private_is384.int32))
+
+pub inline fun mbedtls-sha512-contextcb-wrapper/set-private_is384(^s: mbedtls-sha512-contextcb<s::S>, private_is384: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-sha512-context-ptr/set-private_is384(private_is384.int32))
+
 // \brief          The SHA-3 context structure.
 // 
 // The structure is used SHA-3 checksum calculations.
 pub type mbedtls-sha3-context-c
-alias mbedtls-sha3-contextc<s::S> = owned-c<mbedtls-sha3-context-c>
-alias mbedtls-sha3-contextcb<s::S> = borrowed-c<s,mbedtls-sha3-context-c>
-alias mbedtls-sha3-contextca<s::S> = owned-c<c-array<mbedtls-sha3-context-c>>
+pub alias mbedtls-sha3-contextc<s::S> = owned-c<mbedtls-sha3-context-c>
+pub alias mbedtls-sha3-contextcb<s::S> = borrowed-c<s,mbedtls-sha3-context-c>
+pub alias mbedtls-sha3-contextca<s::S> = owned-c<c-array<mbedtls-sha3-context>>
 
 extern mbedtls-sha3-context/size-of(c: c-null<mbedtls-sha3-context-c>): int32
-  c inline "sizeof(mbedtls_sha3_context)"
+  c inline "sizeof(struct mbedtls_sha3_context)"
 
 pub fun mbedtls-sha3-contextc(): mbedtls-sha3-contextc<s::S>
   malloc(?size-of=mbedtls-sha3-context/size-of)
@@ -1217,7 +1290,7 @@ pub fun mbedtls-sha3-contextc-array-calloc(n: int): mbedtls-sha3-contextca<s::S>
   malloc-c(n.int32, ?size-of=mbedtls-sha3-context/size-of)
 
 inline extern mbedtls-sha3-context-ptr/private_index(s: intptr_t): int32
-  c inline "((mbedtls_sha3_context*)#1)->private_index"
+  c inline "(int32_t)(((struct mbedtls_sha3_context*)#1)->private_index)"
 
 pub inline fun mbedtls-sha3-contextc/private_index(^s: mbedtls-sha3-contextc<s::S>): int32
   s.with-ptr(mbedtls-sha3-context-ptr/private_index)
@@ -1226,7 +1299,7 @@ pub inline fun mbedtls-sha3-contextcb/private_index(^s: mbedtls-sha3-contextcb<s
   s.with-ptr(mbedtls-sha3-context-ptr/private_index)
 
 inline extern mbedtls-sha3-context-ptr/set-private_index(s: intptr_t, private_index: int32): ()
-  c inline "((mbedtls_sha3_context*)#1)->private_index = #2"
+  c inline "((struct mbedtls_sha3_context*)#1)->private_index = (int32_t)#2"
 
 pub inline fun mbedtls-sha3-contextc/set-private_index(^s: mbedtls-sha3-contextc<s::S>, private_index: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-sha3-context-ptr/set-private_index(private_index))
@@ -1234,8 +1307,20 @@ pub inline fun mbedtls-sha3-contextc/set-private_index(^s: mbedtls-sha3-contextc
 pub inline fun mbedtls-sha3-contextcb/set-private_index(^s: mbedtls-sha3-contextcb<s::S>, private_index: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-sha3-context-ptr/set-private_index(private_index))
 
+pub inline fun mbedtls-sha3-contextc-wrapper/private_index(^s: mbedtls-sha3-contextc<s::S>): int
+  s.with-ptr(mbedtls-sha3-context-ptr/private_index).int
+
+pub inline fun mbedtls-sha3-contextcb-wrapper/private_index(^s: mbedtls-sha3-contextcb<s::S>): int
+  s.with-ptr(mbedtls-sha3-context-ptr/private_index).int
+
+pub inline fun mbedtls-sha3-contextc-wrapper/set-private_index(^s: mbedtls-sha3-contextc<s::S>, private_index: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-sha3-context-ptr/set-private_index(private_index.int32))
+
+pub inline fun mbedtls-sha3-contextcb-wrapper/set-private_index(^s: mbedtls-sha3-contextcb<s::S>, private_index: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-sha3-context-ptr/set-private_index(private_index.int32))
+
 inline extern mbedtls-sha3-context-ptr/private_olen(s: intptr_t): int16
-  c inline "((mbedtls_sha3_context*)#1)->private_olen"
+  c inline "(int16_t)(((struct mbedtls_sha3_context*)#1)->private_olen)"
 
 pub inline fun mbedtls-sha3-contextc/private_olen(^s: mbedtls-sha3-contextc<s::S>): int16
   s.with-ptr(mbedtls-sha3-context-ptr/private_olen)
@@ -1244,7 +1329,7 @@ pub inline fun mbedtls-sha3-contextcb/private_olen(^s: mbedtls-sha3-contextcb<s:
   s.with-ptr(mbedtls-sha3-context-ptr/private_olen)
 
 inline extern mbedtls-sha3-context-ptr/set-private_olen(s: intptr_t, private_olen: int16): ()
-  c inline "((mbedtls_sha3_context*)#1)->private_olen = #2"
+  c inline "((struct mbedtls_sha3_context*)#1)->private_olen = (int16_t)#2"
 
 pub inline fun mbedtls-sha3-contextc/set-private_olen(^s: mbedtls-sha3-contextc<s::S>, private_olen: int16): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-sha3-context-ptr/set-private_olen(private_olen))
@@ -1252,8 +1337,20 @@ pub inline fun mbedtls-sha3-contextc/set-private_olen(^s: mbedtls-sha3-contextc<
 pub inline fun mbedtls-sha3-contextcb/set-private_olen(^s: mbedtls-sha3-contextcb<s::S>, private_olen: int16): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-sha3-context-ptr/set-private_olen(private_olen))
 
+pub inline fun mbedtls-sha3-contextc-wrapper/private_olen(^s: mbedtls-sha3-contextc<s::S>): int
+  s.with-ptr(mbedtls-sha3-context-ptr/private_olen).int
+
+pub inline fun mbedtls-sha3-contextcb-wrapper/private_olen(^s: mbedtls-sha3-contextcb<s::S>): int
+  s.with-ptr(mbedtls-sha3-context-ptr/private_olen).int
+
+pub inline fun mbedtls-sha3-contextc-wrapper/set-private_olen(^s: mbedtls-sha3-contextc<s::S>, private_olen: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-sha3-context-ptr/set-private_olen(private_olen.int16))
+
+pub inline fun mbedtls-sha3-contextcb-wrapper/set-private_olen(^s: mbedtls-sha3-contextcb<s::S>, private_olen: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-sha3-context-ptr/set-private_olen(private_olen.int16))
+
 inline extern mbedtls-sha3-context-ptr/private_max_block_size(s: intptr_t): int16
-  c inline "((mbedtls_sha3_context*)#1)->private_max_block_size"
+  c inline "(int16_t)(((struct mbedtls_sha3_context*)#1)->private_max_block_size)"
 
 pub inline fun mbedtls-sha3-contextc/private_max_block_size(^s: mbedtls-sha3-contextc<s::S>): int16
   s.with-ptr(mbedtls-sha3-context-ptr/private_max_block_size)
@@ -1262,7 +1359,7 @@ pub inline fun mbedtls-sha3-contextcb/private_max_block_size(^s: mbedtls-sha3-co
   s.with-ptr(mbedtls-sha3-context-ptr/private_max_block_size)
 
 inline extern mbedtls-sha3-context-ptr/set-private_max_block_size(s: intptr_t, private_max_block_size: int16): ()
-  c inline "((mbedtls_sha3_context*)#1)->private_max_block_size = #2"
+  c inline "((struct mbedtls_sha3_context*)#1)->private_max_block_size = (int16_t)#2"
 
 pub inline fun mbedtls-sha3-contextc/set-private_max_block_size(^s: mbedtls-sha3-contextc<s::S>, private_max_block_size: int16): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-sha3-context-ptr/set-private_max_block_size(private_max_block_size))
@@ -1270,13 +1367,25 @@ pub inline fun mbedtls-sha3-contextc/set-private_max_block_size(^s: mbedtls-sha3
 pub inline fun mbedtls-sha3-contextcb/set-private_max_block_size(^s: mbedtls-sha3-contextcb<s::S>, private_max_block_size: int16): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-sha3-context-ptr/set-private_max_block_size(private_max_block_size))
 
+pub inline fun mbedtls-sha3-contextc-wrapper/private_max_block_size(^s: mbedtls-sha3-contextc<s::S>): int
+  s.with-ptr(mbedtls-sha3-context-ptr/private_max_block_size).int
+
+pub inline fun mbedtls-sha3-contextcb-wrapper/private_max_block_size(^s: mbedtls-sha3-contextcb<s::S>): int
+  s.with-ptr(mbedtls-sha3-context-ptr/private_max_block_size).int
+
+pub inline fun mbedtls-sha3-contextc-wrapper/set-private_max_block_size(^s: mbedtls-sha3-contextc<s::S>, private_max_block_size: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-sha3-context-ptr/set-private_max_block_size(private_max_block_size.int16))
+
+pub inline fun mbedtls-sha3-contextcb-wrapper/set-private_max_block_size(^s: mbedtls-sha3-contextcb<s::S>, private_max_block_size: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-sha3-context-ptr/set-private_max_block_size(private_max_block_size.int16))
+
 pub type psa-driver-cipher-context-t-c
-alias psa-driver-cipher-context-tc = owned-c<psa-driver-cipher-context-t-c>
-alias psa-driver-cipher-context-tcb<s::S> = borrowed-c<s,psa-driver-cipher-context-t-c>
-alias psa-driver-cipher-context-tca = owned-c<c-array<psa-driver-cipher-context-t-c>>
+pub alias psa-driver-cipher-context-tc = owned-c<psa-driver-cipher-context-t-c>
+pub alias psa-driver-cipher-context-tcb<s::S> = borrowed-c<s,psa-driver-cipher-context-t-c>
+pub alias psa-driver-cipher-context-tca = owned-c<c-array<psa-driver-cipher-context-t>>
 
 extern psa-driver-cipher-context-t/size-of(c: c-null<psa-driver-cipher-context-t-c>): int32
-  c inline "sizeof(psa_driver_cipher_context_t)"
+  c inline "sizeof(union psa_driver_cipher_context_t)"
 
 pub fun psa-driver-cipher-context-tc(): psa-driver-cipher-context-tc
   malloc(?size-of=psa-driver-cipher-context-t/size-of)
@@ -1291,7 +1400,7 @@ pub fun psa-driver-cipher-context-tc-array-calloc(n: int): psa-driver-cipher-con
   malloc-c(n.int32, ?size-of=psa-driver-cipher-context-t/size-of)
 
 inline extern psa-driver-cipher-context-t-ptr/dummy(s: intptr_t): int32
-  c inline "((psa_driver_cipher_context_t*)#1)->dummy"
+  c inline "(unsigned int)(((union psa_driver_cipher_context_t*)#1)->dummy)"
 
 pub inline fun psa-driver-cipher-context-tc/dummy(^s: psa-driver-cipher-context-tc): int32
   s.with-ptr(psa-driver-cipher-context-t-ptr/dummy)
@@ -1300,7 +1409,7 @@ pub inline fun psa-driver-cipher-context-tcb/dummy(^s: psa-driver-cipher-context
   s.with-ptr(psa-driver-cipher-context-t-ptr/dummy)
 
 inline extern psa-driver-cipher-context-t-ptr/set-dummy(s: intptr_t, dummy: int32): ()
-  c inline "((psa_driver_cipher_context_t*)#1)->dummy = #2"
+  c inline "((union psa_driver_cipher_context_t*)#1)->dummy = (unsigned int)#2"
 
 pub inline fun psa-driver-cipher-context-tc/set-dummy(^s: psa-driver-cipher-context-tc, dummy: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-cipher-context-t-ptr/set-dummy(dummy))
@@ -1308,8 +1417,20 @@ pub inline fun psa-driver-cipher-context-tc/set-dummy(^s: psa-driver-cipher-cont
 pub inline fun psa-driver-cipher-context-tcb/set-dummy(^s: psa-driver-cipher-context-tcb<s::S>, dummy: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-cipher-context-t-ptr/set-dummy(dummy))
 
+pub inline fun psa-driver-cipher-context-tc-wrapper/dummy(^s: psa-driver-cipher-context-tc): int
+  s.with-ptr(psa-driver-cipher-context-t-ptr/dummy).int
+
+pub inline fun psa-driver-cipher-context-tcb-wrapper/dummy(^s: psa-driver-cipher-context-tcb<s::S>): int
+  s.with-ptr(psa-driver-cipher-context-t-ptr/dummy).int
+
+pub inline fun psa-driver-cipher-context-tc-wrapper/set-dummy(^s: psa-driver-cipher-context-tc, dummy: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-cipher-context-t-ptr/set-dummy(dummy.int32))
+
+pub inline fun psa-driver-cipher-context-tcb-wrapper/set-dummy(^s: psa-driver-cipher-context-tcb<s::S>, dummy: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-cipher-context-t-ptr/set-dummy(dummy.int32))
+
 inline extern psa-driver-cipher-context-t-ptr/mbedtls_ctx(s: intptr_t): mbedtls-psa-cipher-operation-t-c
-  c inline "((psa_driver_cipher_context_t*)#1)->mbedtls_ctx"
+  c inline "(mbedtls_psa_cipher_operation_t)(((union psa_driver_cipher_context_t*)#1)->mbedtls_ctx)"
 
 pub inline fun psa-driver-cipher-context-tc/mbedtls_ctx(^s: psa-driver-cipher-context-tc): mbedtls-psa-cipher-operation-t-c
   s.with-ptr(psa-driver-cipher-context-t-ptr/mbedtls_ctx)
@@ -1318,7 +1439,7 @@ pub inline fun psa-driver-cipher-context-tcb/mbedtls_ctx(^s: psa-driver-cipher-c
   s.with-ptr(psa-driver-cipher-context-t-ptr/mbedtls_ctx)
 
 inline extern psa-driver-cipher-context-t-ptr/set-mbedtls_ctx(s: intptr_t, mbedtls_ctx: mbedtls-psa-cipher-operation-t-c): ()
-  c inline "((psa_driver_cipher_context_t*)#1)->mbedtls_ctx = #2"
+  c inline "((union psa_driver_cipher_context_t*)#1)->mbedtls_ctx = (mbedtls_psa_cipher_operation_t)#2"
 
 pub inline fun psa-driver-cipher-context-tc/set-mbedtls_ctx(^s: psa-driver-cipher-context-tc, mbedtls_ctx: mbedtls-psa-cipher-operation-t-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-cipher-context-t-ptr/set-mbedtls_ctx(mbedtls_ctx))
@@ -1326,19 +1447,31 @@ pub inline fun psa-driver-cipher-context-tc/set-mbedtls_ctx(^s: psa-driver-ciphe
 pub inline fun psa-driver-cipher-context-tcb/set-mbedtls_ctx(^s: psa-driver-cipher-context-tcb<s::S>, mbedtls_ctx: mbedtls-psa-cipher-operation-t-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-cipher-context-t-ptr/set-mbedtls_ctx(mbedtls_ctx))
 
+pub inline fun psa-driver-cipher-context-tc-wrapper/mbedtls_ctx(^s: psa-driver-cipher-context-tc): mbedtls-psa-cipher-operation-t
+  s.with-ptr(psa-driver-cipher-context-t-ptr/mbedtls_ctx).to-koka
+
+pub inline fun psa-driver-cipher-context-tcb-wrapper/mbedtls_ctx(^s: psa-driver-cipher-context-tcb<s::S>): mbedtls-psa-cipher-operation-t
+  s.with-ptr(psa-driver-cipher-context-t-ptr/mbedtls_ctx).to-koka
+
+pub inline fun psa-driver-cipher-context-tc-wrapper/set-mbedtls_ctx(^s: psa-driver-cipher-context-tc, mbedtls_ctx: mbedtls-psa-cipher-operation-t): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-cipher-context-t-ptr/set-mbedtls_ctx((struct mbedtls_psa_cipher_operation_t)(mbedtls_ctx)))
+
+pub inline fun psa-driver-cipher-context-tcb-wrapper/set-mbedtls_ctx(^s: psa-driver-cipher-context-tcb<s::S>, mbedtls_ctx: mbedtls-psa-cipher-operation-t): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-cipher-context-t-ptr/set-mbedtls_ctx((struct mbedtls_psa_cipher_operation_t)(mbedtls_ctx)))
+
 pub struct mbedtls-psa-cipher-operation-t
-  private-alg: int32
-  private-iv-length: int8
-  private-block-length: int8
-  private-ctx: unnamedunion2-c
+  private-alg: koka-psa_algorithm_t
+  private-iv-length: int
+  private-block-length: int
+  private-ctx: unnamedunion2
 
 pub type mbedtls-psa-cipher-operation-t-c
-alias mbedtls-psa-cipher-operation-tc = owned-c<mbedtls-psa-cipher-operation-t-c>
-alias mbedtls-psa-cipher-operation-tcb<s::S> = borrowed-c<s,mbedtls-psa-cipher-operation-t-c>
-alias mbedtls-psa-cipher-operation-tca = owned-c<c-array<mbedtls-psa-cipher-operation-t-c>>
+pub alias mbedtls-psa-cipher-operation-tc = owned-c<mbedtls-psa-cipher-operation-t-c>
+pub alias mbedtls-psa-cipher-operation-tcb<s::S> = borrowed-c<s,mbedtls-psa-cipher-operation-t-c>
+pub alias mbedtls-psa-cipher-operation-tca = owned-c<c-array<mbedtls-psa-cipher-operation-t>>
 
 extern mbedtls-psa-cipher-operation-t/size-of(c: c-null<mbedtls-psa-cipher-operation-t-c>): int32
-  c inline "sizeof(mbedtls_psa_cipher_operation_t)"
+  c inline "sizeof(struct mbedtls_psa_cipher_operation_t)"
 
 pub fun mbedtls-psa-cipher-operation-tc(): mbedtls-psa-cipher-operation-tc
   malloc(?size-of=mbedtls-psa-cipher-operation-t/size-of)
@@ -1353,7 +1486,7 @@ pub fun mbedtls-psa-cipher-operation-tc-array-calloc(n: int): mbedtls-psa-cipher
   malloc-c(n.int32, ?size-of=mbedtls-psa-cipher-operation-t/size-of)
 
 inline extern mbedtls-psa-cipher-operation-t-ptr/private-alg(s: intptr_t): int32
-  c inline "((mbedtls_psa_cipher_operation_t*)#1)->private_alg"
+  c inline "(psa_algorithm_t)(((struct mbedtls_psa_cipher_operation_t*)#1)->private_alg)"
 
 pub inline fun mbedtls-psa-cipher-operation-tc/private-alg(^s: mbedtls-psa-cipher-operation-tc): int32
   s.with-ptr(mbedtls-psa-cipher-operation-t-ptr/private-alg)
@@ -1362,7 +1495,7 @@ pub inline fun mbedtls-psa-cipher-operation-tcb/private-alg(^s: mbedtls-psa-ciph
   s.with-ptr(mbedtls-psa-cipher-operation-t-ptr/private-alg)
 
 inline extern mbedtls-psa-cipher-operation-t-ptr/set-private-alg(s: intptr_t, private-alg: int32): ()
-  c inline "((mbedtls_psa_cipher_operation_t*)#1)->private_alg = #2"
+  c inline "((struct mbedtls_psa_cipher_operation_t*)#1)->private_alg = (psa_algorithm_t)#2"
 
 pub inline fun mbedtls-psa-cipher-operation-tc/set-private-alg(^s: mbedtls-psa-cipher-operation-tc, private-alg: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-cipher-operation-t-ptr/set-private-alg(private-alg))
@@ -1370,8 +1503,20 @@ pub inline fun mbedtls-psa-cipher-operation-tc/set-private-alg(^s: mbedtls-psa-c
 pub inline fun mbedtls-psa-cipher-operation-tcb/set-private-alg(^s: mbedtls-psa-cipher-operation-tcb<s::S>, private-alg: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-cipher-operation-t-ptr/set-private-alg(private-alg))
 
+pub inline fun mbedtls-psa-cipher-operation-tc-wrapper/private-alg(^s: mbedtls-psa-cipher-operation-tc): koka-psa_algorithm_t
+  s.with-ptr(mbedtls-psa-cipher-operation-t-ptr/private-alg).int
+
+pub inline fun mbedtls-psa-cipher-operation-tcb-wrapper/private-alg(^s: mbedtls-psa-cipher-operation-tcb<s::S>): koka-psa_algorithm_t
+  s.with-ptr(mbedtls-psa-cipher-operation-t-ptr/private-alg).int
+
+pub inline fun mbedtls-psa-cipher-operation-tc-wrapper/set-private-alg(^s: mbedtls-psa-cipher-operation-tc, private-alg: koka-psa_algorithm_t): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-cipher-operation-t-ptr/set-private-alg(private-alg.int32))
+
+pub inline fun mbedtls-psa-cipher-operation-tcb-wrapper/set-private-alg(^s: mbedtls-psa-cipher-operation-tcb<s::S>, private-alg: koka-psa_algorithm_t): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-cipher-operation-t-ptr/set-private-alg(private-alg.int32))
+
 inline extern mbedtls-psa-cipher-operation-t-ptr/private-iv-length(s: intptr_t): int8
-  c inline "((mbedtls_psa_cipher_operation_t*)#1)->private_iv_length"
+  c inline "(uint8_t)(((struct mbedtls_psa_cipher_operation_t*)#1)->private_iv_length)"
 
 pub inline fun mbedtls-psa-cipher-operation-tc/private-iv-length(^s: mbedtls-psa-cipher-operation-tc): int8
   s.with-ptr(mbedtls-psa-cipher-operation-t-ptr/private-iv-length)
@@ -1380,7 +1525,7 @@ pub inline fun mbedtls-psa-cipher-operation-tcb/private-iv-length(^s: mbedtls-ps
   s.with-ptr(mbedtls-psa-cipher-operation-t-ptr/private-iv-length)
 
 inline extern mbedtls-psa-cipher-operation-t-ptr/set-private-iv-length(s: intptr_t, private-iv-length: int8): ()
-  c inline "((mbedtls_psa_cipher_operation_t*)#1)->private_iv_length = #2"
+  c inline "((struct mbedtls_psa_cipher_operation_t*)#1)->private_iv_length = (uint8_t)#2"
 
 pub inline fun mbedtls-psa-cipher-operation-tc/set-private-iv-length(^s: mbedtls-psa-cipher-operation-tc, private-iv-length: int8): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-cipher-operation-t-ptr/set-private-iv-length(private-iv-length))
@@ -1388,8 +1533,20 @@ pub inline fun mbedtls-psa-cipher-operation-tc/set-private-iv-length(^s: mbedtls
 pub inline fun mbedtls-psa-cipher-operation-tcb/set-private-iv-length(^s: mbedtls-psa-cipher-operation-tcb<s::S>, private-iv-length: int8): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-cipher-operation-t-ptr/set-private-iv-length(private-iv-length))
 
+pub inline fun mbedtls-psa-cipher-operation-tc-wrapper/private-iv-length(^s: mbedtls-psa-cipher-operation-tc): int
+  s.with-ptr(mbedtls-psa-cipher-operation-t-ptr/private-iv-length).int
+
+pub inline fun mbedtls-psa-cipher-operation-tcb-wrapper/private-iv-length(^s: mbedtls-psa-cipher-operation-tcb<s::S>): int
+  s.with-ptr(mbedtls-psa-cipher-operation-t-ptr/private-iv-length).int
+
+pub inline fun mbedtls-psa-cipher-operation-tc-wrapper/set-private-iv-length(^s: mbedtls-psa-cipher-operation-tc, private-iv-length: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-cipher-operation-t-ptr/set-private-iv-length(private-iv-length.int8))
+
+pub inline fun mbedtls-psa-cipher-operation-tcb-wrapper/set-private-iv-length(^s: mbedtls-psa-cipher-operation-tcb<s::S>, private-iv-length: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-cipher-operation-t-ptr/set-private-iv-length(private-iv-length.int8))
+
 inline extern mbedtls-psa-cipher-operation-t-ptr/private-block-length(s: intptr_t): int8
-  c inline "((mbedtls_psa_cipher_operation_t*)#1)->private_block_length"
+  c inline "(uint8_t)(((struct mbedtls_psa_cipher_operation_t*)#1)->private_block_length)"
 
 pub inline fun mbedtls-psa-cipher-operation-tc/private-block-length(^s: mbedtls-psa-cipher-operation-tc): int8
   s.with-ptr(mbedtls-psa-cipher-operation-t-ptr/private-block-length)
@@ -1398,7 +1555,7 @@ pub inline fun mbedtls-psa-cipher-operation-tcb/private-block-length(^s: mbedtls
   s.with-ptr(mbedtls-psa-cipher-operation-t-ptr/private-block-length)
 
 inline extern mbedtls-psa-cipher-operation-t-ptr/set-private-block-length(s: intptr_t, private-block-length: int8): ()
-  c inline "((mbedtls_psa_cipher_operation_t*)#1)->private_block_length = #2"
+  c inline "((struct mbedtls_psa_cipher_operation_t*)#1)->private_block_length = (uint8_t)#2"
 
 pub inline fun mbedtls-psa-cipher-operation-tc/set-private-block-length(^s: mbedtls-psa-cipher-operation-tc, private-block-length: int8): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-cipher-operation-t-ptr/set-private-block-length(private-block-length))
@@ -1406,8 +1563,20 @@ pub inline fun mbedtls-psa-cipher-operation-tc/set-private-block-length(^s: mbed
 pub inline fun mbedtls-psa-cipher-operation-tcb/set-private-block-length(^s: mbedtls-psa-cipher-operation-tcb<s::S>, private-block-length: int8): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-cipher-operation-t-ptr/set-private-block-length(private-block-length))
 
+pub inline fun mbedtls-psa-cipher-operation-tc-wrapper/private-block-length(^s: mbedtls-psa-cipher-operation-tc): int
+  s.with-ptr(mbedtls-psa-cipher-operation-t-ptr/private-block-length).int
+
+pub inline fun mbedtls-psa-cipher-operation-tcb-wrapper/private-block-length(^s: mbedtls-psa-cipher-operation-tcb<s::S>): int
+  s.with-ptr(mbedtls-psa-cipher-operation-t-ptr/private-block-length).int
+
+pub inline fun mbedtls-psa-cipher-operation-tc-wrapper/set-private-block-length(^s: mbedtls-psa-cipher-operation-tc, private-block-length: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-cipher-operation-t-ptr/set-private-block-length(private-block-length.int8))
+
+pub inline fun mbedtls-psa-cipher-operation-tcb-wrapper/set-private-block-length(^s: mbedtls-psa-cipher-operation-tcb<s::S>, private-block-length: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-cipher-operation-t-ptr/set-private-block-length(private-block-length.int8))
+
 inline extern mbedtls-psa-cipher-operation-t-ptr/private-ctx(s: intptr_t): unnamedunion2-c
-  c inline "((mbedtls_psa_cipher_operation_t*)#1)->private_ctx"
+  c inline "(UnnamedUnion2)(((struct mbedtls_psa_cipher_operation_t*)#1)->private_ctx)"
 
 pub inline fun mbedtls-psa-cipher-operation-tc/private-ctx(^s: mbedtls-psa-cipher-operation-tc): unnamedunion2-c
   s.with-ptr(mbedtls-psa-cipher-operation-t-ptr/private-ctx)
@@ -1416,7 +1585,7 @@ pub inline fun mbedtls-psa-cipher-operation-tcb/private-ctx(^s: mbedtls-psa-ciph
   s.with-ptr(mbedtls-psa-cipher-operation-t-ptr/private-ctx)
 
 inline extern mbedtls-psa-cipher-operation-t-ptr/set-private-ctx(s: intptr_t, private-ctx: unnamedunion2-c): ()
-  c inline "((mbedtls_psa_cipher_operation_t*)#1)->private_ctx = #2"
+  c inline "((struct mbedtls_psa_cipher_operation_t*)#1)->private_ctx = (UnnamedUnion2)#2"
 
 pub inline fun mbedtls-psa-cipher-operation-tc/set-private-ctx(^s: mbedtls-psa-cipher-operation-tc, private-ctx: unnamedunion2-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-cipher-operation-t-ptr/set-private-ctx(private-ctx))
@@ -1425,14 +1594,15 @@ pub inline fun mbedtls-psa-cipher-operation-tcb/set-private-ctx(^s: mbedtls-psa-
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-cipher-operation-t-ptr/set-private-ctx(private-ctx))
 
 pub fun mbedtls-psa-cipher-operation-t/to-koka(s: mbedtls-psa-cipher-operation-tc): mbedtls-psa-cipher-operation-t
-  Mbedtls-psa-cipher-operation-t(s.mbedtls-psa-cipher-operation-tc/private-alg, s.mbedtls-psa-cipher-operation-tc/private-iv-length, s.mbedtls-psa-cipher-operation-tc/private-block-length, s.mbedtls-psa-cipher-operation-tc/private-ctx)
+  Mbedtls-psa-cipher-operation-t(s.mbedtls-psa-cipher-operation-tc/private-alg.int, s.mbedtls-psa-cipher-operation-tc/private-iv-length.int, s.mbedtls-psa-cipher-operation-tc/private-block-length.int, s.mbedtls-psa-cipher-operation-tc/private-ctx)
+
 pub type unnamedunion2-c
-alias unnamedunion2c = owned-c<unnamedunion2-c>
-alias unnamedunion2cb<s::S> = borrowed-c<s,unnamedunion2-c>
-alias unnamedunion2ca = owned-c<c-array<unnamedunion2-c>>
+pub alias unnamedunion2c = owned-c<unnamedunion2-c>
+pub alias unnamedunion2cb<s::S> = borrowed-c<s,unnamedunion2-c>
+pub alias unnamedunion2ca = owned-c<c-array<unnamedunion2>>
 
 extern unnamedunion2/size-of(c: c-null<unnamedunion2-c>): int32
-  c inline "sizeof(UnnamedUnion2)"
+  c inline "sizeof(union UnnamedUnion2)"
 
 pub fun unnamedunion2c(): unnamedunion2c
   malloc(?size-of=unnamedunion2/size-of)
@@ -1447,7 +1617,7 @@ pub fun unnamedunion2c-array-calloc(n: int): unnamedunion2ca
   malloc-c(n.int32, ?size-of=unnamedunion2/size-of)
 
 inline extern unnamedunion2-ptr/private_dummy(s: intptr_t): int32
-  c inline "((UnnamedUnion2*)#1)->private_dummy"
+  c inline "(unsigned int)(((union UnnamedUnion2*)#1)->private_dummy)"
 
 pub inline fun unnamedunion2c/private_dummy(^s: unnamedunion2c): int32
   s.with-ptr(unnamedunion2-ptr/private_dummy)
@@ -1456,7 +1626,7 @@ pub inline fun unnamedunion2cb/private_dummy(^s: unnamedunion2cb<s::S>): int32
   s.with-ptr(unnamedunion2-ptr/private_dummy)
 
 inline extern unnamedunion2-ptr/set-private_dummy(s: intptr_t, private_dummy: int32): ()
-  c inline "((UnnamedUnion2*)#1)->private_dummy = #2"
+  c inline "((union UnnamedUnion2*)#1)->private_dummy = (unsigned int)#2"
 
 pub inline fun unnamedunion2c/set-private_dummy(^s: unnamedunion2c, private_dummy: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion2-ptr/set-private_dummy(private_dummy))
@@ -1464,8 +1634,20 @@ pub inline fun unnamedunion2c/set-private_dummy(^s: unnamedunion2c, private_dumm
 pub inline fun unnamedunion2cb/set-private_dummy(^s: unnamedunion2cb<s::S>, private_dummy: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion2-ptr/set-private_dummy(private_dummy))
 
+pub inline fun unnamedunion2c-wrapper/private_dummy(^s: unnamedunion2c): int
+  s.with-ptr(unnamedunion2-ptr/private_dummy).int
+
+pub inline fun unnamedunion2cb-wrapper/private_dummy(^s: unnamedunion2cb<s::S>): int
+  s.with-ptr(unnamedunion2-ptr/private_dummy).int
+
+pub inline fun unnamedunion2c-wrapper/set-private_dummy(^s: unnamedunion2c, private_dummy: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion2-ptr/set-private_dummy(private_dummy.int32))
+
+pub inline fun unnamedunion2cb-wrapper/set-private_dummy(^s: unnamedunion2cb<s::S>, private_dummy: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion2-ptr/set-private_dummy(private_dummy.int32))
+
 inline extern unnamedunion2-ptr/private_cipher(s: intptr_t): mbedtls-cipher-context-t-c
-  c inline "((UnnamedUnion2*)#1)->private_cipher"
+  c inline "(mbedtls_cipher_context_t)(((union UnnamedUnion2*)#1)->private_cipher)"
 
 pub inline fun unnamedunion2c/private_cipher(^s: unnamedunion2c): mbedtls-cipher-context-t-c
   s.with-ptr(unnamedunion2-ptr/private_cipher)
@@ -1474,7 +1656,7 @@ pub inline fun unnamedunion2cb/private_cipher(^s: unnamedunion2cb<s::S>): mbedtl
   s.with-ptr(unnamedunion2-ptr/private_cipher)
 
 inline extern unnamedunion2-ptr/set-private_cipher(s: intptr_t, private_cipher: mbedtls-cipher-context-t-c): ()
-  c inline "((UnnamedUnion2*)#1)->private_cipher = #2"
+  c inline "((union UnnamedUnion2*)#1)->private_cipher = (mbedtls_cipher_context_t)#2"
 
 pub inline fun unnamedunion2c/set-private_cipher(^s: unnamedunion2c, private_cipher: mbedtls-cipher-context-t-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion2-ptr/set-private_cipher(private_cipher))
@@ -1484,12 +1666,12 @@ pub inline fun unnamedunion2cb/set-private_cipher(^s: unnamedunion2cb<s::S>, pri
 
 // Generic cipher context.
 pub type mbedtls-cipher-context-t-c
-alias mbedtls-cipher-context-tc<s::S> = owned-c<mbedtls-cipher-context-t-c>
-alias mbedtls-cipher-context-tcb<s::S> = borrowed-c<s,mbedtls-cipher-context-t-c>
-alias mbedtls-cipher-context-tca<s::S> = owned-c<c-array<mbedtls-cipher-context-t-c>>
+pub alias mbedtls-cipher-context-tc<s::S> = owned-c<mbedtls-cipher-context-t-c>
+pub alias mbedtls-cipher-context-tcb<s::S> = borrowed-c<s,mbedtls-cipher-context-t-c>
+pub alias mbedtls-cipher-context-tca<s::S> = owned-c<c-array<mbedtls-cipher-context-t>>
 
 extern mbedtls-cipher-context-t/size-of(c: c-null<mbedtls-cipher-context-t-c>): int32
-  c inline "sizeof(mbedtls_cipher_context_t)"
+  c inline "sizeof(struct mbedtls_cipher_context_t)"
 
 pub fun mbedtls-cipher-context-tc(): mbedtls-cipher-context-tc<s::S>
   malloc(?size-of=mbedtls-cipher-context-t/size-of)
@@ -1503,26 +1685,40 @@ pub fun mbedtls-cipher-context-tc-array(n: int): mbedtls-cipher-context-tca<s::S
 pub fun mbedtls-cipher-context-tc-array-calloc(n: int): mbedtls-cipher-context-tca<s::S>
   malloc-c(n.int32, ?size-of=mbedtls-cipher-context-t/size-of)
 
-inline extern mbedtls-cipher-context-t-ptr/private_cipher_info(s: intptr_t): owned-c<mbedtls-cipher-info-t-c>
-  c inline "((mbedtls_cipher_context_t*)#1)->private_cipher_info"
+inline extern mbedtls-cipher-context-t-ptr/private_cipher_info(s: intptr_t): intptr_t
+  c inline "(intptr_t)(((struct mbedtls_cipher_context_t*)#1)->private_cipher_info)"
 
-pub inline fun mbedtls-cipher-context-tc/private_cipher_info(^s: mbedtls-cipher-context-tc<s::S>): owned-c<mbedtls-cipher-info-t-c>
+pub inline fun mbedtls-cipher-context-tc/private_cipher_info(^s: mbedtls-cipher-context-tc<s::S>): intptr_t
   s.with-ptr(mbedtls-cipher-context-t-ptr/private_cipher_info)
 
-pub inline fun mbedtls-cipher-context-tcb/private_cipher_info(^s: mbedtls-cipher-context-tcb<s::S>): owned-c<mbedtls-cipher-info-t-c>
+pub inline fun mbedtls-cipher-context-tcb/private_cipher_info(^s: mbedtls-cipher-context-tcb<s::S>): intptr_t
   s.with-ptr(mbedtls-cipher-context-t-ptr/private_cipher_info)
 
-inline extern mbedtls-cipher-context-t-ptr/set-private_cipher_info(s: intptr_t, private_cipher_info: owned-c<mbedtls-cipher-info-t-c>): ()
-  c inline "((mbedtls_cipher_context_t*)#1)->private_cipher_info = #2"
+inline extern mbedtls-cipher-context-t-ptr/set-private_cipher_info(s: intptr_t, private_cipher_info: intptr_t): ()
+  c inline "((struct mbedtls_cipher_context_t*)#1)->private_cipher_info = (struct mbedtls_cipher_info_t*)#2"
 
-pub inline fun mbedtls-cipher-context-tc/set-private_cipher_info(^s: mbedtls-cipher-context-tc<s::S>, private_cipher_info: owned-c<mbedtls-cipher-info-t-c>): ()
+pub inline fun mbedtls-cipher-context-tc/set-private_cipher_info(^s: mbedtls-cipher-context-tc<s::S>, private_cipher_info: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cipher-context-t-ptr/set-private_cipher_info(private_cipher_info))
 
-pub inline fun mbedtls-cipher-context-tcb/set-private_cipher_info(^s: mbedtls-cipher-context-tcb<s::S>, private_cipher_info: owned-c<mbedtls-cipher-info-t-c>): ()
+pub inline fun mbedtls-cipher-context-tcb/set-private_cipher_info(^s: mbedtls-cipher-context-tcb<s::S>, private_cipher_info: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cipher-context-t-ptr/set-private_cipher_info(private_cipher_info))
+
+pub inline fun mbedtls-cipher-context-tc-wrapper/private_cipher_info(^s: mbedtls-cipher-context-tc<s::S>): owned-c<mbedtls-cipher-info-t-c>
+  s.with-ptr(mbedtls-cipher-context-t-ptr/private_cipher_info).c-own
+
+pub inline fun mbedtls-cipher-context-tcb-wrapper/private_cipher_info(^s: mbedtls-cipher-context-tcb<s::S>): owned-c<mbedtls-cipher-info-t-c>
+  s.with-ptr(mbedtls-cipher-context-t-ptr/private_cipher_info).c-own
+
+pub inline fun mbedtls-cipher-context-tc-wrapper/set-private_cipher_info(^s: mbedtls-cipher-context-tc<s::S>, private_cipher_info: owned-c<mbedtls-cipher-info-t-c>): ()
+  with koka-ptr <- private_cipher_info.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cipher-context-t-ptr/set-private_cipher_info(koka-ptr))
+
+pub inline fun mbedtls-cipher-context-tcb-wrapper/set-private_cipher_info(^s: mbedtls-cipher-context-tcb<s::S>, private_cipher_info: owned-c<mbedtls-cipher-info-t-c>): ()
+  with koka-ptr <- private_cipher_info.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cipher-context-t-ptr/set-private_cipher_info(koka-ptr))
 
 inline extern mbedtls-cipher-context-t-ptr/private_key_bitlen(s: intptr_t): int32
-  c inline "((mbedtls_cipher_context_t*)#1)->private_key_bitlen"
+  c inline "(int)(((struct mbedtls_cipher_context_t*)#1)->private_key_bitlen)"
 
 pub inline fun mbedtls-cipher-context-tc/private_key_bitlen(^s: mbedtls-cipher-context-tc<s::S>): int32
   s.with-ptr(mbedtls-cipher-context-t-ptr/private_key_bitlen)
@@ -1531,7 +1727,7 @@ pub inline fun mbedtls-cipher-context-tcb/private_key_bitlen(^s: mbedtls-cipher-
   s.with-ptr(mbedtls-cipher-context-t-ptr/private_key_bitlen)
 
 inline extern mbedtls-cipher-context-t-ptr/set-private_key_bitlen(s: intptr_t, private_key_bitlen: int32): ()
-  c inline "((mbedtls_cipher_context_t*)#1)->private_key_bitlen = #2"
+  c inline "((struct mbedtls_cipher_context_t*)#1)->private_key_bitlen = (int)#2"
 
 pub inline fun mbedtls-cipher-context-tc/set-private_key_bitlen(^s: mbedtls-cipher-context-tc<s::S>, private_key_bitlen: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cipher-context-t-ptr/set-private_key_bitlen(private_key_bitlen))
@@ -1539,8 +1735,20 @@ pub inline fun mbedtls-cipher-context-tc/set-private_key_bitlen(^s: mbedtls-ciph
 pub inline fun mbedtls-cipher-context-tcb/set-private_key_bitlen(^s: mbedtls-cipher-context-tcb<s::S>, private_key_bitlen: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cipher-context-t-ptr/set-private_key_bitlen(private_key_bitlen))
 
+pub inline fun mbedtls-cipher-context-tc-wrapper/private_key_bitlen(^s: mbedtls-cipher-context-tc<s::S>): int
+  s.with-ptr(mbedtls-cipher-context-t-ptr/private_key_bitlen).int
+
+pub inline fun mbedtls-cipher-context-tcb-wrapper/private_key_bitlen(^s: mbedtls-cipher-context-tcb<s::S>): int
+  s.with-ptr(mbedtls-cipher-context-t-ptr/private_key_bitlen).int
+
+pub inline fun mbedtls-cipher-context-tc-wrapper/set-private_key_bitlen(^s: mbedtls-cipher-context-tc<s::S>, private_key_bitlen: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cipher-context-t-ptr/set-private_key_bitlen(private_key_bitlen.int32))
+
+pub inline fun mbedtls-cipher-context-tcb-wrapper/set-private_key_bitlen(^s: mbedtls-cipher-context-tcb<s::S>, private_key_bitlen: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cipher-context-t-ptr/set-private_key_bitlen(private_key_bitlen.int32))
+
 inline extern mbedtls-cipher-context-t-ptr/private_operation(s: intptr_t): int32
-  c inline "((mbedtls_cipher_context_t*)#1)->private_operation"
+  c inline "(int32_t)(((struct mbedtls_cipher_context_t*)#1)->private_operation)"
 
 pub inline fun mbedtls-cipher-context-tc/private_operation(^s: mbedtls-cipher-context-tc<s::S>): int32
   s.with-ptr(mbedtls-cipher-context-t-ptr/private_operation)
@@ -1549,7 +1757,7 @@ pub inline fun mbedtls-cipher-context-tcb/private_operation(^s: mbedtls-cipher-c
   s.with-ptr(mbedtls-cipher-context-t-ptr/private_operation)
 
 inline extern mbedtls-cipher-context-t-ptr/set-private_operation(s: intptr_t, private_operation: int32): ()
-  c inline "((mbedtls_cipher_context_t*)#1)->private_operation = #2"
+  c inline "((struct mbedtls_cipher_context_t*)#1)->private_operation = (int32_t)#2"
 
 pub inline fun mbedtls-cipher-context-tc/set-private_operation(^s: mbedtls-cipher-context-tc<s::S>, private_operation: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cipher-context-t-ptr/set-private_operation(private_operation))
@@ -1557,44 +1765,72 @@ pub inline fun mbedtls-cipher-context-tc/set-private_operation(^s: mbedtls-ciphe
 pub inline fun mbedtls-cipher-context-tcb/set-private_operation(^s: mbedtls-cipher-context-tcb<s::S>, private_operation: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cipher-context-t-ptr/set-private_operation(private_operation))
 
-inline extern mbedtls-cipher-context-t-ptr/private_add_padding(s: intptr_t): owned-c<((output : owned-c<int8>, olen : ssize_t, data_len : ssize_t) -> ())>
-  c inline "((mbedtls_cipher_context_t*)#1)->private_add_padding"
+inline extern mbedtls-cipher-context-t-ptr/private_add_padding(s: intptr_t): intptr_t
+  c inline "(intptr_t)(((struct mbedtls_cipher_context_t*)#1)->private_add_padding)"
 
-pub inline fun mbedtls-cipher-context-tc/private_add_padding(^s: mbedtls-cipher-context-tc<s::S>): owned-c<((output : owned-c<int8>, olen : ssize_t, data_len : ssize_t) -> ())>
+pub inline fun mbedtls-cipher-context-tc/private_add_padding(^s: mbedtls-cipher-context-tc<s::S>): intptr_t
   s.with-ptr(mbedtls-cipher-context-t-ptr/private_add_padding)
 
-pub inline fun mbedtls-cipher-context-tcb/private_add_padding(^s: mbedtls-cipher-context-tcb<s::S>): owned-c<((output : owned-c<int8>, olen : ssize_t, data_len : ssize_t) -> ())>
+pub inline fun mbedtls-cipher-context-tcb/private_add_padding(^s: mbedtls-cipher-context-tcb<s::S>): intptr_t
   s.with-ptr(mbedtls-cipher-context-t-ptr/private_add_padding)
 
-inline extern mbedtls-cipher-context-t-ptr/set-private_add_padding(s: intptr_t, private_add_padding: owned-c<((output : owned-c<int8>, olen : ssize_t, data_len : ssize_t) -> ())>): ()
-  c inline "((mbedtls_cipher_context_t*)#1)->private_add_padding = #2"
+inline extern mbedtls-cipher-context-t-ptr/set-private_add_padding(s: intptr_t, private_add_padding: intptr_t): ()
+  c inline "((struct mbedtls_cipher_context_t*)#1)->private_add_padding = (((output : unsigned char*, olen : ssize_t, data_len : ssize_t) -> kk_unit_t)*)#2"
 
-pub inline fun mbedtls-cipher-context-tc/set-private_add_padding(^s: mbedtls-cipher-context-tc<s::S>, private_add_padding: owned-c<((output : owned-c<int8>, olen : ssize_t, data_len : ssize_t) -> ())>): ()
+pub inline fun mbedtls-cipher-context-tc/set-private_add_padding(^s: mbedtls-cipher-context-tc<s::S>, private_add_padding: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cipher-context-t-ptr/set-private_add_padding(private_add_padding))
 
-pub inline fun mbedtls-cipher-context-tcb/set-private_add_padding(^s: mbedtls-cipher-context-tcb<s::S>, private_add_padding: owned-c<((output : owned-c<int8>, olen : ssize_t, data_len : ssize_t) -> ())>): ()
+pub inline fun mbedtls-cipher-context-tcb/set-private_add_padding(^s: mbedtls-cipher-context-tcb<s::S>, private_add_padding: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cipher-context-t-ptr/set-private_add_padding(private_add_padding))
 
-inline extern mbedtls-cipher-context-t-ptr/private_get_padding(s: intptr_t): owned-c<((input : owned-c<int8>, ilen : ssize_t, data_len : owned-c<ssize_t>) -> int32)>
-  c inline "((mbedtls_cipher_context_t*)#1)->private_get_padding"
+pub inline fun mbedtls-cipher-context-tc-wrapper/private_add_padding(^s: mbedtls-cipher-context-tc<s::S>): owned-c<((output : intptr_t, olen : ssize_t, data_len : ssize_t) -> ())>
+  s.with-ptr(mbedtls-cipher-context-t-ptr/private_add_padding).c-own
 
-pub inline fun mbedtls-cipher-context-tc/private_get_padding(^s: mbedtls-cipher-context-tc<s::S>): owned-c<((input : owned-c<int8>, ilen : ssize_t, data_len : owned-c<ssize_t>) -> int32)>
+pub inline fun mbedtls-cipher-context-tcb-wrapper/private_add_padding(^s: mbedtls-cipher-context-tcb<s::S>): owned-c<((output : intptr_t, olen : ssize_t, data_len : ssize_t) -> ())>
+  s.with-ptr(mbedtls-cipher-context-t-ptr/private_add_padding).c-own
+
+pub inline fun mbedtls-cipher-context-tc-wrapper/set-private_add_padding(^s: mbedtls-cipher-context-tc<s::S>, private_add_padding: owned-c<((output : intptr_t, olen : ssize_t, data_len : ssize_t) -> ())>): ()
+  with koka-ptr <- private_add_padding.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cipher-context-t-ptr/set-private_add_padding(koka-ptr))
+
+pub inline fun mbedtls-cipher-context-tcb-wrapper/set-private_add_padding(^s: mbedtls-cipher-context-tcb<s::S>, private_add_padding: owned-c<((output : intptr_t, olen : ssize_t, data_len : ssize_t) -> ())>): ()
+  with koka-ptr <- private_add_padding.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cipher-context-t-ptr/set-private_add_padding(koka-ptr))
+
+inline extern mbedtls-cipher-context-t-ptr/private_get_padding(s: intptr_t): intptr_t
+  c inline "(intptr_t)(((struct mbedtls_cipher_context_t*)#1)->private_get_padding)"
+
+pub inline fun mbedtls-cipher-context-tc/private_get_padding(^s: mbedtls-cipher-context-tc<s::S>): intptr_t
   s.with-ptr(mbedtls-cipher-context-t-ptr/private_get_padding)
 
-pub inline fun mbedtls-cipher-context-tcb/private_get_padding(^s: mbedtls-cipher-context-tcb<s::S>): owned-c<((input : owned-c<int8>, ilen : ssize_t, data_len : owned-c<ssize_t>) -> int32)>
+pub inline fun mbedtls-cipher-context-tcb/private_get_padding(^s: mbedtls-cipher-context-tcb<s::S>): intptr_t
   s.with-ptr(mbedtls-cipher-context-t-ptr/private_get_padding)
 
-inline extern mbedtls-cipher-context-t-ptr/set-private_get_padding(s: intptr_t, private_get_padding: owned-c<((input : owned-c<int8>, ilen : ssize_t, data_len : owned-c<ssize_t>) -> int32)>): ()
-  c inline "((mbedtls_cipher_context_t*)#1)->private_get_padding = #2"
+inline extern mbedtls-cipher-context-t-ptr/set-private_get_padding(s: intptr_t, private_get_padding: intptr_t): ()
+  c inline "((struct mbedtls_cipher_context_t*)#1)->private_get_padding = (((input : unsigned char*, ilen : ssize_t, data_len : ssize_t*) -> int)*)#2"
 
-pub inline fun mbedtls-cipher-context-tc/set-private_get_padding(^s: mbedtls-cipher-context-tc<s::S>, private_get_padding: owned-c<((input : owned-c<int8>, ilen : ssize_t, data_len : owned-c<ssize_t>) -> int32)>): ()
+pub inline fun mbedtls-cipher-context-tc/set-private_get_padding(^s: mbedtls-cipher-context-tc<s::S>, private_get_padding: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cipher-context-t-ptr/set-private_get_padding(private_get_padding))
 
-pub inline fun mbedtls-cipher-context-tcb/set-private_get_padding(^s: mbedtls-cipher-context-tcb<s::S>, private_get_padding: owned-c<((input : owned-c<int8>, ilen : ssize_t, data_len : owned-c<ssize_t>) -> int32)>): ()
+pub inline fun mbedtls-cipher-context-tcb/set-private_get_padding(^s: mbedtls-cipher-context-tcb<s::S>, private_get_padding: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cipher-context-t-ptr/set-private_get_padding(private_get_padding))
+
+pub inline fun mbedtls-cipher-context-tc-wrapper/private_get_padding(^s: mbedtls-cipher-context-tc<s::S>): owned-c<((input : intptr_t, ilen : ssize_t, data_len : intptr_t) -> int32)>
+  s.with-ptr(mbedtls-cipher-context-t-ptr/private_get_padding).c-own
+
+pub inline fun mbedtls-cipher-context-tcb-wrapper/private_get_padding(^s: mbedtls-cipher-context-tcb<s::S>): owned-c<((input : intptr_t, ilen : ssize_t, data_len : intptr_t) -> int32)>
+  s.with-ptr(mbedtls-cipher-context-t-ptr/private_get_padding).c-own
+
+pub inline fun mbedtls-cipher-context-tc-wrapper/set-private_get_padding(^s: mbedtls-cipher-context-tc<s::S>, private_get_padding: owned-c<((input : intptr_t, ilen : ssize_t, data_len : intptr_t) -> int32)>): ()
+  with koka-ptr <- private_get_padding.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cipher-context-t-ptr/set-private_get_padding(koka-ptr))
+
+pub inline fun mbedtls-cipher-context-tcb-wrapper/set-private_get_padding(^s: mbedtls-cipher-context-tcb<s::S>, private_get_padding: owned-c<((input : intptr_t, ilen : ssize_t, data_len : intptr_t) -> int32)>): ()
+  with koka-ptr <- private_get_padding.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cipher-context-t-ptr/set-private_get_padding(koka-ptr))
 
 inline extern mbedtls-cipher-context-t-ptr/private_unprocessed_len(s: intptr_t): ssize_t
-  c inline "((mbedtls_cipher_context_t*)#1)->private_unprocessed_len"
+  c inline "(ssize_t)(((struct mbedtls_cipher_context_t*)#1)->private_unprocessed_len)"
 
 pub inline fun mbedtls-cipher-context-tc/private_unprocessed_len(^s: mbedtls-cipher-context-tc<s::S>): ssize_t
   s.with-ptr(mbedtls-cipher-context-t-ptr/private_unprocessed_len)
@@ -1603,7 +1839,7 @@ pub inline fun mbedtls-cipher-context-tcb/private_unprocessed_len(^s: mbedtls-ci
   s.with-ptr(mbedtls-cipher-context-t-ptr/private_unprocessed_len)
 
 inline extern mbedtls-cipher-context-t-ptr/set-private_unprocessed_len(s: intptr_t, private_unprocessed_len: ssize_t): ()
-  c inline "((mbedtls_cipher_context_t*)#1)->private_unprocessed_len = #2"
+  c inline "((struct mbedtls_cipher_context_t*)#1)->private_unprocessed_len = (ssize_t)#2"
 
 pub inline fun mbedtls-cipher-context-tc/set-private_unprocessed_len(^s: mbedtls-cipher-context-tc<s::S>, private_unprocessed_len: ssize_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cipher-context-t-ptr/set-private_unprocessed_len(private_unprocessed_len))
@@ -1612,7 +1848,7 @@ pub inline fun mbedtls-cipher-context-tcb/set-private_unprocessed_len(^s: mbedtl
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cipher-context-t-ptr/set-private_unprocessed_len(private_unprocessed_len))
 
 inline extern mbedtls-cipher-context-t-ptr/private_iv_size(s: intptr_t): ssize_t
-  c inline "((mbedtls_cipher_context_t*)#1)->private_iv_size"
+  c inline "(ssize_t)(((struct mbedtls_cipher_context_t*)#1)->private_iv_size)"
 
 pub inline fun mbedtls-cipher-context-tc/private_iv_size(^s: mbedtls-cipher-context-tc<s::S>): ssize_t
   s.with-ptr(mbedtls-cipher-context-t-ptr/private_iv_size)
@@ -1621,7 +1857,7 @@ pub inline fun mbedtls-cipher-context-tcb/private_iv_size(^s: mbedtls-cipher-con
   s.with-ptr(mbedtls-cipher-context-t-ptr/private_iv_size)
 
 inline extern mbedtls-cipher-context-t-ptr/set-private_iv_size(s: intptr_t, private_iv_size: ssize_t): ()
-  c inline "((mbedtls_cipher_context_t*)#1)->private_iv_size = #2"
+  c inline "((struct mbedtls_cipher_context_t*)#1)->private_iv_size = (ssize_t)#2"
 
 pub inline fun mbedtls-cipher-context-tc/set-private_iv_size(^s: mbedtls-cipher-context-tc<s::S>, private_iv_size: ssize_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cipher-context-t-ptr/set-private_iv_size(private_iv_size))
@@ -1629,41 +1865,69 @@ pub inline fun mbedtls-cipher-context-tc/set-private_iv_size(^s: mbedtls-cipher-
 pub inline fun mbedtls-cipher-context-tcb/set-private_iv_size(^s: mbedtls-cipher-context-tcb<s::S>, private_iv_size: ssize_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cipher-context-t-ptr/set-private_iv_size(private_iv_size))
 
-inline extern mbedtls-cipher-context-t-ptr/private_cipher_ctx(s: intptr_t): owned-c<()>
-  c inline "((mbedtls_cipher_context_t*)#1)->private_cipher_ctx"
+inline extern mbedtls-cipher-context-t-ptr/private_cipher_ctx(s: intptr_t): intptr_t
+  c inline "(intptr_t)(((struct mbedtls_cipher_context_t*)#1)->private_cipher_ctx)"
 
-pub inline fun mbedtls-cipher-context-tc/private_cipher_ctx(^s: mbedtls-cipher-context-tc<s::S>): owned-c<()>
+pub inline fun mbedtls-cipher-context-tc/private_cipher_ctx(^s: mbedtls-cipher-context-tc<s::S>): intptr_t
   s.with-ptr(mbedtls-cipher-context-t-ptr/private_cipher_ctx)
 
-pub inline fun mbedtls-cipher-context-tcb/private_cipher_ctx(^s: mbedtls-cipher-context-tcb<s::S>): owned-c<()>
+pub inline fun mbedtls-cipher-context-tcb/private_cipher_ctx(^s: mbedtls-cipher-context-tcb<s::S>): intptr_t
   s.with-ptr(mbedtls-cipher-context-t-ptr/private_cipher_ctx)
 
-inline extern mbedtls-cipher-context-t-ptr/set-private_cipher_ctx(s: intptr_t, private_cipher_ctx: owned-c<()>): ()
-  c inline "((mbedtls_cipher_context_t*)#1)->private_cipher_ctx = #2"
+inline extern mbedtls-cipher-context-t-ptr/set-private_cipher_ctx(s: intptr_t, private_cipher_ctx: intptr_t): ()
+  c inline "((struct mbedtls_cipher_context_t*)#1)->private_cipher_ctx = (kk_unit_t*)#2"
 
-pub inline fun mbedtls-cipher-context-tc/set-private_cipher_ctx(^s: mbedtls-cipher-context-tc<s::S>, private_cipher_ctx: owned-c<()>): ()
+pub inline fun mbedtls-cipher-context-tc/set-private_cipher_ctx(^s: mbedtls-cipher-context-tc<s::S>, private_cipher_ctx: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cipher-context-t-ptr/set-private_cipher_ctx(private_cipher_ctx))
 
-pub inline fun mbedtls-cipher-context-tcb/set-private_cipher_ctx(^s: mbedtls-cipher-context-tcb<s::S>, private_cipher_ctx: owned-c<()>): ()
+pub inline fun mbedtls-cipher-context-tcb/set-private_cipher_ctx(^s: mbedtls-cipher-context-tcb<s::S>, private_cipher_ctx: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cipher-context-t-ptr/set-private_cipher_ctx(private_cipher_ctx))
 
-inline extern mbedtls-cipher-context-t-ptr/private_cmac_ctx(s: intptr_t): owned-c<mbedtls-cmac-context-t-c>
-  c inline "((mbedtls_cipher_context_t*)#1)->private_cmac_ctx"
+pub inline fun mbedtls-cipher-context-tc-wrapper/private_cipher_ctx(^s: mbedtls-cipher-context-tc<s::S>): owned-c<()>
+  s.with-ptr(mbedtls-cipher-context-t-ptr/private_cipher_ctx).c-own
 
-pub inline fun mbedtls-cipher-context-tc/private_cmac_ctx(^s: mbedtls-cipher-context-tc<s::S>): owned-c<mbedtls-cmac-context-t-c>
+pub inline fun mbedtls-cipher-context-tcb-wrapper/private_cipher_ctx(^s: mbedtls-cipher-context-tcb<s::S>): owned-c<()>
+  s.with-ptr(mbedtls-cipher-context-t-ptr/private_cipher_ctx).c-own
+
+pub inline fun mbedtls-cipher-context-tc-wrapper/set-private_cipher_ctx(^s: mbedtls-cipher-context-tc<s::S>, private_cipher_ctx: owned-c<()>): ()
+  with koka-ptr <- private_cipher_ctx.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cipher-context-t-ptr/set-private_cipher_ctx(koka-ptr))
+
+pub inline fun mbedtls-cipher-context-tcb-wrapper/set-private_cipher_ctx(^s: mbedtls-cipher-context-tcb<s::S>, private_cipher_ctx: owned-c<()>): ()
+  with koka-ptr <- private_cipher_ctx.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cipher-context-t-ptr/set-private_cipher_ctx(koka-ptr))
+
+inline extern mbedtls-cipher-context-t-ptr/private_cmac_ctx(s: intptr_t): intptr_t
+  c inline "(intptr_t)(((struct mbedtls_cipher_context_t*)#1)->private_cmac_ctx)"
+
+pub inline fun mbedtls-cipher-context-tc/private_cmac_ctx(^s: mbedtls-cipher-context-tc<s::S>): intptr_t
   s.with-ptr(mbedtls-cipher-context-t-ptr/private_cmac_ctx)
 
-pub inline fun mbedtls-cipher-context-tcb/private_cmac_ctx(^s: mbedtls-cipher-context-tcb<s::S>): owned-c<mbedtls-cmac-context-t-c>
+pub inline fun mbedtls-cipher-context-tcb/private_cmac_ctx(^s: mbedtls-cipher-context-tcb<s::S>): intptr_t
   s.with-ptr(mbedtls-cipher-context-t-ptr/private_cmac_ctx)
 
-inline extern mbedtls-cipher-context-t-ptr/set-private_cmac_ctx(s: intptr_t, private_cmac_ctx: owned-c<mbedtls-cmac-context-t-c>): ()
-  c inline "((mbedtls_cipher_context_t*)#1)->private_cmac_ctx = #2"
+inline extern mbedtls-cipher-context-t-ptr/set-private_cmac_ctx(s: intptr_t, private_cmac_ctx: intptr_t): ()
+  c inline "((struct mbedtls_cipher_context_t*)#1)->private_cmac_ctx = (struct mbedtls_cmac_context_t*)#2"
 
-pub inline fun mbedtls-cipher-context-tc/set-private_cmac_ctx(^s: mbedtls-cipher-context-tc<s::S>, private_cmac_ctx: owned-c<mbedtls-cmac-context-t-c>): ()
+pub inline fun mbedtls-cipher-context-tc/set-private_cmac_ctx(^s: mbedtls-cipher-context-tc<s::S>, private_cmac_ctx: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cipher-context-t-ptr/set-private_cmac_ctx(private_cmac_ctx))
 
-pub inline fun mbedtls-cipher-context-tcb/set-private_cmac_ctx(^s: mbedtls-cipher-context-tcb<s::S>, private_cmac_ctx: owned-c<mbedtls-cmac-context-t-c>): ()
+pub inline fun mbedtls-cipher-context-tcb/set-private_cmac_ctx(^s: mbedtls-cipher-context-tcb<s::S>, private_cmac_ctx: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cipher-context-t-ptr/set-private_cmac_ctx(private_cmac_ctx))
+
+pub inline fun mbedtls-cipher-context-tc-wrapper/private_cmac_ctx(^s: mbedtls-cipher-context-tc<s::S>): owned-c<mbedtls-cmac-context-t-c>
+  s.with-ptr(mbedtls-cipher-context-t-ptr/private_cmac_ctx).c-own
+
+pub inline fun mbedtls-cipher-context-tcb-wrapper/private_cmac_ctx(^s: mbedtls-cipher-context-tcb<s::S>): owned-c<mbedtls-cmac-context-t-c>
+  s.with-ptr(mbedtls-cipher-context-t-ptr/private_cmac_ctx).c-own
+
+pub inline fun mbedtls-cipher-context-tc-wrapper/set-private_cmac_ctx(^s: mbedtls-cipher-context-tc<s::S>, private_cmac_ctx: owned-c<mbedtls-cmac-context-t-c>): ()
+  with koka-ptr <- private_cmac_ctx.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cipher-context-t-ptr/set-private_cmac_ctx(koka-ptr))
+
+pub inline fun mbedtls-cipher-context-tcb-wrapper/set-private_cmac_ctx(^s: mbedtls-cipher-context-tcb<s::S>, private_cmac_ctx: owned-c<mbedtls-cmac-context-t-c>): ()
+  with koka-ptr <- private_cmac_ctx.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cipher-context-t-ptr/set-private_cmac_ctx(koka-ptr))
 
 // Cipher information. Allows calling cipher functions
 // in a generic way.
@@ -1678,19 +1942,23 @@ pub inline fun mbedtls-cipher-context-tcb/set-private_cmac_ctx(^s: mbedtls-ciphe
 // \note        Some fields store a value that has been right-shifted to save
 // code-size, so should not be used directly. The accessor
 // functions adjust for this and return the "natural" value.
+pub struct mbedtls-cipher-info-t
 pub type mbedtls-cipher-info-t-c
-alias mbedtls-cipher-info-t-cc = owned-c<mbedtls-cipher-info-t-c>
-alias mbedtls-cipher-info-t-ccb<s::S> = borrowed-c<s,mbedtls-cipher-info-t-c>
-alias mbedtls-cipher-info-t-cca = owned-c<c-array<mbedtls-cipher-info-t-c>>
+pub alias mbedtls-cipher-info-tc = owned-c<mbedtls-cipher-info-t-c>
+pub alias mbedtls-cipher-info-tcb<s::S> = borrowed-c<s,mbedtls-cipher-info-t-c>
+pub alias mbedtls-cipher-info-tca = owned-c<c-array<mbedtls-cipher-info-t>>
+
+pub fun mbedtls-cipher-info-t/to-koka(s: mbedtls-cipher-info-tc): mbedtls-cipher-info-t
+  Mbedtls-cipher-info-t()
 
 // The CMAC context structure.
 pub type mbedtls-cmac-context-t-c
-alias mbedtls-cmac-context-tc<s::S> = owned-c<mbedtls-cmac-context-t-c>
-alias mbedtls-cmac-context-tcb<s::S> = borrowed-c<s,mbedtls-cmac-context-t-c>
-alias mbedtls-cmac-context-tca<s::S> = owned-c<c-array<mbedtls-cmac-context-t-c>>
+pub alias mbedtls-cmac-context-tc<s::S> = owned-c<mbedtls-cmac-context-t-c>
+pub alias mbedtls-cmac-context-tcb<s::S> = borrowed-c<s,mbedtls-cmac-context-t-c>
+pub alias mbedtls-cmac-context-tca<s::S> = owned-c<c-array<mbedtls-cmac-context-t>>
 
 extern mbedtls-cmac-context-t/size-of(c: c-null<mbedtls-cmac-context-t-c>): int32
-  c inline "sizeof(mbedtls_cmac_context_t)"
+  c inline "sizeof(struct mbedtls_cmac_context_t)"
 
 pub fun mbedtls-cmac-context-tc(): mbedtls-cmac-context-tc<s::S>
   malloc(?size-of=mbedtls-cmac-context-t/size-of)
@@ -1705,7 +1973,7 @@ pub fun mbedtls-cmac-context-tc-array-calloc(n: int): mbedtls-cmac-context-tca<s
   malloc-c(n.int32, ?size-of=mbedtls-cmac-context-t/size-of)
 
 inline extern mbedtls-cmac-context-t-ptr/private_unprocessed_len(s: intptr_t): ssize_t
-  c inline "((mbedtls_cmac_context_t*)#1)->private_unprocessed_len"
+  c inline "(ssize_t)(((struct mbedtls_cmac_context_t*)#1)->private_unprocessed_len)"
 
 pub inline fun mbedtls-cmac-context-tc/private_unprocessed_len(^s: mbedtls-cmac-context-tc<s::S>): ssize_t
   s.with-ptr(mbedtls-cmac-context-t-ptr/private_unprocessed_len)
@@ -1714,7 +1982,7 @@ pub inline fun mbedtls-cmac-context-tcb/private_unprocessed_len(^s: mbedtls-cmac
   s.with-ptr(mbedtls-cmac-context-t-ptr/private_unprocessed_len)
 
 inline extern mbedtls-cmac-context-t-ptr/set-private_unprocessed_len(s: intptr_t, private_unprocessed_len: ssize_t): ()
-  c inline "((mbedtls_cmac_context_t*)#1)->private_unprocessed_len = #2"
+  c inline "((struct mbedtls_cmac_context_t*)#1)->private_unprocessed_len = (ssize_t)#2"
 
 pub inline fun mbedtls-cmac-context-tc/set-private_unprocessed_len(^s: mbedtls-cmac-context-tc<s::S>, private_unprocessed_len: ssize_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-cmac-context-t-ptr/set-private_unprocessed_len(private_unprocessed_len))
@@ -1760,12 +2028,12 @@ pub fun int/mbedtls_ecjpake_role(i: int): exn mbedtls_ecjpake_role
     2 -> MBEDTLS_ECJPAKE_NONE
 
 pub type psa-driver-mac-context-t-c
-alias psa-driver-mac-context-tc = owned-c<psa-driver-mac-context-t-c>
-alias psa-driver-mac-context-tcb<s::S> = borrowed-c<s,psa-driver-mac-context-t-c>
-alias psa-driver-mac-context-tca = owned-c<c-array<psa-driver-mac-context-t-c>>
+pub alias psa-driver-mac-context-tc = owned-c<psa-driver-mac-context-t-c>
+pub alias psa-driver-mac-context-tcb<s::S> = borrowed-c<s,psa-driver-mac-context-t-c>
+pub alias psa-driver-mac-context-tca = owned-c<c-array<psa-driver-mac-context-t>>
 
 extern psa-driver-mac-context-t/size-of(c: c-null<psa-driver-mac-context-t-c>): int32
-  c inline "sizeof(psa_driver_mac_context_t)"
+  c inline "sizeof(union psa_driver_mac_context_t)"
 
 pub fun psa-driver-mac-context-tc(): psa-driver-mac-context-tc
   malloc(?size-of=psa-driver-mac-context-t/size-of)
@@ -1780,7 +2048,7 @@ pub fun psa-driver-mac-context-tc-array-calloc(n: int): psa-driver-mac-context-t
   malloc-c(n.int32, ?size-of=psa-driver-mac-context-t/size-of)
 
 inline extern psa-driver-mac-context-t-ptr/dummy(s: intptr_t): int32
-  c inline "((psa_driver_mac_context_t*)#1)->dummy"
+  c inline "(unsigned int)(((union psa_driver_mac_context_t*)#1)->dummy)"
 
 pub inline fun psa-driver-mac-context-tc/dummy(^s: psa-driver-mac-context-tc): int32
   s.with-ptr(psa-driver-mac-context-t-ptr/dummy)
@@ -1789,7 +2057,7 @@ pub inline fun psa-driver-mac-context-tcb/dummy(^s: psa-driver-mac-context-tcb<s
   s.with-ptr(psa-driver-mac-context-t-ptr/dummy)
 
 inline extern psa-driver-mac-context-t-ptr/set-dummy(s: intptr_t, dummy: int32): ()
-  c inline "((psa_driver_mac_context_t*)#1)->dummy = #2"
+  c inline "((union psa_driver_mac_context_t*)#1)->dummy = (unsigned int)#2"
 
 pub inline fun psa-driver-mac-context-tc/set-dummy(^s: psa-driver-mac-context-tc, dummy: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-mac-context-t-ptr/set-dummy(dummy))
@@ -1797,8 +2065,20 @@ pub inline fun psa-driver-mac-context-tc/set-dummy(^s: psa-driver-mac-context-tc
 pub inline fun psa-driver-mac-context-tcb/set-dummy(^s: psa-driver-mac-context-tcb<s::S>, dummy: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-mac-context-t-ptr/set-dummy(dummy))
 
+pub inline fun psa-driver-mac-context-tc-wrapper/dummy(^s: psa-driver-mac-context-tc): int
+  s.with-ptr(psa-driver-mac-context-t-ptr/dummy).int
+
+pub inline fun psa-driver-mac-context-tcb-wrapper/dummy(^s: psa-driver-mac-context-tcb<s::S>): int
+  s.with-ptr(psa-driver-mac-context-t-ptr/dummy).int
+
+pub inline fun psa-driver-mac-context-tc-wrapper/set-dummy(^s: psa-driver-mac-context-tc, dummy: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-mac-context-t-ptr/set-dummy(dummy.int32))
+
+pub inline fun psa-driver-mac-context-tcb-wrapper/set-dummy(^s: psa-driver-mac-context-tcb<s::S>, dummy: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-mac-context-t-ptr/set-dummy(dummy.int32))
+
 inline extern psa-driver-mac-context-t-ptr/mbedtls_ctx(s: intptr_t): mbedtls-psa-mac-operation-t-c
-  c inline "((psa_driver_mac_context_t*)#1)->mbedtls_ctx"
+  c inline "(mbedtls_psa_mac_operation_t)(((union psa_driver_mac_context_t*)#1)->mbedtls_ctx)"
 
 pub inline fun psa-driver-mac-context-tc/mbedtls_ctx(^s: psa-driver-mac-context-tc): mbedtls-psa-mac-operation-t-c
   s.with-ptr(psa-driver-mac-context-t-ptr/mbedtls_ctx)
@@ -1807,7 +2087,7 @@ pub inline fun psa-driver-mac-context-tcb/mbedtls_ctx(^s: psa-driver-mac-context
   s.with-ptr(psa-driver-mac-context-t-ptr/mbedtls_ctx)
 
 inline extern psa-driver-mac-context-t-ptr/set-mbedtls_ctx(s: intptr_t, mbedtls_ctx: mbedtls-psa-mac-operation-t-c): ()
-  c inline "((psa_driver_mac_context_t*)#1)->mbedtls_ctx = #2"
+  c inline "((union psa_driver_mac_context_t*)#1)->mbedtls_ctx = (mbedtls_psa_mac_operation_t)#2"
 
 pub inline fun psa-driver-mac-context-tc/set-mbedtls_ctx(^s: psa-driver-mac-context-tc, mbedtls_ctx: mbedtls-psa-mac-operation-t-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-mac-context-t-ptr/set-mbedtls_ctx(mbedtls_ctx))
@@ -1815,17 +2095,29 @@ pub inline fun psa-driver-mac-context-tc/set-mbedtls_ctx(^s: psa-driver-mac-cont
 pub inline fun psa-driver-mac-context-tcb/set-mbedtls_ctx(^s: psa-driver-mac-context-tcb<s::S>, mbedtls_ctx: mbedtls-psa-mac-operation-t-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-mac-context-t-ptr/set-mbedtls_ctx(mbedtls_ctx))
 
+pub inline fun psa-driver-mac-context-tc-wrapper/mbedtls_ctx(^s: psa-driver-mac-context-tc): mbedtls-psa-mac-operation-t
+  s.with-ptr(psa-driver-mac-context-t-ptr/mbedtls_ctx).to-koka
+
+pub inline fun psa-driver-mac-context-tcb-wrapper/mbedtls_ctx(^s: psa-driver-mac-context-tcb<s::S>): mbedtls-psa-mac-operation-t
+  s.with-ptr(psa-driver-mac-context-t-ptr/mbedtls_ctx).to-koka
+
+pub inline fun psa-driver-mac-context-tc-wrapper/set-mbedtls_ctx(^s: psa-driver-mac-context-tc, mbedtls_ctx: mbedtls-psa-mac-operation-t): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-mac-context-t-ptr/set-mbedtls_ctx((struct mbedtls_psa_mac_operation_t)(mbedtls_ctx)))
+
+pub inline fun psa-driver-mac-context-tcb-wrapper/set-mbedtls_ctx(^s: psa-driver-mac-context-tcb<s::S>, mbedtls_ctx: mbedtls-psa-mac-operation-t): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-mac-context-t-ptr/set-mbedtls_ctx((struct mbedtls_psa_mac_operation_t)(mbedtls_ctx)))
+
 pub value struct mbedtls-psa-mac-operation-t
-  private-alg: int32
-  private-ctx: unnamedunion3-c
+  private-alg: koka-psa_algorithm_t
+  private-ctx: unnamedunion3
 
 pub type mbedtls-psa-mac-operation-t-c
-alias mbedtls-psa-mac-operation-tc = owned-c<mbedtls-psa-mac-operation-t-c>
-alias mbedtls-psa-mac-operation-tcb<s::S> = borrowed-c<s,mbedtls-psa-mac-operation-t-c>
-alias mbedtls-psa-mac-operation-tca = owned-c<c-array<mbedtls-psa-mac-operation-t-c>>
+pub alias mbedtls-psa-mac-operation-tc = owned-c<mbedtls-psa-mac-operation-t-c>
+pub alias mbedtls-psa-mac-operation-tcb<s::S> = borrowed-c<s,mbedtls-psa-mac-operation-t-c>
+pub alias mbedtls-psa-mac-operation-tca = owned-c<c-array<mbedtls-psa-mac-operation-t>>
 
 extern mbedtls-psa-mac-operation-t/size-of(c: c-null<mbedtls-psa-mac-operation-t-c>): int32
-  c inline "sizeof(mbedtls_psa_mac_operation_t)"
+  c inline "sizeof(struct mbedtls_psa_mac_operation_t)"
 
 pub fun mbedtls-psa-mac-operation-tc(): mbedtls-psa-mac-operation-tc
   malloc(?size-of=mbedtls-psa-mac-operation-t/size-of)
@@ -1840,7 +2132,7 @@ pub fun mbedtls-psa-mac-operation-tc-array-calloc(n: int): mbedtls-psa-mac-opera
   malloc-c(n.int32, ?size-of=mbedtls-psa-mac-operation-t/size-of)
 
 inline extern mbedtls-psa-mac-operation-t-ptr/private-alg(s: intptr_t): int32
-  c inline "((mbedtls_psa_mac_operation_t*)#1)->private_alg"
+  c inline "(psa_algorithm_t)(((struct mbedtls_psa_mac_operation_t*)#1)->private_alg)"
 
 pub inline fun mbedtls-psa-mac-operation-tc/private-alg(^s: mbedtls-psa-mac-operation-tc): int32
   s.with-ptr(mbedtls-psa-mac-operation-t-ptr/private-alg)
@@ -1849,7 +2141,7 @@ pub inline fun mbedtls-psa-mac-operation-tcb/private-alg(^s: mbedtls-psa-mac-ope
   s.with-ptr(mbedtls-psa-mac-operation-t-ptr/private-alg)
 
 inline extern mbedtls-psa-mac-operation-t-ptr/set-private-alg(s: intptr_t, private-alg: int32): ()
-  c inline "((mbedtls_psa_mac_operation_t*)#1)->private_alg = #2"
+  c inline "((struct mbedtls_psa_mac_operation_t*)#1)->private_alg = (psa_algorithm_t)#2"
 
 pub inline fun mbedtls-psa-mac-operation-tc/set-private-alg(^s: mbedtls-psa-mac-operation-tc, private-alg: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-mac-operation-t-ptr/set-private-alg(private-alg))
@@ -1857,8 +2149,20 @@ pub inline fun mbedtls-psa-mac-operation-tc/set-private-alg(^s: mbedtls-psa-mac-
 pub inline fun mbedtls-psa-mac-operation-tcb/set-private-alg(^s: mbedtls-psa-mac-operation-tcb<s::S>, private-alg: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-mac-operation-t-ptr/set-private-alg(private-alg))
 
+pub inline fun mbedtls-psa-mac-operation-tc-wrapper/private-alg(^s: mbedtls-psa-mac-operation-tc): koka-psa_algorithm_t
+  s.with-ptr(mbedtls-psa-mac-operation-t-ptr/private-alg).int
+
+pub inline fun mbedtls-psa-mac-operation-tcb-wrapper/private-alg(^s: mbedtls-psa-mac-operation-tcb<s::S>): koka-psa_algorithm_t
+  s.with-ptr(mbedtls-psa-mac-operation-t-ptr/private-alg).int
+
+pub inline fun mbedtls-psa-mac-operation-tc-wrapper/set-private-alg(^s: mbedtls-psa-mac-operation-tc, private-alg: koka-psa_algorithm_t): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-mac-operation-t-ptr/set-private-alg(private-alg.int32))
+
+pub inline fun mbedtls-psa-mac-operation-tcb-wrapper/set-private-alg(^s: mbedtls-psa-mac-operation-tcb<s::S>, private-alg: koka-psa_algorithm_t): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-mac-operation-t-ptr/set-private-alg(private-alg.int32))
+
 inline extern mbedtls-psa-mac-operation-t-ptr/private-ctx(s: intptr_t): unnamedunion3-c
-  c inline "((mbedtls_psa_mac_operation_t*)#1)->private_ctx"
+  c inline "(UnnamedUnion3)(((struct mbedtls_psa_mac_operation_t*)#1)->private_ctx)"
 
 pub inline fun mbedtls-psa-mac-operation-tc/private-ctx(^s: mbedtls-psa-mac-operation-tc): unnamedunion3-c
   s.with-ptr(mbedtls-psa-mac-operation-t-ptr/private-ctx)
@@ -1867,7 +2171,7 @@ pub inline fun mbedtls-psa-mac-operation-tcb/private-ctx(^s: mbedtls-psa-mac-ope
   s.with-ptr(mbedtls-psa-mac-operation-t-ptr/private-ctx)
 
 inline extern mbedtls-psa-mac-operation-t-ptr/set-private-ctx(s: intptr_t, private-ctx: unnamedunion3-c): ()
-  c inline "((mbedtls_psa_mac_operation_t*)#1)->private_ctx = #2"
+  c inline "((struct mbedtls_psa_mac_operation_t*)#1)->private_ctx = (UnnamedUnion3)#2"
 
 pub inline fun mbedtls-psa-mac-operation-tc/set-private-ctx(^s: mbedtls-psa-mac-operation-tc, private-ctx: unnamedunion3-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-mac-operation-t-ptr/set-private-ctx(private-ctx))
@@ -1876,14 +2180,15 @@ pub inline fun mbedtls-psa-mac-operation-tcb/set-private-ctx(^s: mbedtls-psa-mac
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-mac-operation-t-ptr/set-private-ctx(private-ctx))
 
 pub fun mbedtls-psa-mac-operation-t/to-koka(s: mbedtls-psa-mac-operation-tc): mbedtls-psa-mac-operation-t
-  Mbedtls-psa-mac-operation-t(s.mbedtls-psa-mac-operation-tc/private-alg, s.mbedtls-psa-mac-operation-tc/private-ctx)
+  Mbedtls-psa-mac-operation-t(s.mbedtls-psa-mac-operation-tc/private-alg.int, s.mbedtls-psa-mac-operation-tc/private-ctx)
+
 pub type unnamedunion3-c
-alias unnamedunion3c = owned-c<unnamedunion3-c>
-alias unnamedunion3cb<s::S> = borrowed-c<s,unnamedunion3-c>
-alias unnamedunion3ca = owned-c<c-array<unnamedunion3-c>>
+pub alias unnamedunion3c = owned-c<unnamedunion3-c>
+pub alias unnamedunion3cb<s::S> = borrowed-c<s,unnamedunion3-c>
+pub alias unnamedunion3ca = owned-c<c-array<unnamedunion3>>
 
 extern unnamedunion3/size-of(c: c-null<unnamedunion3-c>): int32
-  c inline "sizeof(UnnamedUnion3)"
+  c inline "sizeof(union UnnamedUnion3)"
 
 pub fun unnamedunion3c(): unnamedunion3c
   malloc(?size-of=unnamedunion3/size-of)
@@ -1898,7 +2203,7 @@ pub fun unnamedunion3c-array-calloc(n: int): unnamedunion3ca
   malloc-c(n.int32, ?size-of=unnamedunion3/size-of)
 
 inline extern unnamedunion3-ptr/private_dummy(s: intptr_t): int32
-  c inline "((UnnamedUnion3*)#1)->private_dummy"
+  c inline "(unsigned int)(((union UnnamedUnion3*)#1)->private_dummy)"
 
 pub inline fun unnamedunion3c/private_dummy(^s: unnamedunion3c): int32
   s.with-ptr(unnamedunion3-ptr/private_dummy)
@@ -1907,7 +2212,7 @@ pub inline fun unnamedunion3cb/private_dummy(^s: unnamedunion3cb<s::S>): int32
   s.with-ptr(unnamedunion3-ptr/private_dummy)
 
 inline extern unnamedunion3-ptr/set-private_dummy(s: intptr_t, private_dummy: int32): ()
-  c inline "((UnnamedUnion3*)#1)->private_dummy = #2"
+  c inline "((union UnnamedUnion3*)#1)->private_dummy = (unsigned int)#2"
 
 pub inline fun unnamedunion3c/set-private_dummy(^s: unnamedunion3c, private_dummy: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion3-ptr/set-private_dummy(private_dummy))
@@ -1915,8 +2220,20 @@ pub inline fun unnamedunion3c/set-private_dummy(^s: unnamedunion3c, private_dumm
 pub inline fun unnamedunion3cb/set-private_dummy(^s: unnamedunion3cb<s::S>, private_dummy: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion3-ptr/set-private_dummy(private_dummy))
 
+pub inline fun unnamedunion3c-wrapper/private_dummy(^s: unnamedunion3c): int
+  s.with-ptr(unnamedunion3-ptr/private_dummy).int
+
+pub inline fun unnamedunion3cb-wrapper/private_dummy(^s: unnamedunion3cb<s::S>): int
+  s.with-ptr(unnamedunion3-ptr/private_dummy).int
+
+pub inline fun unnamedunion3c-wrapper/set-private_dummy(^s: unnamedunion3c, private_dummy: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion3-ptr/set-private_dummy(private_dummy.int32))
+
+pub inline fun unnamedunion3cb-wrapper/set-private_dummy(^s: unnamedunion3cb<s::S>, private_dummy: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion3-ptr/set-private_dummy(private_dummy.int32))
+
 inline extern unnamedunion3-ptr/private_hmac(s: intptr_t): mbedtls-psa-hmac-operation-t-c
-  c inline "((UnnamedUnion3*)#1)->private_hmac"
+  c inline "(mbedtls_psa_hmac_operation_t)(((union UnnamedUnion3*)#1)->private_hmac)"
 
 pub inline fun unnamedunion3c/private_hmac(^s: unnamedunion3c): mbedtls-psa-hmac-operation-t-c
   s.with-ptr(unnamedunion3-ptr/private_hmac)
@@ -1925,7 +2242,7 @@ pub inline fun unnamedunion3cb/private_hmac(^s: unnamedunion3cb<s::S>): mbedtls-
   s.with-ptr(unnamedunion3-ptr/private_hmac)
 
 inline extern unnamedunion3-ptr/set-private_hmac(s: intptr_t, private_hmac: mbedtls-psa-hmac-operation-t-c): ()
-  c inline "((UnnamedUnion3*)#1)->private_hmac = #2"
+  c inline "((union UnnamedUnion3*)#1)->private_hmac = (mbedtls_psa_hmac_operation_t)#2"
 
 pub inline fun unnamedunion3c/set-private_hmac(^s: unnamedunion3c, private_hmac: mbedtls-psa-hmac-operation-t-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion3-ptr/set-private_hmac(private_hmac))
@@ -1934,7 +2251,7 @@ pub inline fun unnamedunion3cb/set-private_hmac(^s: unnamedunion3cb<s::S>, priva
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion3-ptr/set-private_hmac(private_hmac))
 
 inline extern unnamedunion3-ptr/private_cmac(s: intptr_t): mbedtls-cipher-context-t-c
-  c inline "((UnnamedUnion3*)#1)->private_cmac"
+  c inline "(mbedtls_cipher_context_t)(((union UnnamedUnion3*)#1)->private_cmac)"
 
 pub inline fun unnamedunion3c/private_cmac(^s: unnamedunion3c): mbedtls-cipher-context-t-c
   s.with-ptr(unnamedunion3-ptr/private_cmac)
@@ -1943,7 +2260,7 @@ pub inline fun unnamedunion3cb/private_cmac(^s: unnamedunion3cb<s::S>): mbedtls-
   s.with-ptr(unnamedunion3-ptr/private_cmac)
 
 inline extern unnamedunion3-ptr/set-private_cmac(s: intptr_t, private_cmac: mbedtls-cipher-context-t-c): ()
-  c inline "((UnnamedUnion3*)#1)->private_cmac = #2"
+  c inline "((union UnnamedUnion3*)#1)->private_cmac = (mbedtls_cipher_context_t)#2"
 
 pub inline fun unnamedunion3c/set-private_cmac(^s: unnamedunion3c, private_cmac: mbedtls-cipher-context-t-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion3-ptr/set-private_cmac(private_cmac))
@@ -1952,12 +2269,12 @@ pub inline fun unnamedunion3cb/set-private_cmac(^s: unnamedunion3cb<s::S>, priva
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion3-ptr/set-private_cmac(private_cmac))
 
 pub type mbedtls-psa-hmac-operation-t-c
-alias mbedtls-psa-hmac-operation-tc<s::S> = owned-c<mbedtls-psa-hmac-operation-t-c>
-alias mbedtls-psa-hmac-operation-tcb<s::S> = borrowed-c<s,mbedtls-psa-hmac-operation-t-c>
-alias mbedtls-psa-hmac-operation-tca<s::S> = owned-c<c-array<mbedtls-psa-hmac-operation-t-c>>
+pub alias mbedtls-psa-hmac-operation-tc<s::S> = owned-c<mbedtls-psa-hmac-operation-t-c>
+pub alias mbedtls-psa-hmac-operation-tcb<s::S> = borrowed-c<s,mbedtls-psa-hmac-operation-t-c>
+pub alias mbedtls-psa-hmac-operation-tca<s::S> = owned-c<c-array<mbedtls-psa-hmac-operation-t>>
 
 extern mbedtls-psa-hmac-operation-t/size-of(c: c-null<mbedtls-psa-hmac-operation-t-c>): int32
-  c inline "sizeof(mbedtls_psa_hmac_operation_t)"
+  c inline "sizeof(struct mbedtls_psa_hmac_operation_t)"
 
 pub fun mbedtls-psa-hmac-operation-tc(): mbedtls-psa-hmac-operation-tc<s::S>
   malloc(?size-of=mbedtls-psa-hmac-operation-t/size-of)
@@ -1972,7 +2289,7 @@ pub fun mbedtls-psa-hmac-operation-tc-array-calloc(n: int): mbedtls-psa-hmac-ope
   malloc-c(n.int32, ?size-of=mbedtls-psa-hmac-operation-t/size-of)
 
 inline extern mbedtls-psa-hmac-operation-t-ptr/private_alg(s: intptr_t): int32
-  c inline "((mbedtls_psa_hmac_operation_t*)#1)->private_alg"
+  c inline "(psa_algorithm_t)(((struct mbedtls_psa_hmac_operation_t*)#1)->private_alg)"
 
 pub inline fun mbedtls-psa-hmac-operation-tc/private_alg(^s: mbedtls-psa-hmac-operation-tc<s::S>): int32
   s.with-ptr(mbedtls-psa-hmac-operation-t-ptr/private_alg)
@@ -1981,7 +2298,7 @@ pub inline fun mbedtls-psa-hmac-operation-tcb/private_alg(^s: mbedtls-psa-hmac-o
   s.with-ptr(mbedtls-psa-hmac-operation-t-ptr/private_alg)
 
 inline extern mbedtls-psa-hmac-operation-t-ptr/set-private_alg(s: intptr_t, private_alg: int32): ()
-  c inline "((mbedtls_psa_hmac_operation_t*)#1)->private_alg = #2"
+  c inline "((struct mbedtls_psa_hmac_operation_t*)#1)->private_alg = (psa_algorithm_t)#2"
 
 pub inline fun mbedtls-psa-hmac-operation-tc/set-private_alg(^s: mbedtls-psa-hmac-operation-tc<s::S>, private_alg: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-hmac-operation-t-ptr/set-private_alg(private_alg))
@@ -1989,8 +2306,20 @@ pub inline fun mbedtls-psa-hmac-operation-tc/set-private_alg(^s: mbedtls-psa-hma
 pub inline fun mbedtls-psa-hmac-operation-tcb/set-private_alg(^s: mbedtls-psa-hmac-operation-tcb<s::S>, private_alg: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-hmac-operation-t-ptr/set-private_alg(private_alg))
 
+pub inline fun mbedtls-psa-hmac-operation-tc-wrapper/private_alg(^s: mbedtls-psa-hmac-operation-tc<s::S>): koka-psa_algorithm_t
+  s.with-ptr(mbedtls-psa-hmac-operation-t-ptr/private_alg).int
+
+pub inline fun mbedtls-psa-hmac-operation-tcb-wrapper/private_alg(^s: mbedtls-psa-hmac-operation-tcb<s::S>): koka-psa_algorithm_t
+  s.with-ptr(mbedtls-psa-hmac-operation-t-ptr/private_alg).int
+
+pub inline fun mbedtls-psa-hmac-operation-tc-wrapper/set-private_alg(^s: mbedtls-psa-hmac-operation-tc<s::S>, private_alg: koka-psa_algorithm_t): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-hmac-operation-t-ptr/set-private_alg(private_alg.int32))
+
+pub inline fun mbedtls-psa-hmac-operation-tcb-wrapper/set-private_alg(^s: mbedtls-psa-hmac-operation-tcb<s::S>, private_alg: koka-psa_algorithm_t): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-hmac-operation-t-ptr/set-private_alg(private_alg.int32))
+
 inline extern mbedtls-psa-hmac-operation-t-ptr/hash_ctx(s: intptr_t): psa-hash-operation-s-c
-  c inline "((mbedtls_psa_hmac_operation_t*)#1)->hash_ctx"
+  c inline "(psa_hash_operation_s)(((struct mbedtls_psa_hmac_operation_t*)#1)->hash_ctx)"
 
 pub inline fun mbedtls-psa-hmac-operation-tc/hash_ctx(^s: mbedtls-psa-hmac-operation-tc<s::S>): psa-hash-operation-s-c
   s.with-ptr(mbedtls-psa-hmac-operation-t-ptr/hash_ctx)
@@ -1999,7 +2328,7 @@ pub inline fun mbedtls-psa-hmac-operation-tcb/hash_ctx(^s: mbedtls-psa-hmac-oper
   s.with-ptr(mbedtls-psa-hmac-operation-t-ptr/hash_ctx)
 
 inline extern mbedtls-psa-hmac-operation-t-ptr/set-hash_ctx(s: intptr_t, hash_ctx: psa-hash-operation-s-c): ()
-  c inline "((mbedtls_psa_hmac_operation_t*)#1)->hash_ctx = #2"
+  c inline "((struct mbedtls_psa_hmac_operation_t*)#1)->hash_ctx = (psa_hash_operation_s)#2"
 
 pub inline fun mbedtls-psa-hmac-operation-tc/set-hash_ctx(^s: mbedtls-psa-hmac-operation-tc<s::S>, hash_ctx: psa-hash-operation-s-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-hmac-operation-t-ptr/set-hash_ctx(hash_ctx))
@@ -2007,17 +2336,29 @@ pub inline fun mbedtls-psa-hmac-operation-tc/set-hash_ctx(^s: mbedtls-psa-hmac-o
 pub inline fun mbedtls-psa-hmac-operation-tcb/set-hash_ctx(^s: mbedtls-psa-hmac-operation-tcb<s::S>, hash_ctx: psa-hash-operation-s-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-hmac-operation-t-ptr/set-hash_ctx(hash_ctx))
 
+pub inline fun mbedtls-psa-hmac-operation-tc-wrapper/hash_ctx(^s: mbedtls-psa-hmac-operation-tc<s::S>): psa-hash-operation-s
+  s.with-ptr(mbedtls-psa-hmac-operation-t-ptr/hash_ctx).to-koka
+
+pub inline fun mbedtls-psa-hmac-operation-tcb-wrapper/hash_ctx(^s: mbedtls-psa-hmac-operation-tcb<s::S>): psa-hash-operation-s
+  s.with-ptr(mbedtls-psa-hmac-operation-t-ptr/hash_ctx).to-koka
+
+pub inline fun mbedtls-psa-hmac-operation-tc-wrapper/set-hash_ctx(^s: mbedtls-psa-hmac-operation-tc<s::S>, hash_ctx: psa-hash-operation-s): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-hmac-operation-t-ptr/set-hash_ctx((struct psa_hash_operation_s)(hash_ctx)))
+
+pub inline fun mbedtls-psa-hmac-operation-tcb-wrapper/set-hash_ctx(^s: mbedtls-psa-hmac-operation-tcb<s::S>, hash_ctx: psa-hash-operation-s): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-hmac-operation-t-ptr/set-hash_ctx((struct psa_hash_operation_s)(hash_ctx)))
+
 pub value struct psa-hash-operation-s
-  private-id: int32
-  private-ctx: psa-driver-hash-context-t-c
+  private-id: int
+  private-ctx: psa-driver-hash-context-t
 
 pub type psa-hash-operation-s-c
-alias psa-hash-operation-sc = owned-c<psa-hash-operation-s-c>
-alias psa-hash-operation-scb<s::S> = borrowed-c<s,psa-hash-operation-s-c>
-alias psa-hash-operation-sca = owned-c<c-array<psa-hash-operation-s-c>>
+pub alias psa-hash-operation-sc = owned-c<psa-hash-operation-s-c>
+pub alias psa-hash-operation-scb<s::S> = borrowed-c<s,psa-hash-operation-s-c>
+pub alias psa-hash-operation-sca = owned-c<c-array<psa-hash-operation-s>>
 
 extern psa-hash-operation-s/size-of(c: c-null<psa-hash-operation-s-c>): int32
-  c inline "sizeof(psa_hash_operation_s)"
+  c inline "sizeof(struct psa_hash_operation_s)"
 
 pub fun psa-hash-operation-sc(): psa-hash-operation-sc
   malloc(?size-of=psa-hash-operation-s/size-of)
@@ -2032,7 +2373,7 @@ pub fun psa-hash-operation-sc-array-calloc(n: int): psa-hash-operation-sca
   malloc-c(n.int32, ?size-of=psa-hash-operation-s/size-of)
 
 inline extern psa-hash-operation-s-ptr/private-id(s: intptr_t): int32
-  c inline "((psa_hash_operation_s*)#1)->private_id"
+  c inline "(unsigned int)(((struct psa_hash_operation_s*)#1)->private_id)"
 
 pub inline fun psa-hash-operation-sc/private-id(^s: psa-hash-operation-sc): int32
   s.with-ptr(psa-hash-operation-s-ptr/private-id)
@@ -2041,7 +2382,7 @@ pub inline fun psa-hash-operation-scb/private-id(^s: psa-hash-operation-scb<s::S
   s.with-ptr(psa-hash-operation-s-ptr/private-id)
 
 inline extern psa-hash-operation-s-ptr/set-private-id(s: intptr_t, private-id: int32): ()
-  c inline "((psa_hash_operation_s*)#1)->private_id = #2"
+  c inline "((struct psa_hash_operation_s*)#1)->private_id = (unsigned int)#2"
 
 pub inline fun psa-hash-operation-sc/set-private-id(^s: psa-hash-operation-sc, private-id: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-hash-operation-s-ptr/set-private-id(private-id))
@@ -2049,8 +2390,20 @@ pub inline fun psa-hash-operation-sc/set-private-id(^s: psa-hash-operation-sc, p
 pub inline fun psa-hash-operation-scb/set-private-id(^s: psa-hash-operation-scb<s::S>, private-id: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-hash-operation-s-ptr/set-private-id(private-id))
 
+pub inline fun psa-hash-operation-sc-wrapper/private-id(^s: psa-hash-operation-sc): int
+  s.with-ptr(psa-hash-operation-s-ptr/private-id).int
+
+pub inline fun psa-hash-operation-scb-wrapper/private-id(^s: psa-hash-operation-scb<s::S>): int
+  s.with-ptr(psa-hash-operation-s-ptr/private-id).int
+
+pub inline fun psa-hash-operation-sc-wrapper/set-private-id(^s: psa-hash-operation-sc, private-id: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-hash-operation-s-ptr/set-private-id(private-id.int32))
+
+pub inline fun psa-hash-operation-scb-wrapper/set-private-id(^s: psa-hash-operation-scb<s::S>, private-id: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-hash-operation-s-ptr/set-private-id(private-id.int32))
+
 inline extern psa-hash-operation-s-ptr/private-ctx(s: intptr_t): psa-driver-hash-context-t-c
-  c inline "((psa_hash_operation_s*)#1)->private_ctx"
+  c inline "(psa_driver_hash_context_t)(((struct psa_hash_operation_s*)#1)->private_ctx)"
 
 pub inline fun psa-hash-operation-sc/private-ctx(^s: psa-hash-operation-sc): psa-driver-hash-context-t-c
   s.with-ptr(psa-hash-operation-s-ptr/private-ctx)
@@ -2059,7 +2412,7 @@ pub inline fun psa-hash-operation-scb/private-ctx(^s: psa-hash-operation-scb<s::
   s.with-ptr(psa-hash-operation-s-ptr/private-ctx)
 
 inline extern psa-hash-operation-s-ptr/set-private-ctx(s: intptr_t, private-ctx: psa-driver-hash-context-t-c): ()
-  c inline "((psa_hash_operation_s*)#1)->private_ctx = #2"
+  c inline "((struct psa_hash_operation_s*)#1)->private_ctx = (psa_driver_hash_context_t)#2"
 
 pub inline fun psa-hash-operation-sc/set-private-ctx(^s: psa-hash-operation-sc, private-ctx: psa-driver-hash-context-t-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-hash-operation-s-ptr/set-private-ctx(private-ctx))
@@ -2068,19 +2421,24 @@ pub inline fun psa-hash-operation-scb/set-private-ctx(^s: psa-hash-operation-scb
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-hash-operation-s-ptr/set-private-ctx(private-ctx))
 
 pub fun psa-hash-operation-s/to-koka(s: psa-hash-operation-sc): psa-hash-operation-s
-  Psa-hash-operation-s(s.psa-hash-operation-sc/private-id, s.psa-hash-operation-sc/private-ctx)
+  Psa-hash-operation-s(s.psa-hash-operation-sc/private-id.int, s.psa-hash-operation-sc/private-ctx)
+
+pub struct psa-driver-aead-context-t
 pub type psa-driver-aead-context-t-c
-alias psa-driver-aead-context-t-cc = owned-c<psa-driver-aead-context-t-c>
-alias psa-driver-aead-context-t-ccb<s::S> = borrowed-c<s,psa-driver-aead-context-t-c>
-alias psa-driver-aead-context-t-cca = owned-c<c-array<psa-driver-aead-context-t-c>>
+pub alias psa-driver-aead-context-tc = owned-c<psa-driver-aead-context-t-c>
+pub alias psa-driver-aead-context-tcb<s::S> = borrowed-c<s,psa-driver-aead-context-t-c>
+pub alias psa-driver-aead-context-tca = owned-c<c-array<psa-driver-aead-context-t>>
+
+pub fun psa-driver-aead-context-t/to-koka(s: psa-driver-aead-context-tc): psa-driver-aead-context-t
+  Psa-driver-aead-context-t()
 
 pub type psa-driver-sign-hash-interruptible-context-t-c
-alias psa-driver-sign-hash-interruptible-context-tc = owned-c<psa-driver-sign-hash-interruptible-context-t-c>
-alias psa-driver-sign-hash-interruptible-context-tcb<s::S> = borrowed-c<s,psa-driver-sign-hash-interruptible-context-t-c>
-alias psa-driver-sign-hash-interruptible-context-tca = owned-c<c-array<psa-driver-sign-hash-interruptible-context-t-c>>
+pub alias psa-driver-sign-hash-interruptible-context-tc = owned-c<psa-driver-sign-hash-interruptible-context-t-c>
+pub alias psa-driver-sign-hash-interruptible-context-tcb<s::S> = borrowed-c<s,psa-driver-sign-hash-interruptible-context-t-c>
+pub alias psa-driver-sign-hash-interruptible-context-tca = owned-c<c-array<psa-driver-sign-hash-interruptible-context-t>>
 
 extern psa-driver-sign-hash-interruptible-context-t/size-of(c: c-null<psa-driver-sign-hash-interruptible-context-t-c>): int32
-  c inline "sizeof(psa_driver_sign_hash_interruptible_context_t)"
+  c inline "sizeof(union psa_driver_sign_hash_interruptible_context_t)"
 
 pub fun psa-driver-sign-hash-interruptible-context-tc(): psa-driver-sign-hash-interruptible-context-tc
   malloc(?size-of=psa-driver-sign-hash-interruptible-context-t/size-of)
@@ -2095,7 +2453,7 @@ pub fun psa-driver-sign-hash-interruptible-context-tc-array-calloc(n: int): psa-
   malloc-c(n.int32, ?size-of=psa-driver-sign-hash-interruptible-context-t/size-of)
 
 inline extern psa-driver-sign-hash-interruptible-context-t-ptr/dummy(s: intptr_t): int32
-  c inline "((psa_driver_sign_hash_interruptible_context_t*)#1)->dummy"
+  c inline "(unsigned int)(((union psa_driver_sign_hash_interruptible_context_t*)#1)->dummy)"
 
 pub inline fun psa-driver-sign-hash-interruptible-context-tc/dummy(^s: psa-driver-sign-hash-interruptible-context-tc): int32
   s.with-ptr(psa-driver-sign-hash-interruptible-context-t-ptr/dummy)
@@ -2104,7 +2462,7 @@ pub inline fun psa-driver-sign-hash-interruptible-context-tcb/dummy(^s: psa-driv
   s.with-ptr(psa-driver-sign-hash-interruptible-context-t-ptr/dummy)
 
 inline extern psa-driver-sign-hash-interruptible-context-t-ptr/set-dummy(s: intptr_t, dummy: int32): ()
-  c inline "((psa_driver_sign_hash_interruptible_context_t*)#1)->dummy = #2"
+  c inline "((union psa_driver_sign_hash_interruptible_context_t*)#1)->dummy = (unsigned int)#2"
 
 pub inline fun psa-driver-sign-hash-interruptible-context-tc/set-dummy(^s: psa-driver-sign-hash-interruptible-context-tc, dummy: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-sign-hash-interruptible-context-t-ptr/set-dummy(dummy))
@@ -2112,8 +2470,20 @@ pub inline fun psa-driver-sign-hash-interruptible-context-tc/set-dummy(^s: psa-d
 pub inline fun psa-driver-sign-hash-interruptible-context-tcb/set-dummy(^s: psa-driver-sign-hash-interruptible-context-tcb<s::S>, dummy: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-sign-hash-interruptible-context-t-ptr/set-dummy(dummy))
 
+pub inline fun psa-driver-sign-hash-interruptible-context-tc-wrapper/dummy(^s: psa-driver-sign-hash-interruptible-context-tc): int
+  s.with-ptr(psa-driver-sign-hash-interruptible-context-t-ptr/dummy).int
+
+pub inline fun psa-driver-sign-hash-interruptible-context-tcb-wrapper/dummy(^s: psa-driver-sign-hash-interruptible-context-tcb<s::S>): int
+  s.with-ptr(psa-driver-sign-hash-interruptible-context-t-ptr/dummy).int
+
+pub inline fun psa-driver-sign-hash-interruptible-context-tc-wrapper/set-dummy(^s: psa-driver-sign-hash-interruptible-context-tc, dummy: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-sign-hash-interruptible-context-t-ptr/set-dummy(dummy.int32))
+
+pub inline fun psa-driver-sign-hash-interruptible-context-tcb-wrapper/set-dummy(^s: psa-driver-sign-hash-interruptible-context-tcb<s::S>, dummy: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-sign-hash-interruptible-context-t-ptr/set-dummy(dummy.int32))
+
 inline extern psa-driver-sign-hash-interruptible-context-t-ptr/mbedtls_ctx(s: intptr_t): mbedtls-psa-sign-hash-interruptible-operation-t-c
-  c inline "((psa_driver_sign_hash_interruptible_context_t*)#1)->mbedtls_ctx"
+  c inline "(mbedtls_psa_sign_hash_interruptible_operation_t)(((union psa_driver_sign_hash_interruptible_context_t*)#1)->mbedtls_ctx)"
 
 pub inline fun psa-driver-sign-hash-interruptible-context-tc/mbedtls_ctx(^s: psa-driver-sign-hash-interruptible-context-tc): mbedtls-psa-sign-hash-interruptible-operation-t-c
   s.with-ptr(psa-driver-sign-hash-interruptible-context-t-ptr/mbedtls_ctx)
@@ -2122,7 +2492,7 @@ pub inline fun psa-driver-sign-hash-interruptible-context-tcb/mbedtls_ctx(^s: ps
   s.with-ptr(psa-driver-sign-hash-interruptible-context-t-ptr/mbedtls_ctx)
 
 inline extern psa-driver-sign-hash-interruptible-context-t-ptr/set-mbedtls_ctx(s: intptr_t, mbedtls_ctx: mbedtls-psa-sign-hash-interruptible-operation-t-c): ()
-  c inline "((psa_driver_sign_hash_interruptible_context_t*)#1)->mbedtls_ctx = #2"
+  c inline "((union psa_driver_sign_hash_interruptible_context_t*)#1)->mbedtls_ctx = (mbedtls_psa_sign_hash_interruptible_operation_t)#2"
 
 pub inline fun psa-driver-sign-hash-interruptible-context-tc/set-mbedtls_ctx(^s: psa-driver-sign-hash-interruptible-context-tc, mbedtls_ctx: mbedtls-psa-sign-hash-interruptible-operation-t-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-sign-hash-interruptible-context-t-ptr/set-mbedtls_ctx(mbedtls_ctx))
@@ -2130,16 +2500,28 @@ pub inline fun psa-driver-sign-hash-interruptible-context-tc/set-mbedtls_ctx(^s:
 pub inline fun psa-driver-sign-hash-interruptible-context-tcb/set-mbedtls_ctx(^s: psa-driver-sign-hash-interruptible-context-tcb<s::S>, mbedtls_ctx: mbedtls-psa-sign-hash-interruptible-operation-t-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-sign-hash-interruptible-context-t-ptr/set-mbedtls_ctx(mbedtls_ctx))
 
+pub inline fun psa-driver-sign-hash-interruptible-context-tc-wrapper/mbedtls_ctx(^s: psa-driver-sign-hash-interruptible-context-tc): mbedtls-psa-sign-hash-interruptible-operation-t
+  s.with-ptr(psa-driver-sign-hash-interruptible-context-t-ptr/mbedtls_ctx).to-koka
+
+pub inline fun psa-driver-sign-hash-interruptible-context-tcb-wrapper/mbedtls_ctx(^s: psa-driver-sign-hash-interruptible-context-tcb<s::S>): mbedtls-psa-sign-hash-interruptible-operation-t
+  s.with-ptr(psa-driver-sign-hash-interruptible-context-t-ptr/mbedtls_ctx).to-koka
+
+pub inline fun psa-driver-sign-hash-interruptible-context-tc-wrapper/set-mbedtls_ctx(^s: psa-driver-sign-hash-interruptible-context-tc, mbedtls_ctx: mbedtls-psa-sign-hash-interruptible-operation-t): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-sign-hash-interruptible-context-t-ptr/set-mbedtls_ctx((struct mbedtls_psa_sign_hash_interruptible_operation_t)(mbedtls_ctx)))
+
+pub inline fun psa-driver-sign-hash-interruptible-context-tcb-wrapper/set-mbedtls_ctx(^s: psa-driver-sign-hash-interruptible-context-tcb<s::S>, mbedtls_ctx: mbedtls-psa-sign-hash-interruptible-operation-t): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-sign-hash-interruptible-context-t-ptr/set-mbedtls_ctx((struct mbedtls_psa_sign_hash_interruptible_operation_t)(mbedtls_ctx)))
+
 pub value struct mbedtls-psa-sign-hash-interruptible-operation-t
-  private-dummy: int32
+  private-dummy: int
 
 pub type mbedtls-psa-sign-hash-interruptible-operation-t-c
-alias mbedtls-psa-sign-hash-interruptible-operation-tc = owned-c<mbedtls-psa-sign-hash-interruptible-operation-t-c>
-alias mbedtls-psa-sign-hash-interruptible-operation-tcb<s::S> = borrowed-c<s,mbedtls-psa-sign-hash-interruptible-operation-t-c>
-alias mbedtls-psa-sign-hash-interruptible-operation-tca = owned-c<c-array<mbedtls-psa-sign-hash-interruptible-operation-t-c>>
+pub alias mbedtls-psa-sign-hash-interruptible-operation-tc = owned-c<mbedtls-psa-sign-hash-interruptible-operation-t-c>
+pub alias mbedtls-psa-sign-hash-interruptible-operation-tcb<s::S> = borrowed-c<s,mbedtls-psa-sign-hash-interruptible-operation-t-c>
+pub alias mbedtls-psa-sign-hash-interruptible-operation-tca = owned-c<c-array<mbedtls-psa-sign-hash-interruptible-operation-t>>
 
 extern mbedtls-psa-sign-hash-interruptible-operation-t/size-of(c: c-null<mbedtls-psa-sign-hash-interruptible-operation-t-c>): int32
-  c inline "sizeof(mbedtls_psa_sign_hash_interruptible_operation_t)"
+  c inline "sizeof(struct mbedtls_psa_sign_hash_interruptible_operation_t)"
 
 pub fun mbedtls-psa-sign-hash-interruptible-operation-tc(): mbedtls-psa-sign-hash-interruptible-operation-tc
   malloc(?size-of=mbedtls-psa-sign-hash-interruptible-operation-t/size-of)
@@ -2154,7 +2536,7 @@ pub fun mbedtls-psa-sign-hash-interruptible-operation-tc-array-calloc(n: int): m
   malloc-c(n.int32, ?size-of=mbedtls-psa-sign-hash-interruptible-operation-t/size-of)
 
 inline extern mbedtls-psa-sign-hash-interruptible-operation-t-ptr/private-dummy(s: intptr_t): int32
-  c inline "((mbedtls_psa_sign_hash_interruptible_operation_t*)#1)->private_dummy"
+  c inline "(unsigned int)(((struct mbedtls_psa_sign_hash_interruptible_operation_t*)#1)->private_dummy)"
 
 pub inline fun mbedtls-psa-sign-hash-interruptible-operation-tc/private-dummy(^s: mbedtls-psa-sign-hash-interruptible-operation-tc): int32
   s.with-ptr(mbedtls-psa-sign-hash-interruptible-operation-t-ptr/private-dummy)
@@ -2163,7 +2545,7 @@ pub inline fun mbedtls-psa-sign-hash-interruptible-operation-tcb/private-dummy(^
   s.with-ptr(mbedtls-psa-sign-hash-interruptible-operation-t-ptr/private-dummy)
 
 inline extern mbedtls-psa-sign-hash-interruptible-operation-t-ptr/set-private-dummy(s: intptr_t, private-dummy: int32): ()
-  c inline "((mbedtls_psa_sign_hash_interruptible_operation_t*)#1)->private_dummy = #2"
+  c inline "((struct mbedtls_psa_sign_hash_interruptible_operation_t*)#1)->private_dummy = (unsigned int)#2"
 
 pub inline fun mbedtls-psa-sign-hash-interruptible-operation-tc/set-private-dummy(^s: mbedtls-psa-sign-hash-interruptible-operation-tc, private-dummy: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-sign-hash-interruptible-operation-t-ptr/set-private-dummy(private-dummy))
@@ -2171,15 +2553,28 @@ pub inline fun mbedtls-psa-sign-hash-interruptible-operation-tc/set-private-dumm
 pub inline fun mbedtls-psa-sign-hash-interruptible-operation-tcb/set-private-dummy(^s: mbedtls-psa-sign-hash-interruptible-operation-tcb<s::S>, private-dummy: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-sign-hash-interruptible-operation-t-ptr/set-private-dummy(private-dummy))
 
+pub inline fun mbedtls-psa-sign-hash-interruptible-operation-tc-wrapper/private-dummy(^s: mbedtls-psa-sign-hash-interruptible-operation-tc): int
+  s.with-ptr(mbedtls-psa-sign-hash-interruptible-operation-t-ptr/private-dummy).int
+
+pub inline fun mbedtls-psa-sign-hash-interruptible-operation-tcb-wrapper/private-dummy(^s: mbedtls-psa-sign-hash-interruptible-operation-tcb<s::S>): int
+  s.with-ptr(mbedtls-psa-sign-hash-interruptible-operation-t-ptr/private-dummy).int
+
+pub inline fun mbedtls-psa-sign-hash-interruptible-operation-tc-wrapper/set-private-dummy(^s: mbedtls-psa-sign-hash-interruptible-operation-tc, private-dummy: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-sign-hash-interruptible-operation-t-ptr/set-private-dummy(private-dummy.int32))
+
+pub inline fun mbedtls-psa-sign-hash-interruptible-operation-tcb-wrapper/set-private-dummy(^s: mbedtls-psa-sign-hash-interruptible-operation-tcb<s::S>, private-dummy: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-sign-hash-interruptible-operation-t-ptr/set-private-dummy(private-dummy.int32))
+
 pub fun mbedtls-psa-sign-hash-interruptible-operation-t/to-koka(s: mbedtls-psa-sign-hash-interruptible-operation-tc): mbedtls-psa-sign-hash-interruptible-operation-t
-  Mbedtls-psa-sign-hash-interruptible-operation-t(s.mbedtls-psa-sign-hash-interruptible-operation-tc/private-dummy)
+  Mbedtls-psa-sign-hash-interruptible-operation-t(s.mbedtls-psa-sign-hash-interruptible-operation-tc/private-dummy.int)
+
 pub type psa-driver-verify-hash-interruptible-context-t-c
-alias psa-driver-verify-hash-interruptible-context-tc = owned-c<psa-driver-verify-hash-interruptible-context-t-c>
-alias psa-driver-verify-hash-interruptible-context-tcb<s::S> = borrowed-c<s,psa-driver-verify-hash-interruptible-context-t-c>
-alias psa-driver-verify-hash-interruptible-context-tca = owned-c<c-array<psa-driver-verify-hash-interruptible-context-t-c>>
+pub alias psa-driver-verify-hash-interruptible-context-tc = owned-c<psa-driver-verify-hash-interruptible-context-t-c>
+pub alias psa-driver-verify-hash-interruptible-context-tcb<s::S> = borrowed-c<s,psa-driver-verify-hash-interruptible-context-t-c>
+pub alias psa-driver-verify-hash-interruptible-context-tca = owned-c<c-array<psa-driver-verify-hash-interruptible-context-t>>
 
 extern psa-driver-verify-hash-interruptible-context-t/size-of(c: c-null<psa-driver-verify-hash-interruptible-context-t-c>): int32
-  c inline "sizeof(psa_driver_verify_hash_interruptible_context_t)"
+  c inline "sizeof(union psa_driver_verify_hash_interruptible_context_t)"
 
 pub fun psa-driver-verify-hash-interruptible-context-tc(): psa-driver-verify-hash-interruptible-context-tc
   malloc(?size-of=psa-driver-verify-hash-interruptible-context-t/size-of)
@@ -2194,7 +2589,7 @@ pub fun psa-driver-verify-hash-interruptible-context-tc-array-calloc(n: int): ps
   malloc-c(n.int32, ?size-of=psa-driver-verify-hash-interruptible-context-t/size-of)
 
 inline extern psa-driver-verify-hash-interruptible-context-t-ptr/dummy(s: intptr_t): int32
-  c inline "((psa_driver_verify_hash_interruptible_context_t*)#1)->dummy"
+  c inline "(unsigned int)(((union psa_driver_verify_hash_interruptible_context_t*)#1)->dummy)"
 
 pub inline fun psa-driver-verify-hash-interruptible-context-tc/dummy(^s: psa-driver-verify-hash-interruptible-context-tc): int32
   s.with-ptr(psa-driver-verify-hash-interruptible-context-t-ptr/dummy)
@@ -2203,7 +2598,7 @@ pub inline fun psa-driver-verify-hash-interruptible-context-tcb/dummy(^s: psa-dr
   s.with-ptr(psa-driver-verify-hash-interruptible-context-t-ptr/dummy)
 
 inline extern psa-driver-verify-hash-interruptible-context-t-ptr/set-dummy(s: intptr_t, dummy: int32): ()
-  c inline "((psa_driver_verify_hash_interruptible_context_t*)#1)->dummy = #2"
+  c inline "((union psa_driver_verify_hash_interruptible_context_t*)#1)->dummy = (unsigned int)#2"
 
 pub inline fun psa-driver-verify-hash-interruptible-context-tc/set-dummy(^s: psa-driver-verify-hash-interruptible-context-tc, dummy: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-verify-hash-interruptible-context-t-ptr/set-dummy(dummy))
@@ -2211,8 +2606,20 @@ pub inline fun psa-driver-verify-hash-interruptible-context-tc/set-dummy(^s: psa
 pub inline fun psa-driver-verify-hash-interruptible-context-tcb/set-dummy(^s: psa-driver-verify-hash-interruptible-context-tcb<s::S>, dummy: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-verify-hash-interruptible-context-t-ptr/set-dummy(dummy))
 
+pub inline fun psa-driver-verify-hash-interruptible-context-tc-wrapper/dummy(^s: psa-driver-verify-hash-interruptible-context-tc): int
+  s.with-ptr(psa-driver-verify-hash-interruptible-context-t-ptr/dummy).int
+
+pub inline fun psa-driver-verify-hash-interruptible-context-tcb-wrapper/dummy(^s: psa-driver-verify-hash-interruptible-context-tcb<s::S>): int
+  s.with-ptr(psa-driver-verify-hash-interruptible-context-t-ptr/dummy).int
+
+pub inline fun psa-driver-verify-hash-interruptible-context-tc-wrapper/set-dummy(^s: psa-driver-verify-hash-interruptible-context-tc, dummy: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-verify-hash-interruptible-context-t-ptr/set-dummy(dummy.int32))
+
+pub inline fun psa-driver-verify-hash-interruptible-context-tcb-wrapper/set-dummy(^s: psa-driver-verify-hash-interruptible-context-tcb<s::S>, dummy: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-verify-hash-interruptible-context-t-ptr/set-dummy(dummy.int32))
+
 inline extern psa-driver-verify-hash-interruptible-context-t-ptr/mbedtls_ctx(s: intptr_t): mbedtls-psa-verify-hash-interruptible-operation-t-c
-  c inline "((psa_driver_verify_hash_interruptible_context_t*)#1)->mbedtls_ctx"
+  c inline "(mbedtls_psa_verify_hash_interruptible_operation_t)(((union psa_driver_verify_hash_interruptible_context_t*)#1)->mbedtls_ctx)"
 
 pub inline fun psa-driver-verify-hash-interruptible-context-tc/mbedtls_ctx(^s: psa-driver-verify-hash-interruptible-context-tc): mbedtls-psa-verify-hash-interruptible-operation-t-c
   s.with-ptr(psa-driver-verify-hash-interruptible-context-t-ptr/mbedtls_ctx)
@@ -2221,7 +2628,7 @@ pub inline fun psa-driver-verify-hash-interruptible-context-tcb/mbedtls_ctx(^s: 
   s.with-ptr(psa-driver-verify-hash-interruptible-context-t-ptr/mbedtls_ctx)
 
 inline extern psa-driver-verify-hash-interruptible-context-t-ptr/set-mbedtls_ctx(s: intptr_t, mbedtls_ctx: mbedtls-psa-verify-hash-interruptible-operation-t-c): ()
-  c inline "((psa_driver_verify_hash_interruptible_context_t*)#1)->mbedtls_ctx = #2"
+  c inline "((union psa_driver_verify_hash_interruptible_context_t*)#1)->mbedtls_ctx = (mbedtls_psa_verify_hash_interruptible_operation_t)#2"
 
 pub inline fun psa-driver-verify-hash-interruptible-context-tc/set-mbedtls_ctx(^s: psa-driver-verify-hash-interruptible-context-tc, mbedtls_ctx: mbedtls-psa-verify-hash-interruptible-operation-t-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-verify-hash-interruptible-context-t-ptr/set-mbedtls_ctx(mbedtls_ctx))
@@ -2229,16 +2636,28 @@ pub inline fun psa-driver-verify-hash-interruptible-context-tc/set-mbedtls_ctx(^
 pub inline fun psa-driver-verify-hash-interruptible-context-tcb/set-mbedtls_ctx(^s: psa-driver-verify-hash-interruptible-context-tcb<s::S>, mbedtls_ctx: mbedtls-psa-verify-hash-interruptible-operation-t-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-verify-hash-interruptible-context-t-ptr/set-mbedtls_ctx(mbedtls_ctx))
 
+pub inline fun psa-driver-verify-hash-interruptible-context-tc-wrapper/mbedtls_ctx(^s: psa-driver-verify-hash-interruptible-context-tc): mbedtls-psa-verify-hash-interruptible-operation-t
+  s.with-ptr(psa-driver-verify-hash-interruptible-context-t-ptr/mbedtls_ctx).to-koka
+
+pub inline fun psa-driver-verify-hash-interruptible-context-tcb-wrapper/mbedtls_ctx(^s: psa-driver-verify-hash-interruptible-context-tcb<s::S>): mbedtls-psa-verify-hash-interruptible-operation-t
+  s.with-ptr(psa-driver-verify-hash-interruptible-context-t-ptr/mbedtls_ctx).to-koka
+
+pub inline fun psa-driver-verify-hash-interruptible-context-tc-wrapper/set-mbedtls_ctx(^s: psa-driver-verify-hash-interruptible-context-tc, mbedtls_ctx: mbedtls-psa-verify-hash-interruptible-operation-t): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-verify-hash-interruptible-context-t-ptr/set-mbedtls_ctx((struct mbedtls_psa_verify_hash_interruptible_operation_t)(mbedtls_ctx)))
+
+pub inline fun psa-driver-verify-hash-interruptible-context-tcb-wrapper/set-mbedtls_ctx(^s: psa-driver-verify-hash-interruptible-context-tcb<s::S>, mbedtls_ctx: mbedtls-psa-verify-hash-interruptible-operation-t): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-verify-hash-interruptible-context-t-ptr/set-mbedtls_ctx((struct mbedtls_psa_verify_hash_interruptible_operation_t)(mbedtls_ctx)))
+
 pub value struct mbedtls-psa-verify-hash-interruptible-operation-t
-  private-dummy: int32
+  private-dummy: int
 
 pub type mbedtls-psa-verify-hash-interruptible-operation-t-c
-alias mbedtls-psa-verify-hash-interruptible-operation-tc = owned-c<mbedtls-psa-verify-hash-interruptible-operation-t-c>
-alias mbedtls-psa-verify-hash-interruptible-operation-tcb<s::S> = borrowed-c<s,mbedtls-psa-verify-hash-interruptible-operation-t-c>
-alias mbedtls-psa-verify-hash-interruptible-operation-tca = owned-c<c-array<mbedtls-psa-verify-hash-interruptible-operation-t-c>>
+pub alias mbedtls-psa-verify-hash-interruptible-operation-tc = owned-c<mbedtls-psa-verify-hash-interruptible-operation-t-c>
+pub alias mbedtls-psa-verify-hash-interruptible-operation-tcb<s::S> = borrowed-c<s,mbedtls-psa-verify-hash-interruptible-operation-t-c>
+pub alias mbedtls-psa-verify-hash-interruptible-operation-tca = owned-c<c-array<mbedtls-psa-verify-hash-interruptible-operation-t>>
 
 extern mbedtls-psa-verify-hash-interruptible-operation-t/size-of(c: c-null<mbedtls-psa-verify-hash-interruptible-operation-t-c>): int32
-  c inline "sizeof(mbedtls_psa_verify_hash_interruptible_operation_t)"
+  c inline "sizeof(struct mbedtls_psa_verify_hash_interruptible_operation_t)"
 
 pub fun mbedtls-psa-verify-hash-interruptible-operation-tc(): mbedtls-psa-verify-hash-interruptible-operation-tc
   malloc(?size-of=mbedtls-psa-verify-hash-interruptible-operation-t/size-of)
@@ -2253,7 +2672,7 @@ pub fun mbedtls-psa-verify-hash-interruptible-operation-tc-array-calloc(n: int):
   malloc-c(n.int32, ?size-of=mbedtls-psa-verify-hash-interruptible-operation-t/size-of)
 
 inline extern mbedtls-psa-verify-hash-interruptible-operation-t-ptr/private-dummy(s: intptr_t): int32
-  c inline "((mbedtls_psa_verify_hash_interruptible_operation_t*)#1)->private_dummy"
+  c inline "(unsigned int)(((struct mbedtls_psa_verify_hash_interruptible_operation_t*)#1)->private_dummy)"
 
 pub inline fun mbedtls-psa-verify-hash-interruptible-operation-tc/private-dummy(^s: mbedtls-psa-verify-hash-interruptible-operation-tc): int32
   s.with-ptr(mbedtls-psa-verify-hash-interruptible-operation-t-ptr/private-dummy)
@@ -2262,7 +2681,7 @@ pub inline fun mbedtls-psa-verify-hash-interruptible-operation-tcb/private-dummy
   s.with-ptr(mbedtls-psa-verify-hash-interruptible-operation-t-ptr/private-dummy)
 
 inline extern mbedtls-psa-verify-hash-interruptible-operation-t-ptr/set-private-dummy(s: intptr_t, private-dummy: int32): ()
-  c inline "((mbedtls_psa_verify_hash_interruptible_operation_t*)#1)->private_dummy = #2"
+  c inline "((struct mbedtls_psa_verify_hash_interruptible_operation_t*)#1)->private_dummy = (unsigned int)#2"
 
 pub inline fun mbedtls-psa-verify-hash-interruptible-operation-tc/set-private-dummy(^s: mbedtls-psa-verify-hash-interruptible-operation-tc, private-dummy: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-verify-hash-interruptible-operation-t-ptr/set-private-dummy(private-dummy))
@@ -2270,15 +2689,28 @@ pub inline fun mbedtls-psa-verify-hash-interruptible-operation-tc/set-private-du
 pub inline fun mbedtls-psa-verify-hash-interruptible-operation-tcb/set-private-dummy(^s: mbedtls-psa-verify-hash-interruptible-operation-tcb<s::S>, private-dummy: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-verify-hash-interruptible-operation-t-ptr/set-private-dummy(private-dummy))
 
+pub inline fun mbedtls-psa-verify-hash-interruptible-operation-tc-wrapper/private-dummy(^s: mbedtls-psa-verify-hash-interruptible-operation-tc): int
+  s.with-ptr(mbedtls-psa-verify-hash-interruptible-operation-t-ptr/private-dummy).int
+
+pub inline fun mbedtls-psa-verify-hash-interruptible-operation-tcb-wrapper/private-dummy(^s: mbedtls-psa-verify-hash-interruptible-operation-tcb<s::S>): int
+  s.with-ptr(mbedtls-psa-verify-hash-interruptible-operation-t-ptr/private-dummy).int
+
+pub inline fun mbedtls-psa-verify-hash-interruptible-operation-tc-wrapper/set-private-dummy(^s: mbedtls-psa-verify-hash-interruptible-operation-tc, private-dummy: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-verify-hash-interruptible-operation-t-ptr/set-private-dummy(private-dummy.int32))
+
+pub inline fun mbedtls-psa-verify-hash-interruptible-operation-tcb-wrapper/set-private-dummy(^s: mbedtls-psa-verify-hash-interruptible-operation-tcb<s::S>, private-dummy: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-verify-hash-interruptible-operation-t-ptr/set-private-dummy(private-dummy.int32))
+
 pub fun mbedtls-psa-verify-hash-interruptible-operation-t/to-koka(s: mbedtls-psa-verify-hash-interruptible-operation-tc): mbedtls-psa-verify-hash-interruptible-operation-t
-  Mbedtls-psa-verify-hash-interruptible-operation-t(s.mbedtls-psa-verify-hash-interruptible-operation-tc/private-dummy)
+  Mbedtls-psa-verify-hash-interruptible-operation-t(s.mbedtls-psa-verify-hash-interruptible-operation-tc/private-dummy.int)
+
 pub type psa-driver-pake-context-t-c
-alias psa-driver-pake-context-tc = owned-c<psa-driver-pake-context-t-c>
-alias psa-driver-pake-context-tcb<s::S> = borrowed-c<s,psa-driver-pake-context-t-c>
-alias psa-driver-pake-context-tca = owned-c<c-array<psa-driver-pake-context-t-c>>
+pub alias psa-driver-pake-context-tc = owned-c<psa-driver-pake-context-t-c>
+pub alias psa-driver-pake-context-tcb<s::S> = borrowed-c<s,psa-driver-pake-context-t-c>
+pub alias psa-driver-pake-context-tca = owned-c<c-array<psa-driver-pake-context-t>>
 
 extern psa-driver-pake-context-t/size-of(c: c-null<psa-driver-pake-context-t-c>): int32
-  c inline "sizeof(psa_driver_pake_context_t)"
+  c inline "sizeof(union psa_driver_pake_context_t)"
 
 pub fun psa-driver-pake-context-tc(): psa-driver-pake-context-tc
   malloc(?size-of=psa-driver-pake-context-t/size-of)
@@ -2293,7 +2725,7 @@ pub fun psa-driver-pake-context-tc-array-calloc(n: int): psa-driver-pake-context
   malloc-c(n.int32, ?size-of=psa-driver-pake-context-t/size-of)
 
 inline extern psa-driver-pake-context-t-ptr/dummy(s: intptr_t): int32
-  c inline "((psa_driver_pake_context_t*)#1)->dummy"
+  c inline "(unsigned int)(((union psa_driver_pake_context_t*)#1)->dummy)"
 
 pub inline fun psa-driver-pake-context-tc/dummy(^s: psa-driver-pake-context-tc): int32
   s.with-ptr(psa-driver-pake-context-t-ptr/dummy)
@@ -2302,7 +2734,7 @@ pub inline fun psa-driver-pake-context-tcb/dummy(^s: psa-driver-pake-context-tcb
   s.with-ptr(psa-driver-pake-context-t-ptr/dummy)
 
 inline extern psa-driver-pake-context-t-ptr/set-dummy(s: intptr_t, dummy: int32): ()
-  c inline "((psa_driver_pake_context_t*)#1)->dummy = #2"
+  c inline "((union psa_driver_pake_context_t*)#1)->dummy = (unsigned int)#2"
 
 pub inline fun psa-driver-pake-context-tc/set-dummy(^s: psa-driver-pake-context-tc, dummy: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-pake-context-t-ptr/set-dummy(dummy))
@@ -2310,8 +2742,20 @@ pub inline fun psa-driver-pake-context-tc/set-dummy(^s: psa-driver-pake-context-
 pub inline fun psa-driver-pake-context-tcb/set-dummy(^s: psa-driver-pake-context-tcb<s::S>, dummy: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-pake-context-t-ptr/set-dummy(dummy))
 
+pub inline fun psa-driver-pake-context-tc-wrapper/dummy(^s: psa-driver-pake-context-tc): int
+  s.with-ptr(psa-driver-pake-context-t-ptr/dummy).int
+
+pub inline fun psa-driver-pake-context-tcb-wrapper/dummy(^s: psa-driver-pake-context-tcb<s::S>): int
+  s.with-ptr(psa-driver-pake-context-t-ptr/dummy).int
+
+pub inline fun psa-driver-pake-context-tc-wrapper/set-dummy(^s: psa-driver-pake-context-tc, dummy: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-pake-context-t-ptr/set-dummy(dummy.int32))
+
+pub inline fun psa-driver-pake-context-tcb-wrapper/set-dummy(^s: psa-driver-pake-context-tcb<s::S>, dummy: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-pake-context-t-ptr/set-dummy(dummy.int32))
+
 inline extern psa-driver-pake-context-t-ptr/mbedtls_ctx(s: intptr_t): mbedtls-psa-pake-operation-t-c
-  c inline "((psa_driver_pake_context_t*)#1)->mbedtls_ctx"
+  c inline "(mbedtls_psa_pake_operation_t)(((union psa_driver_pake_context_t*)#1)->mbedtls_ctx)"
 
 pub inline fun psa-driver-pake-context-tc/mbedtls_ctx(^s: psa-driver-pake-context-tc): mbedtls-psa-pake-operation-t-c
   s.with-ptr(psa-driver-pake-context-t-ptr/mbedtls_ctx)
@@ -2320,7 +2764,7 @@ pub inline fun psa-driver-pake-context-tcb/mbedtls_ctx(^s: psa-driver-pake-conte
   s.with-ptr(psa-driver-pake-context-t-ptr/mbedtls_ctx)
 
 inline extern psa-driver-pake-context-t-ptr/set-mbedtls_ctx(s: intptr_t, mbedtls_ctx: mbedtls-psa-pake-operation-t-c): ()
-  c inline "((psa_driver_pake_context_t*)#1)->mbedtls_ctx = #2"
+  c inline "((union psa_driver_pake_context_t*)#1)->mbedtls_ctx = (mbedtls_psa_pake_operation_t)#2"
 
 pub inline fun psa-driver-pake-context-tc/set-mbedtls_ctx(^s: psa-driver-pake-context-tc, mbedtls_ctx: mbedtls-psa-pake-operation-t-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-pake-context-t-ptr/set-mbedtls_ctx(mbedtls_ctx))
@@ -2329,12 +2773,12 @@ pub inline fun psa-driver-pake-context-tcb/set-mbedtls_ctx(^s: psa-driver-pake-c
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-driver-pake-context-t-ptr/set-mbedtls_ctx(mbedtls_ctx))
 
 pub type mbedtls-psa-pake-operation-t-c
-alias mbedtls-psa-pake-operation-tc<s::S> = owned-c<mbedtls-psa-pake-operation-t-c>
-alias mbedtls-psa-pake-operation-tcb<s::S> = borrowed-c<s,mbedtls-psa-pake-operation-t-c>
-alias mbedtls-psa-pake-operation-tca<s::S> = owned-c<c-array<mbedtls-psa-pake-operation-t-c>>
+pub alias mbedtls-psa-pake-operation-tc<s::S> = owned-c<mbedtls-psa-pake-operation-t-c>
+pub alias mbedtls-psa-pake-operation-tcb<s::S> = borrowed-c<s,mbedtls-psa-pake-operation-t-c>
+pub alias mbedtls-psa-pake-operation-tca<s::S> = owned-c<c-array<mbedtls-psa-pake-operation-t>>
 
 extern mbedtls-psa-pake-operation-t/size-of(c: c-null<mbedtls-psa-pake-operation-t-c>): int32
-  c inline "sizeof(mbedtls_psa_pake_operation_t)"
+  c inline "sizeof(struct mbedtls_psa_pake_operation_t)"
 
 pub fun mbedtls-psa-pake-operation-tc(): mbedtls-psa-pake-operation-tc<s::S>
   malloc(?size-of=mbedtls-psa-pake-operation-t/size-of)
@@ -2349,7 +2793,7 @@ pub fun mbedtls-psa-pake-operation-tc-array-calloc(n: int): mbedtls-psa-pake-ope
   malloc-c(n.int32, ?size-of=mbedtls-psa-pake-operation-t/size-of)
 
 inline extern mbedtls-psa-pake-operation-t-ptr/private_alg(s: intptr_t): int32
-  c inline "((mbedtls_psa_pake_operation_t*)#1)->private_alg"
+  c inline "(psa_algorithm_t)(((struct mbedtls_psa_pake_operation_t*)#1)->private_alg)"
 
 pub inline fun mbedtls-psa-pake-operation-tc/private_alg(^s: mbedtls-psa-pake-operation-tc<s::S>): int32
   s.with-ptr(mbedtls-psa-pake-operation-t-ptr/private_alg)
@@ -2358,7 +2802,7 @@ pub inline fun mbedtls-psa-pake-operation-tcb/private_alg(^s: mbedtls-psa-pake-o
   s.with-ptr(mbedtls-psa-pake-operation-t-ptr/private_alg)
 
 inline extern mbedtls-psa-pake-operation-t-ptr/set-private_alg(s: intptr_t, private_alg: int32): ()
-  c inline "((mbedtls_psa_pake_operation_t*)#1)->private_alg = #2"
+  c inline "((struct mbedtls_psa_pake_operation_t*)#1)->private_alg = (psa_algorithm_t)#2"
 
 pub inline fun mbedtls-psa-pake-operation-tc/set-private_alg(^s: mbedtls-psa-pake-operation-tc<s::S>, private_alg: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-pake-operation-t-ptr/set-private_alg(private_alg))
@@ -2366,26 +2810,52 @@ pub inline fun mbedtls-psa-pake-operation-tc/set-private_alg(^s: mbedtls-psa-pak
 pub inline fun mbedtls-psa-pake-operation-tcb/set-private_alg(^s: mbedtls-psa-pake-operation-tcb<s::S>, private_alg: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-pake-operation-t-ptr/set-private_alg(private_alg))
 
-inline extern mbedtls-psa-pake-operation-t-ptr/private_password(s: intptr_t): owned-c<int8>
-  c inline "((mbedtls_psa_pake_operation_t*)#1)->private_password"
+pub inline fun mbedtls-psa-pake-operation-tc-wrapper/private_alg(^s: mbedtls-psa-pake-operation-tc<s::S>): koka-psa_algorithm_t
+  s.with-ptr(mbedtls-psa-pake-operation-t-ptr/private_alg).int
 
-pub inline fun mbedtls-psa-pake-operation-tc/private_password(^s: mbedtls-psa-pake-operation-tc<s::S>): owned-c<int8>
+pub inline fun mbedtls-psa-pake-operation-tcb-wrapper/private_alg(^s: mbedtls-psa-pake-operation-tcb<s::S>): koka-psa_algorithm_t
+  s.with-ptr(mbedtls-psa-pake-operation-t-ptr/private_alg).int
+
+pub inline fun mbedtls-psa-pake-operation-tc-wrapper/set-private_alg(^s: mbedtls-psa-pake-operation-tc<s::S>, private_alg: koka-psa_algorithm_t): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-pake-operation-t-ptr/set-private_alg(private_alg.int32))
+
+pub inline fun mbedtls-psa-pake-operation-tcb-wrapper/set-private_alg(^s: mbedtls-psa-pake-operation-tcb<s::S>, private_alg: koka-psa_algorithm_t): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-pake-operation-t-ptr/set-private_alg(private_alg.int32))
+
+inline extern mbedtls-psa-pake-operation-t-ptr/private_password(s: intptr_t): intptr_t
+  c inline "(intptr_t)(((struct mbedtls_psa_pake_operation_t*)#1)->private_password)"
+
+pub inline fun mbedtls-psa-pake-operation-tc/private_password(^s: mbedtls-psa-pake-operation-tc<s::S>): intptr_t
   s.with-ptr(mbedtls-psa-pake-operation-t-ptr/private_password)
 
-pub inline fun mbedtls-psa-pake-operation-tcb/private_password(^s: mbedtls-psa-pake-operation-tcb<s::S>): owned-c<int8>
+pub inline fun mbedtls-psa-pake-operation-tcb/private_password(^s: mbedtls-psa-pake-operation-tcb<s::S>): intptr_t
   s.with-ptr(mbedtls-psa-pake-operation-t-ptr/private_password)
 
-inline extern mbedtls-psa-pake-operation-t-ptr/set-private_password(s: intptr_t, private_password: owned-c<int8>): ()
-  c inline "((mbedtls_psa_pake_operation_t*)#1)->private_password = #2"
+inline extern mbedtls-psa-pake-operation-t-ptr/set-private_password(s: intptr_t, private_password: intptr_t): ()
+  c inline "((struct mbedtls_psa_pake_operation_t*)#1)->private_password = (uint8_t*)#2"
 
-pub inline fun mbedtls-psa-pake-operation-tc/set-private_password(^s: mbedtls-psa-pake-operation-tc<s::S>, private_password: owned-c<int8>): ()
+pub inline fun mbedtls-psa-pake-operation-tc/set-private_password(^s: mbedtls-psa-pake-operation-tc<s::S>, private_password: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-pake-operation-t-ptr/set-private_password(private_password))
 
-pub inline fun mbedtls-psa-pake-operation-tcb/set-private_password(^s: mbedtls-psa-pake-operation-tcb<s::S>, private_password: owned-c<int8>): ()
+pub inline fun mbedtls-psa-pake-operation-tcb/set-private_password(^s: mbedtls-psa-pake-operation-tcb<s::S>, private_password: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-pake-operation-t-ptr/set-private_password(private_password))
+
+pub inline fun mbedtls-psa-pake-operation-tc-wrapper/private_password(^s: mbedtls-psa-pake-operation-tc<s::S>): owned-c<int8>
+  s.with-ptr(mbedtls-psa-pake-operation-t-ptr/private_password).c-own
+
+pub inline fun mbedtls-psa-pake-operation-tcb-wrapper/private_password(^s: mbedtls-psa-pake-operation-tcb<s::S>): owned-c<int8>
+  s.with-ptr(mbedtls-psa-pake-operation-t-ptr/private_password).c-own
+
+pub inline fun mbedtls-psa-pake-operation-tc-wrapper/set-private_password(^s: mbedtls-psa-pake-operation-tc<s::S>, private_password: owned-c<int8>): ()
+  with koka-ptr <- private_password.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-pake-operation-t-ptr/set-private_password(koka-ptr))
+
+pub inline fun mbedtls-psa-pake-operation-tcb-wrapper/set-private_password(^s: mbedtls-psa-pake-operation-tcb<s::S>, private_password: owned-c<int8>): ()
+  with koka-ptr <- private_password.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-pake-operation-t-ptr/set-private_password(koka-ptr))
 
 inline extern mbedtls-psa-pake-operation-t-ptr/private_password_len(s: intptr_t): ssize_t
-  c inline "((mbedtls_psa_pake_operation_t*)#1)->private_password_len"
+  c inline "(ssize_t)(((struct mbedtls_psa_pake_operation_t*)#1)->private_password_len)"
 
 pub inline fun mbedtls-psa-pake-operation-tc/private_password_len(^s: mbedtls-psa-pake-operation-tc<s::S>): ssize_t
   s.with-ptr(mbedtls-psa-pake-operation-t-ptr/private_password_len)
@@ -2394,7 +2864,7 @@ pub inline fun mbedtls-psa-pake-operation-tcb/private_password_len(^s: mbedtls-p
   s.with-ptr(mbedtls-psa-pake-operation-t-ptr/private_password_len)
 
 inline extern mbedtls-psa-pake-operation-t-ptr/set-private_password_len(s: intptr_t, private_password_len: ssize_t): ()
-  c inline "((mbedtls_psa_pake_operation_t*)#1)->private_password_len = #2"
+  c inline "((struct mbedtls_psa_pake_operation_t*)#1)->private_password_len = (ssize_t)#2"
 
 pub inline fun mbedtls-psa-pake-operation-tc/set-private_password_len(^s: mbedtls-psa-pake-operation-tc<s::S>, private_password_len: ssize_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-pake-operation-t-ptr/set-private_password_len(private_password_len))
@@ -2403,7 +2873,7 @@ pub inline fun mbedtls-psa-pake-operation-tcb/set-private_password_len(^s: mbedt
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-pake-operation-t-ptr/set-private_password_len(private_password_len))
 
 inline extern mbedtls-psa-pake-operation-t-ptr/private_role(s: intptr_t): int32
-  c inline "((mbedtls_psa_pake_operation_t*)#1)->private_role"
+  c inline "(int32_t)(((struct mbedtls_psa_pake_operation_t*)#1)->private_role)"
 
 pub inline fun mbedtls-psa-pake-operation-tc/private_role(^s: mbedtls-psa-pake-operation-tc<s::S>): int32
   s.with-ptr(mbedtls-psa-pake-operation-t-ptr/private_role)
@@ -2412,7 +2882,7 @@ pub inline fun mbedtls-psa-pake-operation-tcb/private_role(^s: mbedtls-psa-pake-
   s.with-ptr(mbedtls-psa-pake-operation-t-ptr/private_role)
 
 inline extern mbedtls-psa-pake-operation-t-ptr/set-private_role(s: intptr_t, private_role: int32): ()
-  c inline "((mbedtls_psa_pake_operation_t*)#1)->private_role = #2"
+  c inline "((struct mbedtls_psa_pake_operation_t*)#1)->private_role = (int32_t)#2"
 
 pub inline fun mbedtls-psa-pake-operation-tc/set-private_role(^s: mbedtls-psa-pake-operation-tc<s::S>, private_role: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-pake-operation-t-ptr/set-private_role(private_role))
@@ -2421,7 +2891,7 @@ pub inline fun mbedtls-psa-pake-operation-tcb/set-private_role(^s: mbedtls-psa-p
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-pake-operation-t-ptr/set-private_role(private_role))
 
 inline extern mbedtls-psa-pake-operation-t-ptr/private_buffer_length(s: intptr_t): ssize_t
-  c inline "((mbedtls_psa_pake_operation_t*)#1)->private_buffer_length"
+  c inline "(ssize_t)(((struct mbedtls_psa_pake_operation_t*)#1)->private_buffer_length)"
 
 pub inline fun mbedtls-psa-pake-operation-tc/private_buffer_length(^s: mbedtls-psa-pake-operation-tc<s::S>): ssize_t
   s.with-ptr(mbedtls-psa-pake-operation-t-ptr/private_buffer_length)
@@ -2430,7 +2900,7 @@ pub inline fun mbedtls-psa-pake-operation-tcb/private_buffer_length(^s: mbedtls-
   s.with-ptr(mbedtls-psa-pake-operation-t-ptr/private_buffer_length)
 
 inline extern mbedtls-psa-pake-operation-t-ptr/set-private_buffer_length(s: intptr_t, private_buffer_length: ssize_t): ()
-  c inline "((mbedtls_psa_pake_operation_t*)#1)->private_buffer_length = #2"
+  c inline "((struct mbedtls_psa_pake_operation_t*)#1)->private_buffer_length = (ssize_t)#2"
 
 pub inline fun mbedtls-psa-pake-operation-tc/set-private_buffer_length(^s: mbedtls-psa-pake-operation-tc<s::S>, private_buffer_length: ssize_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-pake-operation-t-ptr/set-private_buffer_length(private_buffer_length))
@@ -2439,7 +2909,7 @@ pub inline fun mbedtls-psa-pake-operation-tcb/set-private_buffer_length(^s: mbed
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-pake-operation-t-ptr/set-private_buffer_length(private_buffer_length))
 
 inline extern mbedtls-psa-pake-operation-t-ptr/private_buffer_offset(s: intptr_t): ssize_t
-  c inline "((mbedtls_psa_pake_operation_t*)#1)->private_buffer_offset"
+  c inline "(ssize_t)(((struct mbedtls_psa_pake_operation_t*)#1)->private_buffer_offset)"
 
 pub inline fun mbedtls-psa-pake-operation-tc/private_buffer_offset(^s: mbedtls-psa-pake-operation-tc<s::S>): ssize_t
   s.with-ptr(mbedtls-psa-pake-operation-t-ptr/private_buffer_offset)
@@ -2448,7 +2918,7 @@ pub inline fun mbedtls-psa-pake-operation-tcb/private_buffer_offset(^s: mbedtls-
   s.with-ptr(mbedtls-psa-pake-operation-t-ptr/private_buffer_offset)
 
 inline extern mbedtls-psa-pake-operation-t-ptr/set-private_buffer_offset(s: intptr_t, private_buffer_offset: ssize_t): ()
-  c inline "((mbedtls_psa_pake_operation_t*)#1)->private_buffer_offset = #2"
+  c inline "((struct mbedtls_psa_pake_operation_t*)#1)->private_buffer_offset = (ssize_t)#2"
 
 pub inline fun mbedtls-psa-pake-operation-tc/set-private_buffer_offset(^s: mbedtls-psa-pake-operation-tc<s::S>, private_buffer_offset: ssize_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-pake-operation-t-ptr/set-private_buffer_offset(private_buffer_offset))
@@ -2457,7 +2927,7 @@ pub inline fun mbedtls-psa-pake-operation-tcb/set-private_buffer_offset(^s: mbed
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-pake-operation-t-ptr/set-private_buffer_offset(private_buffer_offset))
 
 inline extern mbedtls-psa-pake-operation-t-ptr/private_ctx(s: intptr_t): unnamedunion5-c
-  c inline "((mbedtls_psa_pake_operation_t*)#1)->private_ctx"
+  c inline "(UnnamedUnion5)(((struct mbedtls_psa_pake_operation_t*)#1)->private_ctx)"
 
 pub inline fun mbedtls-psa-pake-operation-tc/private_ctx(^s: mbedtls-psa-pake-operation-tc<s::S>): unnamedunion5-c
   s.with-ptr(mbedtls-psa-pake-operation-t-ptr/private_ctx)
@@ -2466,7 +2936,7 @@ pub inline fun mbedtls-psa-pake-operation-tcb/private_ctx(^s: mbedtls-psa-pake-o
   s.with-ptr(mbedtls-psa-pake-operation-t-ptr/private_ctx)
 
 inline extern mbedtls-psa-pake-operation-t-ptr/set-private_ctx(s: intptr_t, private_ctx: unnamedunion5-c): ()
-  c inline "((mbedtls_psa_pake_operation_t*)#1)->private_ctx = #2"
+  c inline "((struct mbedtls_psa_pake_operation_t*)#1)->private_ctx = (UnnamedUnion5)#2"
 
 pub inline fun mbedtls-psa-pake-operation-tc/set-private_ctx(^s: mbedtls-psa-pake-operation-tc<s::S>, private_ctx: unnamedunion5-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-pake-operation-t-ptr/set-private_ctx(private_ctx))
@@ -2475,12 +2945,12 @@ pub inline fun mbedtls-psa-pake-operation-tcb/set-private_ctx(^s: mbedtls-psa-pa
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-psa-pake-operation-t-ptr/set-private_ctx(private_ctx))
 
 pub type unnamedunion5-c
-alias unnamedunion5c = owned-c<unnamedunion5-c>
-alias unnamedunion5cb<s::S> = borrowed-c<s,unnamedunion5-c>
-alias unnamedunion5ca = owned-c<c-array<unnamedunion5-c>>
+pub alias unnamedunion5c = owned-c<unnamedunion5-c>
+pub alias unnamedunion5cb<s::S> = borrowed-c<s,unnamedunion5-c>
+pub alias unnamedunion5ca = owned-c<c-array<unnamedunion5>>
 
 extern unnamedunion5/size-of(c: c-null<unnamedunion5-c>): int32
-  c inline "sizeof(UnnamedUnion5)"
+  c inline "sizeof(union UnnamedUnion5)"
 
 pub fun unnamedunion5c(): unnamedunion5c
   malloc(?size-of=unnamedunion5/size-of)
@@ -2495,7 +2965,7 @@ pub fun unnamedunion5c-array-calloc(n: int): unnamedunion5ca
   malloc-c(n.int32, ?size-of=unnamedunion5/size-of)
 
 inline extern unnamedunion5-ptr/private_dummy(s: intptr_t): int32
-  c inline "((UnnamedUnion5*)#1)->private_dummy"
+  c inline "(unsigned int)(((union UnnamedUnion5*)#1)->private_dummy)"
 
 pub inline fun unnamedunion5c/private_dummy(^s: unnamedunion5c): int32
   s.with-ptr(unnamedunion5-ptr/private_dummy)
@@ -2504,7 +2974,7 @@ pub inline fun unnamedunion5cb/private_dummy(^s: unnamedunion5cb<s::S>): int32
   s.with-ptr(unnamedunion5-ptr/private_dummy)
 
 inline extern unnamedunion5-ptr/set-private_dummy(s: intptr_t, private_dummy: int32): ()
-  c inline "((UnnamedUnion5*)#1)->private_dummy = #2"
+  c inline "((union UnnamedUnion5*)#1)->private_dummy = (unsigned int)#2"
 
 pub inline fun unnamedunion5c/set-private_dummy(^s: unnamedunion5c, private_dummy: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion5-ptr/set-private_dummy(private_dummy))
@@ -2512,8 +2982,20 @@ pub inline fun unnamedunion5c/set-private_dummy(^s: unnamedunion5c, private_dumm
 pub inline fun unnamedunion5cb/set-private_dummy(^s: unnamedunion5cb<s::S>, private_dummy: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion5-ptr/set-private_dummy(private_dummy))
 
+pub inline fun unnamedunion5c-wrapper/private_dummy(^s: unnamedunion5c): int
+  s.with-ptr(unnamedunion5-ptr/private_dummy).int
+
+pub inline fun unnamedunion5cb-wrapper/private_dummy(^s: unnamedunion5cb<s::S>): int
+  s.with-ptr(unnamedunion5-ptr/private_dummy).int
+
+pub inline fun unnamedunion5c-wrapper/set-private_dummy(^s: unnamedunion5c, private_dummy: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion5-ptr/set-private_dummy(private_dummy.int32))
+
+pub inline fun unnamedunion5cb-wrapper/set-private_dummy(^s: unnamedunion5cb<s::S>, private_dummy: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion5-ptr/set-private_dummy(private_dummy.int32))
+
 inline extern unnamedunion5-ptr/private_jpake(s: intptr_t): mbedtls-ecjpake-context-c
-  c inline "((UnnamedUnion5*)#1)->private_jpake"
+  c inline "(mbedtls_ecjpake_context)(((union UnnamedUnion5*)#1)->private_jpake)"
 
 pub inline fun unnamedunion5c/private_jpake(^s: unnamedunion5c): mbedtls-ecjpake-context-c
   s.with-ptr(unnamedunion5-ptr/private_jpake)
@@ -2522,13 +3004,25 @@ pub inline fun unnamedunion5cb/private_jpake(^s: unnamedunion5cb<s::S>): mbedtls
   s.with-ptr(unnamedunion5-ptr/private_jpake)
 
 inline extern unnamedunion5-ptr/set-private_jpake(s: intptr_t, private_jpake: mbedtls-ecjpake-context-c): ()
-  c inline "((UnnamedUnion5*)#1)->private_jpake = #2"
+  c inline "((union UnnamedUnion5*)#1)->private_jpake = (mbedtls_ecjpake_context)#2"
 
 pub inline fun unnamedunion5c/set-private_jpake(^s: unnamedunion5c, private_jpake: mbedtls-ecjpake-context-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion5-ptr/set-private_jpake(private_jpake))
 
 pub inline fun unnamedunion5cb/set-private_jpake(^s: unnamedunion5cb<s::S>, private_jpake: mbedtls-ecjpake-context-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion5-ptr/set-private_jpake(private_jpake))
+
+pub inline fun unnamedunion5c-wrapper/private_jpake(^s: unnamedunion5c): mbedtls-ecjpake-context
+  s.with-ptr(unnamedunion5-ptr/private_jpake).to-koka
+
+pub inline fun unnamedunion5cb-wrapper/private_jpake(^s: unnamedunion5cb<s::S>): mbedtls-ecjpake-context
+  s.with-ptr(unnamedunion5-ptr/private_jpake).to-koka
+
+pub inline fun unnamedunion5c-wrapper/set-private_jpake(^s: unnamedunion5c, private_jpake: mbedtls-ecjpake-context): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion5-ptr/set-private_jpake((struct mbedtls_ecjpake_context)(private_jpake)))
+
+pub inline fun unnamedunion5cb-wrapper/set-private_jpake(^s: unnamedunion5cb<s::S>, private_jpake: mbedtls-ecjpake-context): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.unnamedunion5-ptr/set-private_jpake((struct mbedtls_ecjpake_context)(private_jpake)))
 
 // EC J-PAKE context structure.
 // 
@@ -2541,25 +3035,25 @@ pub inline fun unnamedunion5cb/set-private_jpake(^s: unnamedunion5cb<s::S>, priv
 // description as a pair C: client name, S: server name
 pub struct mbedtls-ecjpake-context
   private-md-type: int32
-  private-grp: mbedtls-ecp-group-c
+  private-grp: mbedtls-ecp-group
   private-role: int32
-  private-point-format: int32
-  private-xm1: mbedtls-ecp-point-c
-  private-xm2: mbedtls-ecp-point-c
-  private-xp1: mbedtls-ecp-point-c
-  private-xp2: mbedtls-ecp-point-c
-  private-xp: mbedtls-ecp-point-c
-  private-xm11: mbedtls-mpi-c
-  private-xm21: mbedtls-mpi-c
-  private-s: mbedtls-mpi-c
+  private-point-format: int
+  private-xm1: mbedtls-ecp-point
+  private-xm2: mbedtls-ecp-point
+  private-xp1: mbedtls-ecp-point
+  private-xp2: mbedtls-ecp-point
+  private-xp: mbedtls-ecp-point
+  private-xm11: mbedtls-mpi
+  private-xm21: mbedtls-mpi
+  private-s: mbedtls-mpi
 
 pub type mbedtls-ecjpake-context-c
-alias mbedtls-ecjpake-contextc = owned-c<mbedtls-ecjpake-context-c>
-alias mbedtls-ecjpake-contextcb<s::S> = borrowed-c<s,mbedtls-ecjpake-context-c>
-alias mbedtls-ecjpake-contextca = owned-c<c-array<mbedtls-ecjpake-context-c>>
+pub alias mbedtls-ecjpake-contextc = owned-c<mbedtls-ecjpake-context-c>
+pub alias mbedtls-ecjpake-contextcb<s::S> = borrowed-c<s,mbedtls-ecjpake-context-c>
+pub alias mbedtls-ecjpake-contextca = owned-c<c-array<mbedtls-ecjpake-context>>
 
 extern mbedtls-ecjpake-context/size-of(c: c-null<mbedtls-ecjpake-context-c>): int32
-  c inline "sizeof(mbedtls_ecjpake_context)"
+  c inline "sizeof(struct mbedtls_ecjpake_context)"
 
 pub fun mbedtls-ecjpake-contextc(): mbedtls-ecjpake-contextc
   malloc(?size-of=mbedtls-ecjpake-context/size-of)
@@ -2574,7 +3068,7 @@ pub fun mbedtls-ecjpake-contextc-array-calloc(n: int): mbedtls-ecjpake-contextca
   malloc-c(n.int32, ?size-of=mbedtls-ecjpake-context/size-of)
 
 inline extern mbedtls-ecjpake-context-ptr/private-md-type(s: intptr_t): int32
-  c inline "((mbedtls_ecjpake_context*)#1)->private_md_type"
+  c inline "(int32_t)(((struct mbedtls_ecjpake_context*)#1)->private_md_type)"
 
 pub inline fun mbedtls-ecjpake-contextc/private-md-type(^s: mbedtls-ecjpake-contextc): int32
   s.with-ptr(mbedtls-ecjpake-context-ptr/private-md-type)
@@ -2583,7 +3077,7 @@ pub inline fun mbedtls-ecjpake-contextcb/private-md-type(^s: mbedtls-ecjpake-con
   s.with-ptr(mbedtls-ecjpake-context-ptr/private-md-type)
 
 inline extern mbedtls-ecjpake-context-ptr/set-private-md-type(s: intptr_t, private-md-type: int32): ()
-  c inline "((mbedtls_ecjpake_context*)#1)->private_md_type = #2"
+  c inline "((struct mbedtls_ecjpake_context*)#1)->private_md_type = (int32_t)#2"
 
 pub inline fun mbedtls-ecjpake-contextc/set-private-md-type(^s: mbedtls-ecjpake-contextc, private-md-type: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-md-type(private-md-type))
@@ -2592,7 +3086,7 @@ pub inline fun mbedtls-ecjpake-contextcb/set-private-md-type(^s: mbedtls-ecjpake
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-md-type(private-md-type))
 
 inline extern mbedtls-ecjpake-context-ptr/private-grp(s: intptr_t): mbedtls-ecp-group-c
-  c inline "((mbedtls_ecjpake_context*)#1)->private_grp"
+  c inline "(mbedtls_ecp_group)(((struct mbedtls_ecjpake_context*)#1)->private_grp)"
 
 pub inline fun mbedtls-ecjpake-contextc/private-grp(^s: mbedtls-ecjpake-contextc): mbedtls-ecp-group-c
   s.with-ptr(mbedtls-ecjpake-context-ptr/private-grp)
@@ -2601,7 +3095,7 @@ pub inline fun mbedtls-ecjpake-contextcb/private-grp(^s: mbedtls-ecjpake-context
   s.with-ptr(mbedtls-ecjpake-context-ptr/private-grp)
 
 inline extern mbedtls-ecjpake-context-ptr/set-private-grp(s: intptr_t, private-grp: mbedtls-ecp-group-c): ()
-  c inline "((mbedtls_ecjpake_context*)#1)->private_grp = #2"
+  c inline "((struct mbedtls_ecjpake_context*)#1)->private_grp = (mbedtls_ecp_group)#2"
 
 pub inline fun mbedtls-ecjpake-contextc/set-private-grp(^s: mbedtls-ecjpake-contextc, private-grp: mbedtls-ecp-group-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-grp(private-grp))
@@ -2609,8 +3103,20 @@ pub inline fun mbedtls-ecjpake-contextc/set-private-grp(^s: mbedtls-ecjpake-cont
 pub inline fun mbedtls-ecjpake-contextcb/set-private-grp(^s: mbedtls-ecjpake-contextcb<s::S>, private-grp: mbedtls-ecp-group-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-grp(private-grp))
 
+pub inline fun mbedtls-ecjpake-contextc-wrapper/private-grp(^s: mbedtls-ecjpake-contextc): mbedtls-ecp-group
+  s.with-ptr(mbedtls-ecjpake-context-ptr/private-grp).to-koka
+
+pub inline fun mbedtls-ecjpake-contextcb-wrapper/private-grp(^s: mbedtls-ecjpake-contextcb<s::S>): mbedtls-ecp-group
+  s.with-ptr(mbedtls-ecjpake-context-ptr/private-grp).to-koka
+
+pub inline fun mbedtls-ecjpake-contextc-wrapper/set-private-grp(^s: mbedtls-ecjpake-contextc, private-grp: mbedtls-ecp-group): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-grp((struct mbedtls_ecp_group)(private-grp)))
+
+pub inline fun mbedtls-ecjpake-contextcb-wrapper/set-private-grp(^s: mbedtls-ecjpake-contextcb<s::S>, private-grp: mbedtls-ecp-group): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-grp((struct mbedtls_ecp_group)(private-grp)))
+
 inline extern mbedtls-ecjpake-context-ptr/private-role(s: intptr_t): int32
-  c inline "((mbedtls_ecjpake_context*)#1)->private_role"
+  c inline "(int32_t)(((struct mbedtls_ecjpake_context*)#1)->private_role)"
 
 pub inline fun mbedtls-ecjpake-contextc/private-role(^s: mbedtls-ecjpake-contextc): int32
   s.with-ptr(mbedtls-ecjpake-context-ptr/private-role)
@@ -2619,7 +3125,7 @@ pub inline fun mbedtls-ecjpake-contextcb/private-role(^s: mbedtls-ecjpake-contex
   s.with-ptr(mbedtls-ecjpake-context-ptr/private-role)
 
 inline extern mbedtls-ecjpake-context-ptr/set-private-role(s: intptr_t, private-role: int32): ()
-  c inline "((mbedtls_ecjpake_context*)#1)->private_role = #2"
+  c inline "((struct mbedtls_ecjpake_context*)#1)->private_role = (int32_t)#2"
 
 pub inline fun mbedtls-ecjpake-contextc/set-private-role(^s: mbedtls-ecjpake-contextc, private-role: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-role(private-role))
@@ -2628,7 +3134,7 @@ pub inline fun mbedtls-ecjpake-contextcb/set-private-role(^s: mbedtls-ecjpake-co
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-role(private-role))
 
 inline extern mbedtls-ecjpake-context-ptr/private-point-format(s: intptr_t): int32
-  c inline "((mbedtls_ecjpake_context*)#1)->private_point_format"
+  c inline "(int)(((struct mbedtls_ecjpake_context*)#1)->private_point_format)"
 
 pub inline fun mbedtls-ecjpake-contextc/private-point-format(^s: mbedtls-ecjpake-contextc): int32
   s.with-ptr(mbedtls-ecjpake-context-ptr/private-point-format)
@@ -2637,7 +3143,7 @@ pub inline fun mbedtls-ecjpake-contextcb/private-point-format(^s: mbedtls-ecjpak
   s.with-ptr(mbedtls-ecjpake-context-ptr/private-point-format)
 
 inline extern mbedtls-ecjpake-context-ptr/set-private-point-format(s: intptr_t, private-point-format: int32): ()
-  c inline "((mbedtls_ecjpake_context*)#1)->private_point_format = #2"
+  c inline "((struct mbedtls_ecjpake_context*)#1)->private_point_format = (int)#2"
 
 pub inline fun mbedtls-ecjpake-contextc/set-private-point-format(^s: mbedtls-ecjpake-contextc, private-point-format: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-point-format(private-point-format))
@@ -2645,8 +3151,20 @@ pub inline fun mbedtls-ecjpake-contextc/set-private-point-format(^s: mbedtls-ecj
 pub inline fun mbedtls-ecjpake-contextcb/set-private-point-format(^s: mbedtls-ecjpake-contextcb<s::S>, private-point-format: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-point-format(private-point-format))
 
+pub inline fun mbedtls-ecjpake-contextc-wrapper/private-point-format(^s: mbedtls-ecjpake-contextc): int
+  s.with-ptr(mbedtls-ecjpake-context-ptr/private-point-format).int
+
+pub inline fun mbedtls-ecjpake-contextcb-wrapper/private-point-format(^s: mbedtls-ecjpake-contextcb<s::S>): int
+  s.with-ptr(mbedtls-ecjpake-context-ptr/private-point-format).int
+
+pub inline fun mbedtls-ecjpake-contextc-wrapper/set-private-point-format(^s: mbedtls-ecjpake-contextc, private-point-format: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-point-format(private-point-format.int32))
+
+pub inline fun mbedtls-ecjpake-contextcb-wrapper/set-private-point-format(^s: mbedtls-ecjpake-contextcb<s::S>, private-point-format: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-point-format(private-point-format.int32))
+
 inline extern mbedtls-ecjpake-context-ptr/private-xm1(s: intptr_t): mbedtls-ecp-point-c
-  c inline "((mbedtls_ecjpake_context*)#1)->private_Xm1"
+  c inline "(mbedtls_ecp_point)(((struct mbedtls_ecjpake_context*)#1)->private_Xm1)"
 
 pub inline fun mbedtls-ecjpake-contextc/private-xm1(^s: mbedtls-ecjpake-contextc): mbedtls-ecp-point-c
   s.with-ptr(mbedtls-ecjpake-context-ptr/private-xm1)
@@ -2655,7 +3173,7 @@ pub inline fun mbedtls-ecjpake-contextcb/private-xm1(^s: mbedtls-ecjpake-context
   s.with-ptr(mbedtls-ecjpake-context-ptr/private-xm1)
 
 inline extern mbedtls-ecjpake-context-ptr/set-private-xm1(s: intptr_t, private-xm1: mbedtls-ecp-point-c): ()
-  c inline "((mbedtls_ecjpake_context*)#1)->private_Xm1 = #2"
+  c inline "((struct mbedtls_ecjpake_context*)#1)->private_Xm1 = (mbedtls_ecp_point)#2"
 
 pub inline fun mbedtls-ecjpake-contextc/set-private-xm1(^s: mbedtls-ecjpake-contextc, private-xm1: mbedtls-ecp-point-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-xm1(private-xm1))
@@ -2663,8 +3181,20 @@ pub inline fun mbedtls-ecjpake-contextc/set-private-xm1(^s: mbedtls-ecjpake-cont
 pub inline fun mbedtls-ecjpake-contextcb/set-private-xm1(^s: mbedtls-ecjpake-contextcb<s::S>, private-xm1: mbedtls-ecp-point-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-xm1(private-xm1))
 
+pub inline fun mbedtls-ecjpake-contextc-wrapper/private-xm1(^s: mbedtls-ecjpake-contextc): mbedtls-ecp-point
+  s.with-ptr(mbedtls-ecjpake-context-ptr/private-xm1).to-koka
+
+pub inline fun mbedtls-ecjpake-contextcb-wrapper/private-xm1(^s: mbedtls-ecjpake-contextcb<s::S>): mbedtls-ecp-point
+  s.with-ptr(mbedtls-ecjpake-context-ptr/private-xm1).to-koka
+
+pub inline fun mbedtls-ecjpake-contextc-wrapper/set-private-xm1(^s: mbedtls-ecjpake-contextc, private-xm1: mbedtls-ecp-point): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-xm1((struct mbedtls_ecp_point)(private-xm1)))
+
+pub inline fun mbedtls-ecjpake-contextcb-wrapper/set-private-xm1(^s: mbedtls-ecjpake-contextcb<s::S>, private-xm1: mbedtls-ecp-point): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-xm1((struct mbedtls_ecp_point)(private-xm1)))
+
 inline extern mbedtls-ecjpake-context-ptr/private-xm2(s: intptr_t): mbedtls-ecp-point-c
-  c inline "((mbedtls_ecjpake_context*)#1)->private_Xm2"
+  c inline "(mbedtls_ecp_point)(((struct mbedtls_ecjpake_context*)#1)->private_Xm2)"
 
 pub inline fun mbedtls-ecjpake-contextc/private-xm2(^s: mbedtls-ecjpake-contextc): mbedtls-ecp-point-c
   s.with-ptr(mbedtls-ecjpake-context-ptr/private-xm2)
@@ -2673,7 +3203,7 @@ pub inline fun mbedtls-ecjpake-contextcb/private-xm2(^s: mbedtls-ecjpake-context
   s.with-ptr(mbedtls-ecjpake-context-ptr/private-xm2)
 
 inline extern mbedtls-ecjpake-context-ptr/set-private-xm2(s: intptr_t, private-xm2: mbedtls-ecp-point-c): ()
-  c inline "((mbedtls_ecjpake_context*)#1)->private_Xm2 = #2"
+  c inline "((struct mbedtls_ecjpake_context*)#1)->private_Xm2 = (mbedtls_ecp_point)#2"
 
 pub inline fun mbedtls-ecjpake-contextc/set-private-xm2(^s: mbedtls-ecjpake-contextc, private-xm2: mbedtls-ecp-point-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-xm2(private-xm2))
@@ -2681,8 +3211,20 @@ pub inline fun mbedtls-ecjpake-contextc/set-private-xm2(^s: mbedtls-ecjpake-cont
 pub inline fun mbedtls-ecjpake-contextcb/set-private-xm2(^s: mbedtls-ecjpake-contextcb<s::S>, private-xm2: mbedtls-ecp-point-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-xm2(private-xm2))
 
+pub inline fun mbedtls-ecjpake-contextc-wrapper/private-xm2(^s: mbedtls-ecjpake-contextc): mbedtls-ecp-point
+  s.with-ptr(mbedtls-ecjpake-context-ptr/private-xm2).to-koka
+
+pub inline fun mbedtls-ecjpake-contextcb-wrapper/private-xm2(^s: mbedtls-ecjpake-contextcb<s::S>): mbedtls-ecp-point
+  s.with-ptr(mbedtls-ecjpake-context-ptr/private-xm2).to-koka
+
+pub inline fun mbedtls-ecjpake-contextc-wrapper/set-private-xm2(^s: mbedtls-ecjpake-contextc, private-xm2: mbedtls-ecp-point): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-xm2((struct mbedtls_ecp_point)(private-xm2)))
+
+pub inline fun mbedtls-ecjpake-contextcb-wrapper/set-private-xm2(^s: mbedtls-ecjpake-contextcb<s::S>, private-xm2: mbedtls-ecp-point): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-xm2((struct mbedtls_ecp_point)(private-xm2)))
+
 inline extern mbedtls-ecjpake-context-ptr/private-xp1(s: intptr_t): mbedtls-ecp-point-c
-  c inline "((mbedtls_ecjpake_context*)#1)->private_Xp1"
+  c inline "(mbedtls_ecp_point)(((struct mbedtls_ecjpake_context*)#1)->private_Xp1)"
 
 pub inline fun mbedtls-ecjpake-contextc/private-xp1(^s: mbedtls-ecjpake-contextc): mbedtls-ecp-point-c
   s.with-ptr(mbedtls-ecjpake-context-ptr/private-xp1)
@@ -2691,7 +3233,7 @@ pub inline fun mbedtls-ecjpake-contextcb/private-xp1(^s: mbedtls-ecjpake-context
   s.with-ptr(mbedtls-ecjpake-context-ptr/private-xp1)
 
 inline extern mbedtls-ecjpake-context-ptr/set-private-xp1(s: intptr_t, private-xp1: mbedtls-ecp-point-c): ()
-  c inline "((mbedtls_ecjpake_context*)#1)->private_Xp1 = #2"
+  c inline "((struct mbedtls_ecjpake_context*)#1)->private_Xp1 = (mbedtls_ecp_point)#2"
 
 pub inline fun mbedtls-ecjpake-contextc/set-private-xp1(^s: mbedtls-ecjpake-contextc, private-xp1: mbedtls-ecp-point-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-xp1(private-xp1))
@@ -2699,8 +3241,20 @@ pub inline fun mbedtls-ecjpake-contextc/set-private-xp1(^s: mbedtls-ecjpake-cont
 pub inline fun mbedtls-ecjpake-contextcb/set-private-xp1(^s: mbedtls-ecjpake-contextcb<s::S>, private-xp1: mbedtls-ecp-point-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-xp1(private-xp1))
 
+pub inline fun mbedtls-ecjpake-contextc-wrapper/private-xp1(^s: mbedtls-ecjpake-contextc): mbedtls-ecp-point
+  s.with-ptr(mbedtls-ecjpake-context-ptr/private-xp1).to-koka
+
+pub inline fun mbedtls-ecjpake-contextcb-wrapper/private-xp1(^s: mbedtls-ecjpake-contextcb<s::S>): mbedtls-ecp-point
+  s.with-ptr(mbedtls-ecjpake-context-ptr/private-xp1).to-koka
+
+pub inline fun mbedtls-ecjpake-contextc-wrapper/set-private-xp1(^s: mbedtls-ecjpake-contextc, private-xp1: mbedtls-ecp-point): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-xp1((struct mbedtls_ecp_point)(private-xp1)))
+
+pub inline fun mbedtls-ecjpake-contextcb-wrapper/set-private-xp1(^s: mbedtls-ecjpake-contextcb<s::S>, private-xp1: mbedtls-ecp-point): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-xp1((struct mbedtls_ecp_point)(private-xp1)))
+
 inline extern mbedtls-ecjpake-context-ptr/private-xp2(s: intptr_t): mbedtls-ecp-point-c
-  c inline "((mbedtls_ecjpake_context*)#1)->private_Xp2"
+  c inline "(mbedtls_ecp_point)(((struct mbedtls_ecjpake_context*)#1)->private_Xp2)"
 
 pub inline fun mbedtls-ecjpake-contextc/private-xp2(^s: mbedtls-ecjpake-contextc): mbedtls-ecp-point-c
   s.with-ptr(mbedtls-ecjpake-context-ptr/private-xp2)
@@ -2709,7 +3263,7 @@ pub inline fun mbedtls-ecjpake-contextcb/private-xp2(^s: mbedtls-ecjpake-context
   s.with-ptr(mbedtls-ecjpake-context-ptr/private-xp2)
 
 inline extern mbedtls-ecjpake-context-ptr/set-private-xp2(s: intptr_t, private-xp2: mbedtls-ecp-point-c): ()
-  c inline "((mbedtls_ecjpake_context*)#1)->private_Xp2 = #2"
+  c inline "((struct mbedtls_ecjpake_context*)#1)->private_Xp2 = (mbedtls_ecp_point)#2"
 
 pub inline fun mbedtls-ecjpake-contextc/set-private-xp2(^s: mbedtls-ecjpake-contextc, private-xp2: mbedtls-ecp-point-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-xp2(private-xp2))
@@ -2717,8 +3271,20 @@ pub inline fun mbedtls-ecjpake-contextc/set-private-xp2(^s: mbedtls-ecjpake-cont
 pub inline fun mbedtls-ecjpake-contextcb/set-private-xp2(^s: mbedtls-ecjpake-contextcb<s::S>, private-xp2: mbedtls-ecp-point-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-xp2(private-xp2))
 
+pub inline fun mbedtls-ecjpake-contextc-wrapper/private-xp2(^s: mbedtls-ecjpake-contextc): mbedtls-ecp-point
+  s.with-ptr(mbedtls-ecjpake-context-ptr/private-xp2).to-koka
+
+pub inline fun mbedtls-ecjpake-contextcb-wrapper/private-xp2(^s: mbedtls-ecjpake-contextcb<s::S>): mbedtls-ecp-point
+  s.with-ptr(mbedtls-ecjpake-context-ptr/private-xp2).to-koka
+
+pub inline fun mbedtls-ecjpake-contextc-wrapper/set-private-xp2(^s: mbedtls-ecjpake-contextc, private-xp2: mbedtls-ecp-point): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-xp2((struct mbedtls_ecp_point)(private-xp2)))
+
+pub inline fun mbedtls-ecjpake-contextcb-wrapper/set-private-xp2(^s: mbedtls-ecjpake-contextcb<s::S>, private-xp2: mbedtls-ecp-point): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-xp2((struct mbedtls_ecp_point)(private-xp2)))
+
 inline extern mbedtls-ecjpake-context-ptr/private-xp(s: intptr_t): mbedtls-ecp-point-c
-  c inline "((mbedtls_ecjpake_context*)#1)->private_Xp"
+  c inline "(mbedtls_ecp_point)(((struct mbedtls_ecjpake_context*)#1)->private_Xp)"
 
 pub inline fun mbedtls-ecjpake-contextc/private-xp(^s: mbedtls-ecjpake-contextc): mbedtls-ecp-point-c
   s.with-ptr(mbedtls-ecjpake-context-ptr/private-xp)
@@ -2727,7 +3293,7 @@ pub inline fun mbedtls-ecjpake-contextcb/private-xp(^s: mbedtls-ecjpake-contextc
   s.with-ptr(mbedtls-ecjpake-context-ptr/private-xp)
 
 inline extern mbedtls-ecjpake-context-ptr/set-private-xp(s: intptr_t, private-xp: mbedtls-ecp-point-c): ()
-  c inline "((mbedtls_ecjpake_context*)#1)->private_Xp = #2"
+  c inline "((struct mbedtls_ecjpake_context*)#1)->private_Xp = (mbedtls_ecp_point)#2"
 
 pub inline fun mbedtls-ecjpake-contextc/set-private-xp(^s: mbedtls-ecjpake-contextc, private-xp: mbedtls-ecp-point-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-xp(private-xp))
@@ -2735,8 +3301,20 @@ pub inline fun mbedtls-ecjpake-contextc/set-private-xp(^s: mbedtls-ecjpake-conte
 pub inline fun mbedtls-ecjpake-contextcb/set-private-xp(^s: mbedtls-ecjpake-contextcb<s::S>, private-xp: mbedtls-ecp-point-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-xp(private-xp))
 
+pub inline fun mbedtls-ecjpake-contextc-wrapper/private-xp(^s: mbedtls-ecjpake-contextc): mbedtls-ecp-point
+  s.with-ptr(mbedtls-ecjpake-context-ptr/private-xp).to-koka
+
+pub inline fun mbedtls-ecjpake-contextcb-wrapper/private-xp(^s: mbedtls-ecjpake-contextcb<s::S>): mbedtls-ecp-point
+  s.with-ptr(mbedtls-ecjpake-context-ptr/private-xp).to-koka
+
+pub inline fun mbedtls-ecjpake-contextc-wrapper/set-private-xp(^s: mbedtls-ecjpake-contextc, private-xp: mbedtls-ecp-point): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-xp((struct mbedtls_ecp_point)(private-xp)))
+
+pub inline fun mbedtls-ecjpake-contextcb-wrapper/set-private-xp(^s: mbedtls-ecjpake-contextcb<s::S>, private-xp: mbedtls-ecp-point): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-xp((struct mbedtls_ecp_point)(private-xp)))
+
 inline extern mbedtls-ecjpake-context-ptr/private-xm11(s: intptr_t): mbedtls-mpi-c
-  c inline "((mbedtls_ecjpake_context*)#1)->private_xm1"
+  c inline "(mbedtls_mpi)(((struct mbedtls_ecjpake_context*)#1)->private_xm1)"
 
 pub inline fun mbedtls-ecjpake-contextc/private-xm11(^s: mbedtls-ecjpake-contextc): mbedtls-mpi-c
   s.with-ptr(mbedtls-ecjpake-context-ptr/private-xm11)
@@ -2745,7 +3323,7 @@ pub inline fun mbedtls-ecjpake-contextcb/private-xm11(^s: mbedtls-ecjpake-contex
   s.with-ptr(mbedtls-ecjpake-context-ptr/private-xm11)
 
 inline extern mbedtls-ecjpake-context-ptr/set-private-xm11(s: intptr_t, private-xm11: mbedtls-mpi-c): ()
-  c inline "((mbedtls_ecjpake_context*)#1)->private_xm1 = #2"
+  c inline "((struct mbedtls_ecjpake_context*)#1)->private_xm1 = (mbedtls_mpi)#2"
 
 pub inline fun mbedtls-ecjpake-contextc/set-private-xm11(^s: mbedtls-ecjpake-contextc, private-xm11: mbedtls-mpi-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-xm11(private-xm11))
@@ -2753,8 +3331,20 @@ pub inline fun mbedtls-ecjpake-contextc/set-private-xm11(^s: mbedtls-ecjpake-con
 pub inline fun mbedtls-ecjpake-contextcb/set-private-xm11(^s: mbedtls-ecjpake-contextcb<s::S>, private-xm11: mbedtls-mpi-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-xm11(private-xm11))
 
+pub inline fun mbedtls-ecjpake-contextc-wrapper/private-xm11(^s: mbedtls-ecjpake-contextc): mbedtls-mpi
+  s.with-ptr(mbedtls-ecjpake-context-ptr/private-xm11).to-koka
+
+pub inline fun mbedtls-ecjpake-contextcb-wrapper/private-xm11(^s: mbedtls-ecjpake-contextcb<s::S>): mbedtls-mpi
+  s.with-ptr(mbedtls-ecjpake-context-ptr/private-xm11).to-koka
+
+pub inline fun mbedtls-ecjpake-contextc-wrapper/set-private-xm11(^s: mbedtls-ecjpake-contextc, private-xm11: mbedtls-mpi): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-xm11((struct mbedtls_mpi)(private-xm11)))
+
+pub inline fun mbedtls-ecjpake-contextcb-wrapper/set-private-xm11(^s: mbedtls-ecjpake-contextcb<s::S>, private-xm11: mbedtls-mpi): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-xm11((struct mbedtls_mpi)(private-xm11)))
+
 inline extern mbedtls-ecjpake-context-ptr/private-xm21(s: intptr_t): mbedtls-mpi-c
-  c inline "((mbedtls_ecjpake_context*)#1)->private_xm2"
+  c inline "(mbedtls_mpi)(((struct mbedtls_ecjpake_context*)#1)->private_xm2)"
 
 pub inline fun mbedtls-ecjpake-contextc/private-xm21(^s: mbedtls-ecjpake-contextc): mbedtls-mpi-c
   s.with-ptr(mbedtls-ecjpake-context-ptr/private-xm21)
@@ -2763,7 +3353,7 @@ pub inline fun mbedtls-ecjpake-contextcb/private-xm21(^s: mbedtls-ecjpake-contex
   s.with-ptr(mbedtls-ecjpake-context-ptr/private-xm21)
 
 inline extern mbedtls-ecjpake-context-ptr/set-private-xm21(s: intptr_t, private-xm21: mbedtls-mpi-c): ()
-  c inline "((mbedtls_ecjpake_context*)#1)->private_xm2 = #2"
+  c inline "((struct mbedtls_ecjpake_context*)#1)->private_xm2 = (mbedtls_mpi)#2"
 
 pub inline fun mbedtls-ecjpake-contextc/set-private-xm21(^s: mbedtls-ecjpake-contextc, private-xm21: mbedtls-mpi-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-xm21(private-xm21))
@@ -2771,8 +3361,20 @@ pub inline fun mbedtls-ecjpake-contextc/set-private-xm21(^s: mbedtls-ecjpake-con
 pub inline fun mbedtls-ecjpake-contextcb/set-private-xm21(^s: mbedtls-ecjpake-contextcb<s::S>, private-xm21: mbedtls-mpi-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-xm21(private-xm21))
 
+pub inline fun mbedtls-ecjpake-contextc-wrapper/private-xm21(^s: mbedtls-ecjpake-contextc): mbedtls-mpi
+  s.with-ptr(mbedtls-ecjpake-context-ptr/private-xm21).to-koka
+
+pub inline fun mbedtls-ecjpake-contextcb-wrapper/private-xm21(^s: mbedtls-ecjpake-contextcb<s::S>): mbedtls-mpi
+  s.with-ptr(mbedtls-ecjpake-context-ptr/private-xm21).to-koka
+
+pub inline fun mbedtls-ecjpake-contextc-wrapper/set-private-xm21(^s: mbedtls-ecjpake-contextc, private-xm21: mbedtls-mpi): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-xm21((struct mbedtls_mpi)(private-xm21)))
+
+pub inline fun mbedtls-ecjpake-contextcb-wrapper/set-private-xm21(^s: mbedtls-ecjpake-contextcb<s::S>, private-xm21: mbedtls-mpi): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-xm21((struct mbedtls_mpi)(private-xm21)))
+
 inline extern mbedtls-ecjpake-context-ptr/private-s(s: intptr_t): mbedtls-mpi-c
-  c inline "((mbedtls_ecjpake_context*)#1)->private_s"
+  c inline "(mbedtls_mpi)(((struct mbedtls_ecjpake_context*)#1)->private_s)"
 
 pub inline fun mbedtls-ecjpake-contextc/private-s(^s: mbedtls-ecjpake-contextc): mbedtls-mpi-c
   s.with-ptr(mbedtls-ecjpake-context-ptr/private-s)
@@ -2781,7 +3383,7 @@ pub inline fun mbedtls-ecjpake-contextcb/private-s(^s: mbedtls-ecjpake-contextcb
   s.with-ptr(mbedtls-ecjpake-context-ptr/private-s)
 
 inline extern mbedtls-ecjpake-context-ptr/set-private-s(s: intptr_t, private-s: mbedtls-mpi-c): ()
-  c inline "((mbedtls_ecjpake_context*)#1)->private_s = #2"
+  c inline "((struct mbedtls_ecjpake_context*)#1)->private_s = (mbedtls_mpi)#2"
 
 pub inline fun mbedtls-ecjpake-contextc/set-private-s(^s: mbedtls-ecjpake-contextc, private-s: mbedtls-mpi-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-s(private-s))
@@ -2789,8 +3391,21 @@ pub inline fun mbedtls-ecjpake-contextc/set-private-s(^s: mbedtls-ecjpake-contex
 pub inline fun mbedtls-ecjpake-contextcb/set-private-s(^s: mbedtls-ecjpake-contextcb<s::S>, private-s: mbedtls-mpi-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-s(private-s))
 
+pub inline fun mbedtls-ecjpake-contextc-wrapper/private-s(^s: mbedtls-ecjpake-contextc): mbedtls-mpi
+  s.with-ptr(mbedtls-ecjpake-context-ptr/private-s).to-koka
+
+pub inline fun mbedtls-ecjpake-contextcb-wrapper/private-s(^s: mbedtls-ecjpake-contextcb<s::S>): mbedtls-mpi
+  s.with-ptr(mbedtls-ecjpake-context-ptr/private-s).to-koka
+
+pub inline fun mbedtls-ecjpake-contextc-wrapper/set-private-s(^s: mbedtls-ecjpake-contextc, private-s: mbedtls-mpi): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-s((struct mbedtls_mpi)(private-s)))
+
+pub inline fun mbedtls-ecjpake-contextcb-wrapper/set-private-s(^s: mbedtls-ecjpake-contextcb<s::S>, private-s: mbedtls-mpi): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecjpake-context-ptr/set-private-s((struct mbedtls_mpi)(private-s)))
+
 pub fun mbedtls-ecjpake-context/to-koka(s: mbedtls-ecjpake-contextc): mbedtls-ecjpake-context
-  Mbedtls-ecjpake-context(s.mbedtls-ecjpake-contextc/private-md-type, s.mbedtls-ecjpake-contextc/private-grp, s.mbedtls-ecjpake-contextc/private-role, s.mbedtls-ecjpake-contextc/private-point-format, s.mbedtls-ecjpake-contextc/private-xm1, s.mbedtls-ecjpake-contextc/private-xm2, s.mbedtls-ecjpake-contextc/private-xp1, s.mbedtls-ecjpake-contextc/private-xp2, s.mbedtls-ecjpake-contextc/private-xp, s.mbedtls-ecjpake-contextc/private-xm11, s.mbedtls-ecjpake-contextc/private-xm21, s.mbedtls-ecjpake-contextc/private-s)
+  Mbedtls-ecjpake-context(s.mbedtls-ecjpake-contextc/private-md-type, s.mbedtls-ecjpake-contextc/private-grp.to-koka.to-koka, s.mbedtls-ecjpake-contextc/private-role, s.mbedtls-ecjpake-contextc/private-point-format.int, s.mbedtls-ecjpake-contextc/private-xm1.to-koka.to-koka, s.mbedtls-ecjpake-contextc/private-xm2.to-koka.to-koka, s.mbedtls-ecjpake-contextc/private-xp1.to-koka.to-koka, s.mbedtls-ecjpake-contextc/private-xp2.to-koka.to-koka, s.mbedtls-ecjpake-contextc/private-xp.to-koka.to-koka, s.mbedtls-ecjpake-contextc/private-xm11.to-koka.to-koka, s.mbedtls-ecjpake-contextc/private-xm21.to-koka.to-koka, s.mbedtls-ecjpake-contextc/private-s.to-koka.to-koka)
+
 // \brief           The ECP group structure.
 // 
 // We consider two types of curve equations:
@@ -2852,41 +3467,41 @@ pub struct mbedtls-ecp-group
   // !< An internal group identifier.
   id: int32
   // !< The prime modulus of the base field.
-  p: mbedtls-mpi-c
+  p: mbedtls-mpi
   // !< For Short Weierstrass: \p A in the equation. Note that
   // \p A is not set to the authentic value in some cases.
   // Refer to detailed description of ::mbedtls_ecp_group if
   // using domain parameters in the structure.
   // For Montgomery curves: <code>(A + 2) / 4</code>.
-  a: mbedtls-mpi-c
+  a: mbedtls-mpi
   // !< For Short Weierstrass: \p B in the equation.
   // For Montgomery curves: unused.
-  b: mbedtls-mpi-c
+  b: mbedtls-mpi
   // !< The generator of the subgroup used.
-  g: mbedtls-ecp-point-c
+  g: mbedtls-ecp-point
   // !< The order of \p G.
-  n: mbedtls-mpi-c
+  n: mbedtls-mpi
   // !< The number of bits in \p P.
   pbits: ssize_t
   // !< For Short Weierstrass: The number of bits in \p P.
   // For Montgomery curves: the number of bits in the
   // private keys.
   nbits: ssize_t
-  private-h: int32
-  private-modp: owned-c<((owned-c<mbedtls-mpi-c>) -> int32)>
-  private-t-pre: owned-c<((owned-c<mbedtls-ecp-point-c>, owned-c<()>) -> int32)>
-  private-t-post: owned-c<((owned-c<mbedtls-ecp-point-c>, owned-c<()>) -> int32)>
+  private-h: int
+  private-modp: owned-c<((intptr_t) -> int32)>
+  private-t-pre: owned-c<((intptr_t, intptr_t) -> int32)>
+  private-t-post: owned-c<((intptr_t, intptr_t) -> int32)>
   private-t-data: owned-c<()>
-  private-t: owned-c<mbedtls-ecp-point-c>
+  private-t: mbedtls-ecp-point
   private-t-size: ssize_t
 
 pub type mbedtls-ecp-group-c
-alias mbedtls-ecp-groupc = owned-c<mbedtls-ecp-group-c>
-alias mbedtls-ecp-groupcb<s::S> = borrowed-c<s,mbedtls-ecp-group-c>
-alias mbedtls-ecp-groupca = owned-c<c-array<mbedtls-ecp-group-c>>
+pub alias mbedtls-ecp-groupc = owned-c<mbedtls-ecp-group-c>
+pub alias mbedtls-ecp-groupcb<s::S> = borrowed-c<s,mbedtls-ecp-group-c>
+pub alias mbedtls-ecp-groupca = owned-c<c-array<mbedtls-ecp-group>>
 
 extern mbedtls-ecp-group/size-of(c: c-null<mbedtls-ecp-group-c>): int32
-  c inline "sizeof(mbedtls_ecp_group)"
+  c inline "sizeof(struct mbedtls_ecp_group)"
 
 pub fun mbedtls-ecp-groupc(): mbedtls-ecp-groupc
   malloc(?size-of=mbedtls-ecp-group/size-of)
@@ -2901,7 +3516,7 @@ pub fun mbedtls-ecp-groupc-array-calloc(n: int): mbedtls-ecp-groupca
   malloc-c(n.int32, ?size-of=mbedtls-ecp-group/size-of)
 
 inline extern mbedtls-ecp-group-ptr/id(s: intptr_t): int32
-  c inline "((mbedtls_ecp_group*)#1)->id"
+  c inline "(int32_t)(((struct mbedtls_ecp_group*)#1)->id)"
 
 pub inline fun mbedtls-ecp-groupc/id(^s: mbedtls-ecp-groupc): int32
   s.with-ptr(mbedtls-ecp-group-ptr/id)
@@ -2910,7 +3525,7 @@ pub inline fun mbedtls-ecp-groupcb/id(^s: mbedtls-ecp-groupcb<s::S>): int32
   s.with-ptr(mbedtls-ecp-group-ptr/id)
 
 inline extern mbedtls-ecp-group-ptr/set-id(s: intptr_t, id: int32): ()
-  c inline "((mbedtls_ecp_group*)#1)->id = #2"
+  c inline "((struct mbedtls_ecp_group*)#1)->id = (int32_t)#2"
 
 pub inline fun mbedtls-ecp-groupc/set-id(^s: mbedtls-ecp-groupc, id: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-id(id))
@@ -2919,7 +3534,7 @@ pub inline fun mbedtls-ecp-groupcb/set-id(^s: mbedtls-ecp-groupcb<s::S>, id: int
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-id(id))
 
 inline extern mbedtls-ecp-group-ptr/p(s: intptr_t): mbedtls-mpi-c
-  c inline "((mbedtls_ecp_group*)#1)->P"
+  c inline "(mbedtls_mpi)(((struct mbedtls_ecp_group*)#1)->P)"
 
 pub inline fun mbedtls-ecp-groupc/p(^s: mbedtls-ecp-groupc): mbedtls-mpi-c
   s.with-ptr(mbedtls-ecp-group-ptr/p)
@@ -2928,7 +3543,7 @@ pub inline fun mbedtls-ecp-groupcb/p(^s: mbedtls-ecp-groupcb<s::S>): mbedtls-mpi
   s.with-ptr(mbedtls-ecp-group-ptr/p)
 
 inline extern mbedtls-ecp-group-ptr/set-p(s: intptr_t, p: mbedtls-mpi-c): ()
-  c inline "((mbedtls_ecp_group*)#1)->P = #2"
+  c inline "((struct mbedtls_ecp_group*)#1)->P = (mbedtls_mpi)#2"
 
 pub inline fun mbedtls-ecp-groupc/set-p(^s: mbedtls-ecp-groupc, p: mbedtls-mpi-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-p(p))
@@ -2936,8 +3551,20 @@ pub inline fun mbedtls-ecp-groupc/set-p(^s: mbedtls-ecp-groupc, p: mbedtls-mpi-c
 pub inline fun mbedtls-ecp-groupcb/set-p(^s: mbedtls-ecp-groupcb<s::S>, p: mbedtls-mpi-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-p(p))
 
+pub inline fun mbedtls-ecp-groupc-wrapper/p(^s: mbedtls-ecp-groupc): mbedtls-mpi
+  s.with-ptr(mbedtls-ecp-group-ptr/p).to-koka
+
+pub inline fun mbedtls-ecp-groupcb-wrapper/p(^s: mbedtls-ecp-groupcb<s::S>): mbedtls-mpi
+  s.with-ptr(mbedtls-ecp-group-ptr/p).to-koka
+
+pub inline fun mbedtls-ecp-groupc-wrapper/set-p(^s: mbedtls-ecp-groupc, p: mbedtls-mpi): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-p((struct mbedtls_mpi)(p)))
+
+pub inline fun mbedtls-ecp-groupcb-wrapper/set-p(^s: mbedtls-ecp-groupcb<s::S>, p: mbedtls-mpi): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-p((struct mbedtls_mpi)(p)))
+
 inline extern mbedtls-ecp-group-ptr/a(s: intptr_t): mbedtls-mpi-c
-  c inline "((mbedtls_ecp_group*)#1)->A"
+  c inline "(mbedtls_mpi)(((struct mbedtls_ecp_group*)#1)->A)"
 
 pub inline fun mbedtls-ecp-groupc/a(^s: mbedtls-ecp-groupc): mbedtls-mpi-c
   s.with-ptr(mbedtls-ecp-group-ptr/a)
@@ -2946,7 +3573,7 @@ pub inline fun mbedtls-ecp-groupcb/a(^s: mbedtls-ecp-groupcb<s::S>): mbedtls-mpi
   s.with-ptr(mbedtls-ecp-group-ptr/a)
 
 inline extern mbedtls-ecp-group-ptr/set-a(s: intptr_t, a: mbedtls-mpi-c): ()
-  c inline "((mbedtls_ecp_group*)#1)->A = #2"
+  c inline "((struct mbedtls_ecp_group*)#1)->A = (mbedtls_mpi)#2"
 
 pub inline fun mbedtls-ecp-groupc/set-a(^s: mbedtls-ecp-groupc, a: mbedtls-mpi-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-a(a))
@@ -2954,8 +3581,20 @@ pub inline fun mbedtls-ecp-groupc/set-a(^s: mbedtls-ecp-groupc, a: mbedtls-mpi-c
 pub inline fun mbedtls-ecp-groupcb/set-a(^s: mbedtls-ecp-groupcb<s::S>, a: mbedtls-mpi-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-a(a))
 
+pub inline fun mbedtls-ecp-groupc-wrapper/a(^s: mbedtls-ecp-groupc): mbedtls-mpi
+  s.with-ptr(mbedtls-ecp-group-ptr/a).to-koka
+
+pub inline fun mbedtls-ecp-groupcb-wrapper/a(^s: mbedtls-ecp-groupcb<s::S>): mbedtls-mpi
+  s.with-ptr(mbedtls-ecp-group-ptr/a).to-koka
+
+pub inline fun mbedtls-ecp-groupc-wrapper/set-a(^s: mbedtls-ecp-groupc, a: mbedtls-mpi): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-a((struct mbedtls_mpi)(a)))
+
+pub inline fun mbedtls-ecp-groupcb-wrapper/set-a(^s: mbedtls-ecp-groupcb<s::S>, a: mbedtls-mpi): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-a((struct mbedtls_mpi)(a)))
+
 inline extern mbedtls-ecp-group-ptr/b(s: intptr_t): mbedtls-mpi-c
-  c inline "((mbedtls_ecp_group*)#1)->B"
+  c inline "(mbedtls_mpi)(((struct mbedtls_ecp_group*)#1)->B)"
 
 pub inline fun mbedtls-ecp-groupc/b(^s: mbedtls-ecp-groupc): mbedtls-mpi-c
   s.with-ptr(mbedtls-ecp-group-ptr/b)
@@ -2964,7 +3603,7 @@ pub inline fun mbedtls-ecp-groupcb/b(^s: mbedtls-ecp-groupcb<s::S>): mbedtls-mpi
   s.with-ptr(mbedtls-ecp-group-ptr/b)
 
 inline extern mbedtls-ecp-group-ptr/set-b(s: intptr_t, b: mbedtls-mpi-c): ()
-  c inline "((mbedtls_ecp_group*)#1)->B = #2"
+  c inline "((struct mbedtls_ecp_group*)#1)->B = (mbedtls_mpi)#2"
 
 pub inline fun mbedtls-ecp-groupc/set-b(^s: mbedtls-ecp-groupc, b: mbedtls-mpi-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-b(b))
@@ -2972,8 +3611,20 @@ pub inline fun mbedtls-ecp-groupc/set-b(^s: mbedtls-ecp-groupc, b: mbedtls-mpi-c
 pub inline fun mbedtls-ecp-groupcb/set-b(^s: mbedtls-ecp-groupcb<s::S>, b: mbedtls-mpi-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-b(b))
 
+pub inline fun mbedtls-ecp-groupc-wrapper/b(^s: mbedtls-ecp-groupc): mbedtls-mpi
+  s.with-ptr(mbedtls-ecp-group-ptr/b).to-koka
+
+pub inline fun mbedtls-ecp-groupcb-wrapper/b(^s: mbedtls-ecp-groupcb<s::S>): mbedtls-mpi
+  s.with-ptr(mbedtls-ecp-group-ptr/b).to-koka
+
+pub inline fun mbedtls-ecp-groupc-wrapper/set-b(^s: mbedtls-ecp-groupc, b: mbedtls-mpi): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-b((struct mbedtls_mpi)(b)))
+
+pub inline fun mbedtls-ecp-groupcb-wrapper/set-b(^s: mbedtls-ecp-groupcb<s::S>, b: mbedtls-mpi): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-b((struct mbedtls_mpi)(b)))
+
 inline extern mbedtls-ecp-group-ptr/g(s: intptr_t): mbedtls-ecp-point-c
-  c inline "((mbedtls_ecp_group*)#1)->G"
+  c inline "(mbedtls_ecp_point)(((struct mbedtls_ecp_group*)#1)->G)"
 
 pub inline fun mbedtls-ecp-groupc/g(^s: mbedtls-ecp-groupc): mbedtls-ecp-point-c
   s.with-ptr(mbedtls-ecp-group-ptr/g)
@@ -2982,7 +3633,7 @@ pub inline fun mbedtls-ecp-groupcb/g(^s: mbedtls-ecp-groupcb<s::S>): mbedtls-ecp
   s.with-ptr(mbedtls-ecp-group-ptr/g)
 
 inline extern mbedtls-ecp-group-ptr/set-g(s: intptr_t, g: mbedtls-ecp-point-c): ()
-  c inline "((mbedtls_ecp_group*)#1)->G = #2"
+  c inline "((struct mbedtls_ecp_group*)#1)->G = (mbedtls_ecp_point)#2"
 
 pub inline fun mbedtls-ecp-groupc/set-g(^s: mbedtls-ecp-groupc, g: mbedtls-ecp-point-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-g(g))
@@ -2990,8 +3641,20 @@ pub inline fun mbedtls-ecp-groupc/set-g(^s: mbedtls-ecp-groupc, g: mbedtls-ecp-p
 pub inline fun mbedtls-ecp-groupcb/set-g(^s: mbedtls-ecp-groupcb<s::S>, g: mbedtls-ecp-point-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-g(g))
 
+pub inline fun mbedtls-ecp-groupc-wrapper/g(^s: mbedtls-ecp-groupc): mbedtls-ecp-point
+  s.with-ptr(mbedtls-ecp-group-ptr/g).to-koka
+
+pub inline fun mbedtls-ecp-groupcb-wrapper/g(^s: mbedtls-ecp-groupcb<s::S>): mbedtls-ecp-point
+  s.with-ptr(mbedtls-ecp-group-ptr/g).to-koka
+
+pub inline fun mbedtls-ecp-groupc-wrapper/set-g(^s: mbedtls-ecp-groupc, g: mbedtls-ecp-point): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-g((struct mbedtls_ecp_point)(g)))
+
+pub inline fun mbedtls-ecp-groupcb-wrapper/set-g(^s: mbedtls-ecp-groupcb<s::S>, g: mbedtls-ecp-point): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-g((struct mbedtls_ecp_point)(g)))
+
 inline extern mbedtls-ecp-group-ptr/n(s: intptr_t): mbedtls-mpi-c
-  c inline "((mbedtls_ecp_group*)#1)->N"
+  c inline "(mbedtls_mpi)(((struct mbedtls_ecp_group*)#1)->N)"
 
 pub inline fun mbedtls-ecp-groupc/n(^s: mbedtls-ecp-groupc): mbedtls-mpi-c
   s.with-ptr(mbedtls-ecp-group-ptr/n)
@@ -3000,7 +3663,7 @@ pub inline fun mbedtls-ecp-groupcb/n(^s: mbedtls-ecp-groupcb<s::S>): mbedtls-mpi
   s.with-ptr(mbedtls-ecp-group-ptr/n)
 
 inline extern mbedtls-ecp-group-ptr/set-n(s: intptr_t, n: mbedtls-mpi-c): ()
-  c inline "((mbedtls_ecp_group*)#1)->N = #2"
+  c inline "((struct mbedtls_ecp_group*)#1)->N = (mbedtls_mpi)#2"
 
 pub inline fun mbedtls-ecp-groupc/set-n(^s: mbedtls-ecp-groupc, n: mbedtls-mpi-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-n(n))
@@ -3008,8 +3671,20 @@ pub inline fun mbedtls-ecp-groupc/set-n(^s: mbedtls-ecp-groupc, n: mbedtls-mpi-c
 pub inline fun mbedtls-ecp-groupcb/set-n(^s: mbedtls-ecp-groupcb<s::S>, n: mbedtls-mpi-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-n(n))
 
+pub inline fun mbedtls-ecp-groupc-wrapper/n(^s: mbedtls-ecp-groupc): mbedtls-mpi
+  s.with-ptr(mbedtls-ecp-group-ptr/n).to-koka
+
+pub inline fun mbedtls-ecp-groupcb-wrapper/n(^s: mbedtls-ecp-groupcb<s::S>): mbedtls-mpi
+  s.with-ptr(mbedtls-ecp-group-ptr/n).to-koka
+
+pub inline fun mbedtls-ecp-groupc-wrapper/set-n(^s: mbedtls-ecp-groupc, n: mbedtls-mpi): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-n((struct mbedtls_mpi)(n)))
+
+pub inline fun mbedtls-ecp-groupcb-wrapper/set-n(^s: mbedtls-ecp-groupcb<s::S>, n: mbedtls-mpi): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-n((struct mbedtls_mpi)(n)))
+
 inline extern mbedtls-ecp-group-ptr/pbits(s: intptr_t): ssize_t
-  c inline "((mbedtls_ecp_group*)#1)->pbits"
+  c inline "(ssize_t)(((struct mbedtls_ecp_group*)#1)->pbits)"
 
 pub inline fun mbedtls-ecp-groupc/pbits(^s: mbedtls-ecp-groupc): ssize_t
   s.with-ptr(mbedtls-ecp-group-ptr/pbits)
@@ -3018,7 +3693,7 @@ pub inline fun mbedtls-ecp-groupcb/pbits(^s: mbedtls-ecp-groupcb<s::S>): ssize_t
   s.with-ptr(mbedtls-ecp-group-ptr/pbits)
 
 inline extern mbedtls-ecp-group-ptr/set-pbits(s: intptr_t, pbits: ssize_t): ()
-  c inline "((mbedtls_ecp_group*)#1)->pbits = #2"
+  c inline "((struct mbedtls_ecp_group*)#1)->pbits = (ssize_t)#2"
 
 pub inline fun mbedtls-ecp-groupc/set-pbits(^s: mbedtls-ecp-groupc, pbits: ssize_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-pbits(pbits))
@@ -3027,7 +3702,7 @@ pub inline fun mbedtls-ecp-groupcb/set-pbits(^s: mbedtls-ecp-groupcb<s::S>, pbit
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-pbits(pbits))
 
 inline extern mbedtls-ecp-group-ptr/nbits(s: intptr_t): ssize_t
-  c inline "((mbedtls_ecp_group*)#1)->nbits"
+  c inline "(ssize_t)(((struct mbedtls_ecp_group*)#1)->nbits)"
 
 pub inline fun mbedtls-ecp-groupc/nbits(^s: mbedtls-ecp-groupc): ssize_t
   s.with-ptr(mbedtls-ecp-group-ptr/nbits)
@@ -3036,7 +3711,7 @@ pub inline fun mbedtls-ecp-groupcb/nbits(^s: mbedtls-ecp-groupcb<s::S>): ssize_t
   s.with-ptr(mbedtls-ecp-group-ptr/nbits)
 
 inline extern mbedtls-ecp-group-ptr/set-nbits(s: intptr_t, nbits: ssize_t): ()
-  c inline "((mbedtls_ecp_group*)#1)->nbits = #2"
+  c inline "((struct mbedtls_ecp_group*)#1)->nbits = (ssize_t)#2"
 
 pub inline fun mbedtls-ecp-groupc/set-nbits(^s: mbedtls-ecp-groupc, nbits: ssize_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-nbits(nbits))
@@ -3045,7 +3720,7 @@ pub inline fun mbedtls-ecp-groupcb/set-nbits(^s: mbedtls-ecp-groupcb<s::S>, nbit
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-nbits(nbits))
 
 inline extern mbedtls-ecp-group-ptr/private-h(s: intptr_t): int32
-  c inline "((mbedtls_ecp_group*)#1)->private_h"
+  c inline "(unsigned int)(((struct mbedtls_ecp_group*)#1)->private_h)"
 
 pub inline fun mbedtls-ecp-groupc/private-h(^s: mbedtls-ecp-groupc): int32
   s.with-ptr(mbedtls-ecp-group-ptr/private-h)
@@ -3054,7 +3729,7 @@ pub inline fun mbedtls-ecp-groupcb/private-h(^s: mbedtls-ecp-groupcb<s::S>): int
   s.with-ptr(mbedtls-ecp-group-ptr/private-h)
 
 inline extern mbedtls-ecp-group-ptr/set-private-h(s: intptr_t, private-h: int32): ()
-  c inline "((mbedtls_ecp_group*)#1)->private_h = #2"
+  c inline "((struct mbedtls_ecp_group*)#1)->private_h = (unsigned int)#2"
 
 pub inline fun mbedtls-ecp-groupc/set-private-h(^s: mbedtls-ecp-groupc, private-h: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-private-h(private-h))
@@ -3062,98 +3737,180 @@ pub inline fun mbedtls-ecp-groupc/set-private-h(^s: mbedtls-ecp-groupc, private-
 pub inline fun mbedtls-ecp-groupcb/set-private-h(^s: mbedtls-ecp-groupcb<s::S>, private-h: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-private-h(private-h))
 
-inline extern mbedtls-ecp-group-ptr/private-modp(s: intptr_t): owned-c<((owned-c<mbedtls-mpi-c>) -> int32)>
-  c inline "((mbedtls_ecp_group*)#1)->private_modp"
+pub inline fun mbedtls-ecp-groupc-wrapper/private-h(^s: mbedtls-ecp-groupc): int
+  s.with-ptr(mbedtls-ecp-group-ptr/private-h).int
 
-pub inline fun mbedtls-ecp-groupc/private-modp(^s: mbedtls-ecp-groupc): owned-c<((owned-c<mbedtls-mpi-c>) -> int32)>
+pub inline fun mbedtls-ecp-groupcb-wrapper/private-h(^s: mbedtls-ecp-groupcb<s::S>): int
+  s.with-ptr(mbedtls-ecp-group-ptr/private-h).int
+
+pub inline fun mbedtls-ecp-groupc-wrapper/set-private-h(^s: mbedtls-ecp-groupc, private-h: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-private-h(private-h.int32))
+
+pub inline fun mbedtls-ecp-groupcb-wrapper/set-private-h(^s: mbedtls-ecp-groupcb<s::S>, private-h: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-private-h(private-h.int32))
+
+inline extern mbedtls-ecp-group-ptr/private-modp(s: intptr_t): intptr_t
+  c inline "(intptr_t)(((struct mbedtls_ecp_group*)#1)->private_modp)"
+
+pub inline fun mbedtls-ecp-groupc/private-modp(^s: mbedtls-ecp-groupc): intptr_t
   s.with-ptr(mbedtls-ecp-group-ptr/private-modp)
 
-pub inline fun mbedtls-ecp-groupcb/private-modp(^s: mbedtls-ecp-groupcb<s::S>): owned-c<((owned-c<mbedtls-mpi-c>) -> int32)>
+pub inline fun mbedtls-ecp-groupcb/private-modp(^s: mbedtls-ecp-groupcb<s::S>): intptr_t
   s.with-ptr(mbedtls-ecp-group-ptr/private-modp)
 
-inline extern mbedtls-ecp-group-ptr/set-private-modp(s: intptr_t, private-modp: owned-c<((owned-c<mbedtls-mpi-c>) -> int32)>): ()
-  c inline "((mbedtls_ecp_group*)#1)->private_modp = #2"
+inline extern mbedtls-ecp-group-ptr/set-private-modp(s: intptr_t, private-modp: intptr_t): ()
+  c inline "((struct mbedtls_ecp_group*)#1)->private_modp = (((mbedtls_mpi*) -> int)*)#2"
 
-pub inline fun mbedtls-ecp-groupc/set-private-modp(^s: mbedtls-ecp-groupc, private-modp: owned-c<((owned-c<mbedtls-mpi-c>) -> int32)>): ()
+pub inline fun mbedtls-ecp-groupc/set-private-modp(^s: mbedtls-ecp-groupc, private-modp: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-private-modp(private-modp))
 
-pub inline fun mbedtls-ecp-groupcb/set-private-modp(^s: mbedtls-ecp-groupcb<s::S>, private-modp: owned-c<((owned-c<mbedtls-mpi-c>) -> int32)>): ()
+pub inline fun mbedtls-ecp-groupcb/set-private-modp(^s: mbedtls-ecp-groupcb<s::S>, private-modp: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-private-modp(private-modp))
 
-inline extern mbedtls-ecp-group-ptr/private-t-pre(s: intptr_t): owned-c<((owned-c<mbedtls-ecp-point-c>, owned-c<()>) -> int32)>
-  c inline "((mbedtls_ecp_group*)#1)->private_t_pre"
+pub inline fun mbedtls-ecp-groupc-wrapper/private-modp(^s: mbedtls-ecp-groupc): owned-c<((intptr_t) -> int32)>
+  s.with-ptr(mbedtls-ecp-group-ptr/private-modp).c-own
 
-pub inline fun mbedtls-ecp-groupc/private-t-pre(^s: mbedtls-ecp-groupc): owned-c<((owned-c<mbedtls-ecp-point-c>, owned-c<()>) -> int32)>
+pub inline fun mbedtls-ecp-groupcb-wrapper/private-modp(^s: mbedtls-ecp-groupcb<s::S>): owned-c<((intptr_t) -> int32)>
+  s.with-ptr(mbedtls-ecp-group-ptr/private-modp).c-own
+
+pub inline fun mbedtls-ecp-groupc-wrapper/set-private-modp(^s: mbedtls-ecp-groupc, private-modp: owned-c<((intptr_t) -> int32)>): ()
+  with koka-ptr <- private-modp.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-private-modp(koka-ptr))
+
+pub inline fun mbedtls-ecp-groupcb-wrapper/set-private-modp(^s: mbedtls-ecp-groupcb<s::S>, private-modp: owned-c<((intptr_t) -> int32)>): ()
+  with koka-ptr <- private-modp.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-private-modp(koka-ptr))
+
+inline extern mbedtls-ecp-group-ptr/private-t-pre(s: intptr_t): intptr_t
+  c inline "(intptr_t)(((struct mbedtls_ecp_group*)#1)->private_t_pre)"
+
+pub inline fun mbedtls-ecp-groupc/private-t-pre(^s: mbedtls-ecp-groupc): intptr_t
   s.with-ptr(mbedtls-ecp-group-ptr/private-t-pre)
 
-pub inline fun mbedtls-ecp-groupcb/private-t-pre(^s: mbedtls-ecp-groupcb<s::S>): owned-c<((owned-c<mbedtls-ecp-point-c>, owned-c<()>) -> int32)>
+pub inline fun mbedtls-ecp-groupcb/private-t-pre(^s: mbedtls-ecp-groupcb<s::S>): intptr_t
   s.with-ptr(mbedtls-ecp-group-ptr/private-t-pre)
 
-inline extern mbedtls-ecp-group-ptr/set-private-t-pre(s: intptr_t, private-t-pre: owned-c<((owned-c<mbedtls-ecp-point-c>, owned-c<()>) -> int32)>): ()
-  c inline "((mbedtls_ecp_group*)#1)->private_t_pre = #2"
+inline extern mbedtls-ecp-group-ptr/set-private-t-pre(s: intptr_t, private-t-pre: intptr_t): ()
+  c inline "((struct mbedtls_ecp_group*)#1)->private_t_pre = (((mbedtls_ecp_point*, kk_unit_t*) -> int)*)#2"
 
-pub inline fun mbedtls-ecp-groupc/set-private-t-pre(^s: mbedtls-ecp-groupc, private-t-pre: owned-c<((owned-c<mbedtls-ecp-point-c>, owned-c<()>) -> int32)>): ()
+pub inline fun mbedtls-ecp-groupc/set-private-t-pre(^s: mbedtls-ecp-groupc, private-t-pre: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-private-t-pre(private-t-pre))
 
-pub inline fun mbedtls-ecp-groupcb/set-private-t-pre(^s: mbedtls-ecp-groupcb<s::S>, private-t-pre: owned-c<((owned-c<mbedtls-ecp-point-c>, owned-c<()>) -> int32)>): ()
+pub inline fun mbedtls-ecp-groupcb/set-private-t-pre(^s: mbedtls-ecp-groupcb<s::S>, private-t-pre: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-private-t-pre(private-t-pre))
 
-inline extern mbedtls-ecp-group-ptr/private-t-post(s: intptr_t): owned-c<((owned-c<mbedtls-ecp-point-c>, owned-c<()>) -> int32)>
-  c inline "((mbedtls_ecp_group*)#1)->private_t_post"
+pub inline fun mbedtls-ecp-groupc-wrapper/private-t-pre(^s: mbedtls-ecp-groupc): owned-c<((intptr_t, intptr_t) -> int32)>
+  s.with-ptr(mbedtls-ecp-group-ptr/private-t-pre).c-own
 
-pub inline fun mbedtls-ecp-groupc/private-t-post(^s: mbedtls-ecp-groupc): owned-c<((owned-c<mbedtls-ecp-point-c>, owned-c<()>) -> int32)>
+pub inline fun mbedtls-ecp-groupcb-wrapper/private-t-pre(^s: mbedtls-ecp-groupcb<s::S>): owned-c<((intptr_t, intptr_t) -> int32)>
+  s.with-ptr(mbedtls-ecp-group-ptr/private-t-pre).c-own
+
+pub inline fun mbedtls-ecp-groupc-wrapper/set-private-t-pre(^s: mbedtls-ecp-groupc, private-t-pre: owned-c<((intptr_t, intptr_t) -> int32)>): ()
+  with koka-ptr <- private-t-pre.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-private-t-pre(koka-ptr))
+
+pub inline fun mbedtls-ecp-groupcb-wrapper/set-private-t-pre(^s: mbedtls-ecp-groupcb<s::S>, private-t-pre: owned-c<((intptr_t, intptr_t) -> int32)>): ()
+  with koka-ptr <- private-t-pre.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-private-t-pre(koka-ptr))
+
+inline extern mbedtls-ecp-group-ptr/private-t-post(s: intptr_t): intptr_t
+  c inline "(intptr_t)(((struct mbedtls_ecp_group*)#1)->private_t_post)"
+
+pub inline fun mbedtls-ecp-groupc/private-t-post(^s: mbedtls-ecp-groupc): intptr_t
   s.with-ptr(mbedtls-ecp-group-ptr/private-t-post)
 
-pub inline fun mbedtls-ecp-groupcb/private-t-post(^s: mbedtls-ecp-groupcb<s::S>): owned-c<((owned-c<mbedtls-ecp-point-c>, owned-c<()>) -> int32)>
+pub inline fun mbedtls-ecp-groupcb/private-t-post(^s: mbedtls-ecp-groupcb<s::S>): intptr_t
   s.with-ptr(mbedtls-ecp-group-ptr/private-t-post)
 
-inline extern mbedtls-ecp-group-ptr/set-private-t-post(s: intptr_t, private-t-post: owned-c<((owned-c<mbedtls-ecp-point-c>, owned-c<()>) -> int32)>): ()
-  c inline "((mbedtls_ecp_group*)#1)->private_t_post = #2"
+inline extern mbedtls-ecp-group-ptr/set-private-t-post(s: intptr_t, private-t-post: intptr_t): ()
+  c inline "((struct mbedtls_ecp_group*)#1)->private_t_post = (((mbedtls_ecp_point*, kk_unit_t*) -> int)*)#2"
 
-pub inline fun mbedtls-ecp-groupc/set-private-t-post(^s: mbedtls-ecp-groupc, private-t-post: owned-c<((owned-c<mbedtls-ecp-point-c>, owned-c<()>) -> int32)>): ()
+pub inline fun mbedtls-ecp-groupc/set-private-t-post(^s: mbedtls-ecp-groupc, private-t-post: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-private-t-post(private-t-post))
 
-pub inline fun mbedtls-ecp-groupcb/set-private-t-post(^s: mbedtls-ecp-groupcb<s::S>, private-t-post: owned-c<((owned-c<mbedtls-ecp-point-c>, owned-c<()>) -> int32)>): ()
+pub inline fun mbedtls-ecp-groupcb/set-private-t-post(^s: mbedtls-ecp-groupcb<s::S>, private-t-post: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-private-t-post(private-t-post))
 
-inline extern mbedtls-ecp-group-ptr/private-t-data(s: intptr_t): owned-c<()>
-  c inline "((mbedtls_ecp_group*)#1)->private_t_data"
+pub inline fun mbedtls-ecp-groupc-wrapper/private-t-post(^s: mbedtls-ecp-groupc): owned-c<((intptr_t, intptr_t) -> int32)>
+  s.with-ptr(mbedtls-ecp-group-ptr/private-t-post).c-own
 
-pub inline fun mbedtls-ecp-groupc/private-t-data(^s: mbedtls-ecp-groupc): owned-c<()>
+pub inline fun mbedtls-ecp-groupcb-wrapper/private-t-post(^s: mbedtls-ecp-groupcb<s::S>): owned-c<((intptr_t, intptr_t) -> int32)>
+  s.with-ptr(mbedtls-ecp-group-ptr/private-t-post).c-own
+
+pub inline fun mbedtls-ecp-groupc-wrapper/set-private-t-post(^s: mbedtls-ecp-groupc, private-t-post: owned-c<((intptr_t, intptr_t) -> int32)>): ()
+  with koka-ptr <- private-t-post.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-private-t-post(koka-ptr))
+
+pub inline fun mbedtls-ecp-groupcb-wrapper/set-private-t-post(^s: mbedtls-ecp-groupcb<s::S>, private-t-post: owned-c<((intptr_t, intptr_t) -> int32)>): ()
+  with koka-ptr <- private-t-post.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-private-t-post(koka-ptr))
+
+inline extern mbedtls-ecp-group-ptr/private-t-data(s: intptr_t): intptr_t
+  c inline "(intptr_t)(((struct mbedtls_ecp_group*)#1)->private_t_data)"
+
+pub inline fun mbedtls-ecp-groupc/private-t-data(^s: mbedtls-ecp-groupc): intptr_t
   s.with-ptr(mbedtls-ecp-group-ptr/private-t-data)
 
-pub inline fun mbedtls-ecp-groupcb/private-t-data(^s: mbedtls-ecp-groupcb<s::S>): owned-c<()>
+pub inline fun mbedtls-ecp-groupcb/private-t-data(^s: mbedtls-ecp-groupcb<s::S>): intptr_t
   s.with-ptr(mbedtls-ecp-group-ptr/private-t-data)
 
-inline extern mbedtls-ecp-group-ptr/set-private-t-data(s: intptr_t, private-t-data: owned-c<()>): ()
-  c inline "((mbedtls_ecp_group*)#1)->private_t_data = #2"
+inline extern mbedtls-ecp-group-ptr/set-private-t-data(s: intptr_t, private-t-data: intptr_t): ()
+  c inline "((struct mbedtls_ecp_group*)#1)->private_t_data = (kk_unit_t*)#2"
 
-pub inline fun mbedtls-ecp-groupc/set-private-t-data(^s: mbedtls-ecp-groupc, private-t-data: owned-c<()>): ()
+pub inline fun mbedtls-ecp-groupc/set-private-t-data(^s: mbedtls-ecp-groupc, private-t-data: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-private-t-data(private-t-data))
 
-pub inline fun mbedtls-ecp-groupcb/set-private-t-data(^s: mbedtls-ecp-groupcb<s::S>, private-t-data: owned-c<()>): ()
+pub inline fun mbedtls-ecp-groupcb/set-private-t-data(^s: mbedtls-ecp-groupcb<s::S>, private-t-data: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-private-t-data(private-t-data))
 
-inline extern mbedtls-ecp-group-ptr/private-t(s: intptr_t): owned-c<mbedtls-ecp-point-c>
-  c inline "((mbedtls_ecp_group*)#1)->private_T"
+pub inline fun mbedtls-ecp-groupc-wrapper/private-t-data(^s: mbedtls-ecp-groupc): owned-c<()>
+  s.with-ptr(mbedtls-ecp-group-ptr/private-t-data).c-own
 
-pub inline fun mbedtls-ecp-groupc/private-t(^s: mbedtls-ecp-groupc): owned-c<mbedtls-ecp-point-c>
+pub inline fun mbedtls-ecp-groupcb-wrapper/private-t-data(^s: mbedtls-ecp-groupcb<s::S>): owned-c<()>
+  s.with-ptr(mbedtls-ecp-group-ptr/private-t-data).c-own
+
+pub inline fun mbedtls-ecp-groupc-wrapper/set-private-t-data(^s: mbedtls-ecp-groupc, private-t-data: owned-c<()>): ()
+  with koka-ptr <- private-t-data.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-private-t-data(koka-ptr))
+
+pub inline fun mbedtls-ecp-groupcb-wrapper/set-private-t-data(^s: mbedtls-ecp-groupcb<s::S>, private-t-data: owned-c<()>): ()
+  with koka-ptr <- private-t-data.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-private-t-data(koka-ptr))
+
+inline extern mbedtls-ecp-group-ptr/private-t(s: intptr_t): intptr_t
+  c inline "(intptr_t)(((struct mbedtls_ecp_group*)#1)->private_T)"
+
+pub inline fun mbedtls-ecp-groupc/private-t(^s: mbedtls-ecp-groupc): intptr_t
   s.with-ptr(mbedtls-ecp-group-ptr/private-t)
 
-pub inline fun mbedtls-ecp-groupcb/private-t(^s: mbedtls-ecp-groupcb<s::S>): owned-c<mbedtls-ecp-point-c>
+pub inline fun mbedtls-ecp-groupcb/private-t(^s: mbedtls-ecp-groupcb<s::S>): intptr_t
   s.with-ptr(mbedtls-ecp-group-ptr/private-t)
 
-inline extern mbedtls-ecp-group-ptr/set-private-t(s: intptr_t, private-t: owned-c<mbedtls-ecp-point-c>): ()
-  c inline "((mbedtls_ecp_group*)#1)->private_T = #2"
+inline extern mbedtls-ecp-group-ptr/set-private-t(s: intptr_t, private-t: intptr_t): ()
+  c inline "((struct mbedtls_ecp_group*)#1)->private_T = (struct mbedtls_ecp_point*)#2"
 
-pub inline fun mbedtls-ecp-groupc/set-private-t(^s: mbedtls-ecp-groupc, private-t: owned-c<mbedtls-ecp-point-c>): ()
+pub inline fun mbedtls-ecp-groupc/set-private-t(^s: mbedtls-ecp-groupc, private-t: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-private-t(private-t))
 
-pub inline fun mbedtls-ecp-groupcb/set-private-t(^s: mbedtls-ecp-groupcb<s::S>, private-t: owned-c<mbedtls-ecp-point-c>): ()
+pub inline fun mbedtls-ecp-groupcb/set-private-t(^s: mbedtls-ecp-groupcb<s::S>, private-t: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-private-t(private-t))
+
+pub inline fun mbedtls-ecp-groupc-wrapper/private-t(^s: mbedtls-ecp-groupc): owned-c<mbedtls-ecp-point-c>
+  s.with-ptr(mbedtls-ecp-group-ptr/private-t).c-own
+
+pub inline fun mbedtls-ecp-groupcb-wrapper/private-t(^s: mbedtls-ecp-groupcb<s::S>): owned-c<mbedtls-ecp-point-c>
+  s.with-ptr(mbedtls-ecp-group-ptr/private-t).c-own
+
+pub inline fun mbedtls-ecp-groupc-wrapper/set-private-t(^s: mbedtls-ecp-groupc, private-t: owned-c<mbedtls-ecp-point-c>): ()
+  with koka-ptr <- private-t.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-private-t(koka-ptr))
+
+pub inline fun mbedtls-ecp-groupcb-wrapper/set-private-t(^s: mbedtls-ecp-groupcb<s::S>, private-t: owned-c<mbedtls-ecp-point-c>): ()
+  with koka-ptr <- private-t.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-private-t(koka-ptr))
 
 inline extern mbedtls-ecp-group-ptr/private-t-size(s: intptr_t): ssize_t
-  c inline "((mbedtls_ecp_group*)#1)->private_T_size"
+  c inline "(ssize_t)(((struct mbedtls_ecp_group*)#1)->private_T_size)"
 
 pub inline fun mbedtls-ecp-groupc/private-t-size(^s: mbedtls-ecp-groupc): ssize_t
   s.with-ptr(mbedtls-ecp-group-ptr/private-t-size)
@@ -3162,7 +3919,7 @@ pub inline fun mbedtls-ecp-groupcb/private-t-size(^s: mbedtls-ecp-groupcb<s::S>)
   s.with-ptr(mbedtls-ecp-group-ptr/private-t-size)
 
 inline extern mbedtls-ecp-group-ptr/set-private-t-size(s: intptr_t, private-t-size: ssize_t): ()
-  c inline "((mbedtls_ecp_group*)#1)->private_T_size = #2"
+  c inline "((struct mbedtls_ecp_group*)#1)->private_T_size = (ssize_t)#2"
 
 pub inline fun mbedtls-ecp-groupc/set-private-t-size(^s: mbedtls-ecp-groupc, private-t-size: ssize_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-private-t-size(private-t-size))
@@ -3171,20 +3928,21 @@ pub inline fun mbedtls-ecp-groupcb/set-private-t-size(^s: mbedtls-ecp-groupcb<s:
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-group-ptr/set-private-t-size(private-t-size))
 
 pub fun mbedtls-ecp-group/to-koka(s: mbedtls-ecp-groupc): mbedtls-ecp-group
-  Mbedtls-ecp-group(s.mbedtls-ecp-groupc/id, s.mbedtls-ecp-groupc/p, s.mbedtls-ecp-groupc/a, s.mbedtls-ecp-groupc/b, s.mbedtls-ecp-groupc/g, s.mbedtls-ecp-groupc/n, s.mbedtls-ecp-groupc/pbits, s.mbedtls-ecp-groupc/nbits, s.mbedtls-ecp-groupc/private-h, s.mbedtls-ecp-groupc/private-modp, s.mbedtls-ecp-groupc/private-t-pre, s.mbedtls-ecp-groupc/private-t-post, s.mbedtls-ecp-groupc/private-t-data, s.mbedtls-ecp-groupc/private-t, s.mbedtls-ecp-groupc/private-t-size)
+  Mbedtls-ecp-group(s.mbedtls-ecp-groupc/id, s.mbedtls-ecp-groupc/p.to-koka.to-koka, s.mbedtls-ecp-groupc/a.to-koka.to-koka, s.mbedtls-ecp-groupc/b.to-koka.to-koka, s.mbedtls-ecp-groupc/g.to-koka.to-koka, s.mbedtls-ecp-groupc/n.to-koka.to-koka, s.mbedtls-ecp-groupc/pbits, s.mbedtls-ecp-groupc/nbits, s.mbedtls-ecp-groupc/private-h.int, s.mbedtls-ecp-groupc/private-modp.c-own, s.mbedtls-ecp-groupc/private-t-pre.c-own, s.mbedtls-ecp-groupc/private-t-post.c-own, s.mbedtls-ecp-groupc/private-t-data.c-own, s.mbedtls-ecp-groupc/private-t.c-own.to-koka, s.mbedtls-ecp-groupc/private-t-size)
+
 // \brief          MPI structure
 pub value struct mbedtls-mpi
   private-p: owned-c<int64>
-  private-s: int16
-  private-n: int16
+  private-s: int
+  private-n: int
 
 pub type mbedtls-mpi-c
-alias mbedtls-mpic = owned-c<mbedtls-mpi-c>
-alias mbedtls-mpicb<s::S> = borrowed-c<s,mbedtls-mpi-c>
-alias mbedtls-mpica = owned-c<c-array<mbedtls-mpi-c>>
+pub alias mbedtls-mpic = owned-c<mbedtls-mpi-c>
+pub alias mbedtls-mpicb<s::S> = borrowed-c<s,mbedtls-mpi-c>
+pub alias mbedtls-mpica = owned-c<c-array<mbedtls-mpi>>
 
 extern mbedtls-mpi/size-of(c: c-null<mbedtls-mpi-c>): int32
-  c inline "sizeof(mbedtls_mpi)"
+  c inline "sizeof(struct mbedtls_mpi)"
 
 pub fun mbedtls-mpic(): mbedtls-mpic
   malloc(?size-of=mbedtls-mpi/size-of)
@@ -3198,26 +3956,40 @@ pub fun mbedtls-mpic-array(n: int): mbedtls-mpica
 pub fun mbedtls-mpic-array-calloc(n: int): mbedtls-mpica
   malloc-c(n.int32, ?size-of=mbedtls-mpi/size-of)
 
-inline extern mbedtls-mpi-ptr/private-p(s: intptr_t): owned-c<int64>
-  c inline "((mbedtls_mpi*)#1)->private_p"
+inline extern mbedtls-mpi-ptr/private-p(s: intptr_t): intptr_t
+  c inline "(intptr_t)(((struct mbedtls_mpi*)#1)->private_p)"
 
-pub inline fun mbedtls-mpic/private-p(^s: mbedtls-mpic): owned-c<int64>
+pub inline fun mbedtls-mpic/private-p(^s: mbedtls-mpic): intptr_t
   s.with-ptr(mbedtls-mpi-ptr/private-p)
 
-pub inline fun mbedtls-mpicb/private-p(^s: mbedtls-mpicb<s::S>): owned-c<int64>
+pub inline fun mbedtls-mpicb/private-p(^s: mbedtls-mpicb<s::S>): intptr_t
   s.with-ptr(mbedtls-mpi-ptr/private-p)
 
-inline extern mbedtls-mpi-ptr/set-private-p(s: intptr_t, private-p: owned-c<int64>): ()
-  c inline "((mbedtls_mpi*)#1)->private_p = #2"
+inline extern mbedtls-mpi-ptr/set-private-p(s: intptr_t, private-p: intptr_t): ()
+  c inline "((struct mbedtls_mpi*)#1)->private_p = (mbedtls_mpi_uint*)#2"
 
-pub inline fun mbedtls-mpic/set-private-p(^s: mbedtls-mpic, private-p: owned-c<int64>): ()
+pub inline fun mbedtls-mpic/set-private-p(^s: mbedtls-mpic, private-p: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-mpi-ptr/set-private-p(private-p))
 
-pub inline fun mbedtls-mpicb/set-private-p(^s: mbedtls-mpicb<s::S>, private-p: owned-c<int64>): ()
+pub inline fun mbedtls-mpicb/set-private-p(^s: mbedtls-mpicb<s::S>, private-p: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-mpi-ptr/set-private-p(private-p))
+
+pub inline fun mbedtls-mpic-wrapper/private-p(^s: mbedtls-mpic): owned-c<int64>
+  s.with-ptr(mbedtls-mpi-ptr/private-p).c-own
+
+pub inline fun mbedtls-mpicb-wrapper/private-p(^s: mbedtls-mpicb<s::S>): owned-c<int64>
+  s.with-ptr(mbedtls-mpi-ptr/private-p).c-own
+
+pub inline fun mbedtls-mpic-wrapper/set-private-p(^s: mbedtls-mpic, private-p: owned-c<int64>): ()
+  with koka-ptr <- private-p.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-mpi-ptr/set-private-p(koka-ptr))
+
+pub inline fun mbedtls-mpicb-wrapper/set-private-p(^s: mbedtls-mpicb<s::S>, private-p: owned-c<int64>): ()
+  with koka-ptr <- private-p.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-mpi-ptr/set-private-p(koka-ptr))
 
 inline extern mbedtls-mpi-ptr/private-s(s: intptr_t): int16
-  c inline "((mbedtls_mpi*)#1)->private_s"
+  c inline "(short)(((struct mbedtls_mpi*)#1)->private_s)"
 
 pub inline fun mbedtls-mpic/private-s(^s: mbedtls-mpic): int16
   s.with-ptr(mbedtls-mpi-ptr/private-s)
@@ -3226,7 +3998,7 @@ pub inline fun mbedtls-mpicb/private-s(^s: mbedtls-mpicb<s::S>): int16
   s.with-ptr(mbedtls-mpi-ptr/private-s)
 
 inline extern mbedtls-mpi-ptr/set-private-s(s: intptr_t, private-s: int16): ()
-  c inline "((mbedtls_mpi*)#1)->private_s = #2"
+  c inline "((struct mbedtls_mpi*)#1)->private_s = (short)#2"
 
 pub inline fun mbedtls-mpic/set-private-s(^s: mbedtls-mpic, private-s: int16): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-mpi-ptr/set-private-s(private-s))
@@ -3234,8 +4006,20 @@ pub inline fun mbedtls-mpic/set-private-s(^s: mbedtls-mpic, private-s: int16): (
 pub inline fun mbedtls-mpicb/set-private-s(^s: mbedtls-mpicb<s::S>, private-s: int16): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-mpi-ptr/set-private-s(private-s))
 
+pub inline fun mbedtls-mpic-wrapper/private-s(^s: mbedtls-mpic): int
+  s.with-ptr(mbedtls-mpi-ptr/private-s).int
+
+pub inline fun mbedtls-mpicb-wrapper/private-s(^s: mbedtls-mpicb<s::S>): int
+  s.with-ptr(mbedtls-mpi-ptr/private-s).int
+
+pub inline fun mbedtls-mpic-wrapper/set-private-s(^s: mbedtls-mpic, private-s: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-mpi-ptr/set-private-s(private-s.int16))
+
+pub inline fun mbedtls-mpicb-wrapper/set-private-s(^s: mbedtls-mpicb<s::S>, private-s: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-mpi-ptr/set-private-s(private-s.int16))
+
 inline extern mbedtls-mpi-ptr/private-n(s: intptr_t): int16
-  c inline "((mbedtls_mpi*)#1)->private_n"
+  c inline "(unsigned short)(((struct mbedtls_mpi*)#1)->private_n)"
 
 pub inline fun mbedtls-mpic/private-n(^s: mbedtls-mpic): int16
   s.with-ptr(mbedtls-mpi-ptr/private-n)
@@ -3244,7 +4028,7 @@ pub inline fun mbedtls-mpicb/private-n(^s: mbedtls-mpicb<s::S>): int16
   s.with-ptr(mbedtls-mpi-ptr/private-n)
 
 inline extern mbedtls-mpi-ptr/set-private-n(s: intptr_t, private-n: int16): ()
-  c inline "((mbedtls_mpi*)#1)->private_n = #2"
+  c inline "((struct mbedtls_mpi*)#1)->private_n = (unsigned short)#2"
 
 pub inline fun mbedtls-mpic/set-private-n(^s: mbedtls-mpic, private-n: int16): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-mpi-ptr/set-private-n(private-n))
@@ -3252,9 +4036,22 @@ pub inline fun mbedtls-mpic/set-private-n(^s: mbedtls-mpic, private-n: int16): (
 pub inline fun mbedtls-mpicb/set-private-n(^s: mbedtls-mpicb<s::S>, private-n: int16): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-mpi-ptr/set-private-n(private-n))
 
+pub inline fun mbedtls-mpic-wrapper/private-n(^s: mbedtls-mpic): int
+  s.with-ptr(mbedtls-mpi-ptr/private-n).int
+
+pub inline fun mbedtls-mpicb-wrapper/private-n(^s: mbedtls-mpicb<s::S>): int
+  s.with-ptr(mbedtls-mpi-ptr/private-n).int
+
+pub inline fun mbedtls-mpic-wrapper/set-private-n(^s: mbedtls-mpic, private-n: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-mpi-ptr/set-private-n(private-n.int16))
+
+pub inline fun mbedtls-mpicb-wrapper/set-private-n(^s: mbedtls-mpicb<s::S>, private-n: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-mpi-ptr/set-private-n(private-n.int16))
+
 pub fun mbedtls-mpi/to-koka(s: mbedtls-mpic): mbedtls-mpi
-  Mbedtls-mpi(s.mbedtls-mpic/private-p, s.mbedtls-mpic/private-s, s.mbedtls-mpic/private-n)
-alias mbedtls_mpi_uint = int64
+  Mbedtls-mpi(s.mbedtls-mpic/private-p.c-own, s.mbedtls-mpic/private-s.int, s.mbedtls-mpic/private-n.int)
+
+alias mbedtls-mpi-uint = int64
 alias koka-mbedtls_mpi_uint = int
 // \brief           The ECP point structure, in Jacobian coordinates.
 // 
@@ -3266,17 +4063,17 @@ alias koka-mbedtls_mpi_uint = int
 // Otherwise, \p X and \p Y are its standard (affine)
 // coordinates.
 pub value struct mbedtls-ecp-point
-  private-x: mbedtls-mpi-c
-  private-y: mbedtls-mpi-c
-  private-z: mbedtls-mpi-c
+  private-x: mbedtls-mpi
+  private-y: mbedtls-mpi
+  private-z: mbedtls-mpi
 
 pub type mbedtls-ecp-point-c
-alias mbedtls-ecp-pointc = owned-c<mbedtls-ecp-point-c>
-alias mbedtls-ecp-pointcb<s::S> = borrowed-c<s,mbedtls-ecp-point-c>
-alias mbedtls-ecp-pointca = owned-c<c-array<mbedtls-ecp-point-c>>
+pub alias mbedtls-ecp-pointc = owned-c<mbedtls-ecp-point-c>
+pub alias mbedtls-ecp-pointcb<s::S> = borrowed-c<s,mbedtls-ecp-point-c>
+pub alias mbedtls-ecp-pointca = owned-c<c-array<mbedtls-ecp-point>>
 
 extern mbedtls-ecp-point/size-of(c: c-null<mbedtls-ecp-point-c>): int32
-  c inline "sizeof(mbedtls_ecp_point)"
+  c inline "sizeof(struct mbedtls_ecp_point)"
 
 pub fun mbedtls-ecp-pointc(): mbedtls-ecp-pointc
   malloc(?size-of=mbedtls-ecp-point/size-of)
@@ -3291,7 +4088,7 @@ pub fun mbedtls-ecp-pointc-array-calloc(n: int): mbedtls-ecp-pointca
   malloc-c(n.int32, ?size-of=mbedtls-ecp-point/size-of)
 
 inline extern mbedtls-ecp-point-ptr/private-x(s: intptr_t): mbedtls-mpi-c
-  c inline "((mbedtls_ecp_point*)#1)->private_X"
+  c inline "(mbedtls_mpi)(((struct mbedtls_ecp_point*)#1)->private_X)"
 
 pub inline fun mbedtls-ecp-pointc/private-x(^s: mbedtls-ecp-pointc): mbedtls-mpi-c
   s.with-ptr(mbedtls-ecp-point-ptr/private-x)
@@ -3300,7 +4097,7 @@ pub inline fun mbedtls-ecp-pointcb/private-x(^s: mbedtls-ecp-pointcb<s::S>): mbe
   s.with-ptr(mbedtls-ecp-point-ptr/private-x)
 
 inline extern mbedtls-ecp-point-ptr/set-private-x(s: intptr_t, private-x: mbedtls-mpi-c): ()
-  c inline "((mbedtls_ecp_point*)#1)->private_X = #2"
+  c inline "((struct mbedtls_ecp_point*)#1)->private_X = (mbedtls_mpi)#2"
 
 pub inline fun mbedtls-ecp-pointc/set-private-x(^s: mbedtls-ecp-pointc, private-x: mbedtls-mpi-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-point-ptr/set-private-x(private-x))
@@ -3308,8 +4105,20 @@ pub inline fun mbedtls-ecp-pointc/set-private-x(^s: mbedtls-ecp-pointc, private-
 pub inline fun mbedtls-ecp-pointcb/set-private-x(^s: mbedtls-ecp-pointcb<s::S>, private-x: mbedtls-mpi-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-point-ptr/set-private-x(private-x))
 
+pub inline fun mbedtls-ecp-pointc-wrapper/private-x(^s: mbedtls-ecp-pointc): mbedtls-mpi
+  s.with-ptr(mbedtls-ecp-point-ptr/private-x).to-koka
+
+pub inline fun mbedtls-ecp-pointcb-wrapper/private-x(^s: mbedtls-ecp-pointcb<s::S>): mbedtls-mpi
+  s.with-ptr(mbedtls-ecp-point-ptr/private-x).to-koka
+
+pub inline fun mbedtls-ecp-pointc-wrapper/set-private-x(^s: mbedtls-ecp-pointc, private-x: mbedtls-mpi): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-point-ptr/set-private-x((struct mbedtls_mpi)(private-x)))
+
+pub inline fun mbedtls-ecp-pointcb-wrapper/set-private-x(^s: mbedtls-ecp-pointcb<s::S>, private-x: mbedtls-mpi): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-point-ptr/set-private-x((struct mbedtls_mpi)(private-x)))
+
 inline extern mbedtls-ecp-point-ptr/private-y(s: intptr_t): mbedtls-mpi-c
-  c inline "((mbedtls_ecp_point*)#1)->private_Y"
+  c inline "(mbedtls_mpi)(((struct mbedtls_ecp_point*)#1)->private_Y)"
 
 pub inline fun mbedtls-ecp-pointc/private-y(^s: mbedtls-ecp-pointc): mbedtls-mpi-c
   s.with-ptr(mbedtls-ecp-point-ptr/private-y)
@@ -3318,7 +4127,7 @@ pub inline fun mbedtls-ecp-pointcb/private-y(^s: mbedtls-ecp-pointcb<s::S>): mbe
   s.with-ptr(mbedtls-ecp-point-ptr/private-y)
 
 inline extern mbedtls-ecp-point-ptr/set-private-y(s: intptr_t, private-y: mbedtls-mpi-c): ()
-  c inline "((mbedtls_ecp_point*)#1)->private_Y = #2"
+  c inline "((struct mbedtls_ecp_point*)#1)->private_Y = (mbedtls_mpi)#2"
 
 pub inline fun mbedtls-ecp-pointc/set-private-y(^s: mbedtls-ecp-pointc, private-y: mbedtls-mpi-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-point-ptr/set-private-y(private-y))
@@ -3326,8 +4135,20 @@ pub inline fun mbedtls-ecp-pointc/set-private-y(^s: mbedtls-ecp-pointc, private-
 pub inline fun mbedtls-ecp-pointcb/set-private-y(^s: mbedtls-ecp-pointcb<s::S>, private-y: mbedtls-mpi-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-point-ptr/set-private-y(private-y))
 
+pub inline fun mbedtls-ecp-pointc-wrapper/private-y(^s: mbedtls-ecp-pointc): mbedtls-mpi
+  s.with-ptr(mbedtls-ecp-point-ptr/private-y).to-koka
+
+pub inline fun mbedtls-ecp-pointcb-wrapper/private-y(^s: mbedtls-ecp-pointcb<s::S>): mbedtls-mpi
+  s.with-ptr(mbedtls-ecp-point-ptr/private-y).to-koka
+
+pub inline fun mbedtls-ecp-pointc-wrapper/set-private-y(^s: mbedtls-ecp-pointc, private-y: mbedtls-mpi): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-point-ptr/set-private-y((struct mbedtls_mpi)(private-y)))
+
+pub inline fun mbedtls-ecp-pointcb-wrapper/set-private-y(^s: mbedtls-ecp-pointcb<s::S>, private-y: mbedtls-mpi): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-point-ptr/set-private-y((struct mbedtls_mpi)(private-y)))
+
 inline extern mbedtls-ecp-point-ptr/private-z(s: intptr_t): mbedtls-mpi-c
-  c inline "((mbedtls_ecp_point*)#1)->private_Z"
+  c inline "(mbedtls_mpi)(((struct mbedtls_ecp_point*)#1)->private_Z)"
 
 pub inline fun mbedtls-ecp-pointc/private-z(^s: mbedtls-ecp-pointc): mbedtls-mpi-c
   s.with-ptr(mbedtls-ecp-point-ptr/private-z)
@@ -3336,7 +4157,7 @@ pub inline fun mbedtls-ecp-pointcb/private-z(^s: mbedtls-ecp-pointcb<s::S>): mbe
   s.with-ptr(mbedtls-ecp-point-ptr/private-z)
 
 inline extern mbedtls-ecp-point-ptr/set-private-z(s: intptr_t, private-z: mbedtls-mpi-c): ()
-  c inline "((mbedtls_ecp_point*)#1)->private_Z = #2"
+  c inline "((struct mbedtls_ecp_point*)#1)->private_Z = (mbedtls_mpi)#2"
 
 pub inline fun mbedtls-ecp-pointc/set-private-z(^s: mbedtls-ecp-pointc, private-z: mbedtls-mpi-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-point-ptr/set-private-z(private-z))
@@ -3344,8 +4165,21 @@ pub inline fun mbedtls-ecp-pointc/set-private-z(^s: mbedtls-ecp-pointc, private-
 pub inline fun mbedtls-ecp-pointcb/set-private-z(^s: mbedtls-ecp-pointcb<s::S>, private-z: mbedtls-mpi-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-point-ptr/set-private-z(private-z))
 
+pub inline fun mbedtls-ecp-pointc-wrapper/private-z(^s: mbedtls-ecp-pointc): mbedtls-mpi
+  s.with-ptr(mbedtls-ecp-point-ptr/private-z).to-koka
+
+pub inline fun mbedtls-ecp-pointcb-wrapper/private-z(^s: mbedtls-ecp-pointcb<s::S>): mbedtls-mpi
+  s.with-ptr(mbedtls-ecp-point-ptr/private-z).to-koka
+
+pub inline fun mbedtls-ecp-pointc-wrapper/set-private-z(^s: mbedtls-ecp-pointc, private-z: mbedtls-mpi): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-point-ptr/set-private-z((struct mbedtls_mpi)(private-z)))
+
+pub inline fun mbedtls-ecp-pointcb-wrapper/set-private-z(^s: mbedtls-ecp-pointcb<s::S>, private-z: mbedtls-mpi): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ecp-point-ptr/set-private-z((struct mbedtls_mpi)(private-z)))
+
 pub fun mbedtls-ecp-point/to-koka(s: mbedtls-ecp-pointc): mbedtls-ecp-point
-  Mbedtls-ecp-point(s.mbedtls-ecp-pointc/private-x, s.mbedtls-ecp-pointc/private-y, s.mbedtls-ecp-pointc/private-z)
+  Mbedtls-ecp-point(s.mbedtls-ecp-pointc/private-x.to-koka.to-koka, s.mbedtls-ecp-pointc/private-y.to-koka.to-koka, s.mbedtls-ecp-pointc/private-z.to-koka.to-koka)
+
 type psa_tls12_prf_key_derivation_state_t
   PSA_TLS12_PRF_STATE_INIT
   PSA_TLS12_PRF_STATE_SEED_SET
@@ -3372,10 +4206,14 @@ pub fun int/psa_tls12_prf_key_derivation_state_t(i: int): exn psa_tls12_prf_key_
     4 -> PSA_TLS12_PRF_STATE_LABEL_SET
     5 -> PSA_TLS12_PRF_STATE_OUTPUT
 
+pub struct psa-driver-key-derivation-context-t
 pub type psa-driver-key-derivation-context-t-c
-alias psa-driver-key-derivation-context-t-cc = owned-c<psa-driver-key-derivation-context-t-c>
-alias psa-driver-key-derivation-context-t-ccb<s::S> = borrowed-c<s,psa-driver-key-derivation-context-t-c>
-alias psa-driver-key-derivation-context-t-cca = owned-c<c-array<psa-driver-key-derivation-context-t-c>>
+pub alias psa-driver-key-derivation-context-tc = owned-c<psa-driver-key-derivation-context-t-c>
+pub alias psa-driver-key-derivation-context-tcb<s::S> = borrowed-c<s,psa-driver-key-derivation-context-t-c>
+pub alias psa-driver-key-derivation-context-tca = owned-c<c-array<psa-driver-key-derivation-context-t>>
+
+pub fun psa-driver-key-derivation-context-t/to-koka(s: psa-driver-key-derivation-context-tc): psa-driver-key-derivation-context-t
+  Psa-driver-key-derivation-context-t()
 
 type psa_crypto_driver_pake_step
   PSA_JPAKE_STEP_INVALID
@@ -3578,23 +4416,23 @@ pub fun int/mbedtls_key_exchange_type_t(i: int): exn mbedtls_key_exchange_type_t
 // my_profile.rsa_min_bitlen = 3072;
 pub struct mbedtls-x509-crt-profile
   // < MDs for signatures
-  allowed-mds: int32
+  allowed-mds: int
   // < PK algs for public keys;
   // this applies to all certificates
   // in the provided chain.
-  allowed-pks: int32
+  allowed-pks: int
   // < Elliptic curves for ECDSA
-  allowed-curves: int32
+  allowed-curves: int
   // < Minimum size for RSA keys
-  rsa-min-bitlen: int32
+  rsa-min-bitlen: int
 
 pub type mbedtls-x509-crt-profile-c
-alias mbedtls-x509-crt-profilec = owned-c<mbedtls-x509-crt-profile-c>
-alias mbedtls-x509-crt-profilecb<s::S> = borrowed-c<s,mbedtls-x509-crt-profile-c>
-alias mbedtls-x509-crt-profileca = owned-c<c-array<mbedtls-x509-crt-profile-c>>
+pub alias mbedtls-x509-crt-profilec = owned-c<mbedtls-x509-crt-profile-c>
+pub alias mbedtls-x509-crt-profilecb<s::S> = borrowed-c<s,mbedtls-x509-crt-profile-c>
+pub alias mbedtls-x509-crt-profileca = owned-c<c-array<mbedtls-x509-crt-profile>>
 
 extern mbedtls-x509-crt-profile/size-of(c: c-null<mbedtls-x509-crt-profile-c>): int32
-  c inline "sizeof(mbedtls_x509_crt_profile)"
+  c inline "sizeof(struct mbedtls_x509_crt_profile)"
 
 pub fun mbedtls-x509-crt-profilec(): mbedtls-x509-crt-profilec
   malloc(?size-of=mbedtls-x509-crt-profile/size-of)
@@ -3609,7 +4447,7 @@ pub fun mbedtls-x509-crt-profilec-array-calloc(n: int): mbedtls-x509-crt-profile
   malloc-c(n.int32, ?size-of=mbedtls-x509-crt-profile/size-of)
 
 inline extern mbedtls-x509-crt-profile-ptr/allowed-mds(s: intptr_t): int32
-  c inline "((mbedtls_x509_crt_profile*)#1)->allowed_mds"
+  c inline "(int32_t)(((struct mbedtls_x509_crt_profile*)#1)->allowed_mds)"
 
 pub inline fun mbedtls-x509-crt-profilec/allowed-mds(^s: mbedtls-x509-crt-profilec): int32
   s.with-ptr(mbedtls-x509-crt-profile-ptr/allowed-mds)
@@ -3618,7 +4456,7 @@ pub inline fun mbedtls-x509-crt-profilecb/allowed-mds(^s: mbedtls-x509-crt-profi
   s.with-ptr(mbedtls-x509-crt-profile-ptr/allowed-mds)
 
 inline extern mbedtls-x509-crt-profile-ptr/set-allowed-mds(s: intptr_t, allowed-mds: int32): ()
-  c inline "((mbedtls_x509_crt_profile*)#1)->allowed_mds = #2"
+  c inline "((struct mbedtls_x509_crt_profile*)#1)->allowed_mds = (int32_t)#2"
 
 pub inline fun mbedtls-x509-crt-profilec/set-allowed-mds(^s: mbedtls-x509-crt-profilec, allowed-mds: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509-crt-profile-ptr/set-allowed-mds(allowed-mds))
@@ -3626,8 +4464,20 @@ pub inline fun mbedtls-x509-crt-profilec/set-allowed-mds(^s: mbedtls-x509-crt-pr
 pub inline fun mbedtls-x509-crt-profilecb/set-allowed-mds(^s: mbedtls-x509-crt-profilecb<s::S>, allowed-mds: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509-crt-profile-ptr/set-allowed-mds(allowed-mds))
 
+pub inline fun mbedtls-x509-crt-profilec-wrapper/allowed-mds(^s: mbedtls-x509-crt-profilec): int
+  s.with-ptr(mbedtls-x509-crt-profile-ptr/allowed-mds).int
+
+pub inline fun mbedtls-x509-crt-profilecb-wrapper/allowed-mds(^s: mbedtls-x509-crt-profilecb<s::S>): int
+  s.with-ptr(mbedtls-x509-crt-profile-ptr/allowed-mds).int
+
+pub inline fun mbedtls-x509-crt-profilec-wrapper/set-allowed-mds(^s: mbedtls-x509-crt-profilec, allowed-mds: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509-crt-profile-ptr/set-allowed-mds(allowed-mds.int32))
+
+pub inline fun mbedtls-x509-crt-profilecb-wrapper/set-allowed-mds(^s: mbedtls-x509-crt-profilecb<s::S>, allowed-mds: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509-crt-profile-ptr/set-allowed-mds(allowed-mds.int32))
+
 inline extern mbedtls-x509-crt-profile-ptr/allowed-pks(s: intptr_t): int32
-  c inline "((mbedtls_x509_crt_profile*)#1)->allowed_pks"
+  c inline "(int32_t)(((struct mbedtls_x509_crt_profile*)#1)->allowed_pks)"
 
 pub inline fun mbedtls-x509-crt-profilec/allowed-pks(^s: mbedtls-x509-crt-profilec): int32
   s.with-ptr(mbedtls-x509-crt-profile-ptr/allowed-pks)
@@ -3636,7 +4486,7 @@ pub inline fun mbedtls-x509-crt-profilecb/allowed-pks(^s: mbedtls-x509-crt-profi
   s.with-ptr(mbedtls-x509-crt-profile-ptr/allowed-pks)
 
 inline extern mbedtls-x509-crt-profile-ptr/set-allowed-pks(s: intptr_t, allowed-pks: int32): ()
-  c inline "((mbedtls_x509_crt_profile*)#1)->allowed_pks = #2"
+  c inline "((struct mbedtls_x509_crt_profile*)#1)->allowed_pks = (int32_t)#2"
 
 pub inline fun mbedtls-x509-crt-profilec/set-allowed-pks(^s: mbedtls-x509-crt-profilec, allowed-pks: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509-crt-profile-ptr/set-allowed-pks(allowed-pks))
@@ -3644,8 +4494,20 @@ pub inline fun mbedtls-x509-crt-profilec/set-allowed-pks(^s: mbedtls-x509-crt-pr
 pub inline fun mbedtls-x509-crt-profilecb/set-allowed-pks(^s: mbedtls-x509-crt-profilecb<s::S>, allowed-pks: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509-crt-profile-ptr/set-allowed-pks(allowed-pks))
 
+pub inline fun mbedtls-x509-crt-profilec-wrapper/allowed-pks(^s: mbedtls-x509-crt-profilec): int
+  s.with-ptr(mbedtls-x509-crt-profile-ptr/allowed-pks).int
+
+pub inline fun mbedtls-x509-crt-profilecb-wrapper/allowed-pks(^s: mbedtls-x509-crt-profilecb<s::S>): int
+  s.with-ptr(mbedtls-x509-crt-profile-ptr/allowed-pks).int
+
+pub inline fun mbedtls-x509-crt-profilec-wrapper/set-allowed-pks(^s: mbedtls-x509-crt-profilec, allowed-pks: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509-crt-profile-ptr/set-allowed-pks(allowed-pks.int32))
+
+pub inline fun mbedtls-x509-crt-profilecb-wrapper/set-allowed-pks(^s: mbedtls-x509-crt-profilecb<s::S>, allowed-pks: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509-crt-profile-ptr/set-allowed-pks(allowed-pks.int32))
+
 inline extern mbedtls-x509-crt-profile-ptr/allowed-curves(s: intptr_t): int32
-  c inline "((mbedtls_x509_crt_profile*)#1)->allowed_curves"
+  c inline "(int32_t)(((struct mbedtls_x509_crt_profile*)#1)->allowed_curves)"
 
 pub inline fun mbedtls-x509-crt-profilec/allowed-curves(^s: mbedtls-x509-crt-profilec): int32
   s.with-ptr(mbedtls-x509-crt-profile-ptr/allowed-curves)
@@ -3654,7 +4516,7 @@ pub inline fun mbedtls-x509-crt-profilecb/allowed-curves(^s: mbedtls-x509-crt-pr
   s.with-ptr(mbedtls-x509-crt-profile-ptr/allowed-curves)
 
 inline extern mbedtls-x509-crt-profile-ptr/set-allowed-curves(s: intptr_t, allowed-curves: int32): ()
-  c inline "((mbedtls_x509_crt_profile*)#1)->allowed_curves = #2"
+  c inline "((struct mbedtls_x509_crt_profile*)#1)->allowed_curves = (int32_t)#2"
 
 pub inline fun mbedtls-x509-crt-profilec/set-allowed-curves(^s: mbedtls-x509-crt-profilec, allowed-curves: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509-crt-profile-ptr/set-allowed-curves(allowed-curves))
@@ -3662,8 +4524,20 @@ pub inline fun mbedtls-x509-crt-profilec/set-allowed-curves(^s: mbedtls-x509-crt
 pub inline fun mbedtls-x509-crt-profilecb/set-allowed-curves(^s: mbedtls-x509-crt-profilecb<s::S>, allowed-curves: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509-crt-profile-ptr/set-allowed-curves(allowed-curves))
 
+pub inline fun mbedtls-x509-crt-profilec-wrapper/allowed-curves(^s: mbedtls-x509-crt-profilec): int
+  s.with-ptr(mbedtls-x509-crt-profile-ptr/allowed-curves).int
+
+pub inline fun mbedtls-x509-crt-profilecb-wrapper/allowed-curves(^s: mbedtls-x509-crt-profilecb<s::S>): int
+  s.with-ptr(mbedtls-x509-crt-profile-ptr/allowed-curves).int
+
+pub inline fun mbedtls-x509-crt-profilec-wrapper/set-allowed-curves(^s: mbedtls-x509-crt-profilec, allowed-curves: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509-crt-profile-ptr/set-allowed-curves(allowed-curves.int32))
+
+pub inline fun mbedtls-x509-crt-profilecb-wrapper/set-allowed-curves(^s: mbedtls-x509-crt-profilecb<s::S>, allowed-curves: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509-crt-profile-ptr/set-allowed-curves(allowed-curves.int32))
+
 inline extern mbedtls-x509-crt-profile-ptr/rsa-min-bitlen(s: intptr_t): int32
-  c inline "((mbedtls_x509_crt_profile*)#1)->rsa_min_bitlen"
+  c inline "(int32_t)(((struct mbedtls_x509_crt_profile*)#1)->rsa_min_bitlen)"
 
 pub inline fun mbedtls-x509-crt-profilec/rsa-min-bitlen(^s: mbedtls-x509-crt-profilec): int32
   s.with-ptr(mbedtls-x509-crt-profile-ptr/rsa-min-bitlen)
@@ -3672,7 +4546,7 @@ pub inline fun mbedtls-x509-crt-profilecb/rsa-min-bitlen(^s: mbedtls-x509-crt-pr
   s.with-ptr(mbedtls-x509-crt-profile-ptr/rsa-min-bitlen)
 
 inline extern mbedtls-x509-crt-profile-ptr/set-rsa-min-bitlen(s: intptr_t, rsa-min-bitlen: int32): ()
-  c inline "((mbedtls_x509_crt_profile*)#1)->rsa_min_bitlen = #2"
+  c inline "((struct mbedtls_x509_crt_profile*)#1)->rsa_min_bitlen = (int32_t)#2"
 
 pub inline fun mbedtls-x509-crt-profilec/set-rsa-min-bitlen(^s: mbedtls-x509-crt-profilec, rsa-min-bitlen: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509-crt-profile-ptr/set-rsa-min-bitlen(rsa-min-bitlen))
@@ -3680,8 +4554,21 @@ pub inline fun mbedtls-x509-crt-profilec/set-rsa-min-bitlen(^s: mbedtls-x509-crt
 pub inline fun mbedtls-x509-crt-profilecb/set-rsa-min-bitlen(^s: mbedtls-x509-crt-profilecb<s::S>, rsa-min-bitlen: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509-crt-profile-ptr/set-rsa-min-bitlen(rsa-min-bitlen))
 
+pub inline fun mbedtls-x509-crt-profilec-wrapper/rsa-min-bitlen(^s: mbedtls-x509-crt-profilec): int
+  s.with-ptr(mbedtls-x509-crt-profile-ptr/rsa-min-bitlen).int
+
+pub inline fun mbedtls-x509-crt-profilecb-wrapper/rsa-min-bitlen(^s: mbedtls-x509-crt-profilecb<s::S>): int
+  s.with-ptr(mbedtls-x509-crt-profile-ptr/rsa-min-bitlen).int
+
+pub inline fun mbedtls-x509-crt-profilec-wrapper/set-rsa-min-bitlen(^s: mbedtls-x509-crt-profilec, rsa-min-bitlen: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509-crt-profile-ptr/set-rsa-min-bitlen(rsa-min-bitlen.int32))
+
+pub inline fun mbedtls-x509-crt-profilecb-wrapper/set-rsa-min-bitlen(^s: mbedtls-x509-crt-profilecb<s::S>, rsa-min-bitlen: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509-crt-profile-ptr/set-rsa-min-bitlen(rsa-min-bitlen.int32))
+
 pub fun mbedtls-x509-crt-profile/to-koka(s: mbedtls-x509-crt-profilec): mbedtls-x509-crt-profile
-  Mbedtls-x509-crt-profile(s.mbedtls-x509-crt-profilec/allowed-mds, s.mbedtls-x509-crt-profilec/allowed-pks, s.mbedtls-x509-crt-profilec/allowed-curves, s.mbedtls-x509-crt-profilec/rsa-min-bitlen)
+  Mbedtls-x509-crt-profile(s.mbedtls-x509-crt-profilec/allowed-mds.int, s.mbedtls-x509-crt-profilec/allowed-pks.int, s.mbedtls-x509-crt-profilec/allowed-curves.int, s.mbedtls-x509-crt-profilec/rsa-min-bitlen.int)
+
 // Which parameter to access in mbedtls_dhm_get_value().
 type mbedtls_dhm_parameter
   // !<  The prime modulus.
@@ -3753,12 +4640,12 @@ pub fun int/mbedtls_ecdh_variant(i: int): exn mbedtls_ecdh_variant
     1 -> MBEDTLS_ECDH_VARIANT_MBEDTLS_2_0
 
 pub type mbedtls-ssl-premaster-secret-c
-alias mbedtls-ssl-premaster-secretc<s::S> = owned-c<mbedtls-ssl-premaster-secret-c>
-alias mbedtls-ssl-premaster-secretcb<s::S> = borrowed-c<s,mbedtls-ssl-premaster-secret-c>
-alias mbedtls-ssl-premaster-secretca<s::S> = owned-c<c-array<mbedtls-ssl-premaster-secret-c>>
+pub alias mbedtls-ssl-premaster-secretc<s::S> = owned-c<mbedtls-ssl-premaster-secret-c>
+pub alias mbedtls-ssl-premaster-secretcb<s::S> = borrowed-c<s,mbedtls-ssl-premaster-secret-c>
+pub alias mbedtls-ssl-premaster-secretca<s::S> = owned-c<c-array<mbedtls-ssl-premaster-secret>>
 
 extern mbedtls-ssl-premaster-secret/size-of(c: c-null<mbedtls-ssl-premaster-secret-c>): int32
-  c inline "sizeof(mbedtls_ssl_premaster_secret)"
+  c inline "sizeof(union mbedtls_ssl_premaster_secret)"
 
 pub fun mbedtls-ssl-premaster-secretc(): mbedtls-ssl-premaster-secretc<s::S>
   malloc(?size-of=mbedtls-ssl-premaster-secret/size-of)
@@ -3773,7 +4660,7 @@ pub fun mbedtls-ssl-premaster-secretc-array-calloc(n: int): mbedtls-ssl-premaste
   malloc-c(n.int32, ?size-of=mbedtls-ssl-premaster-secret/size-of)
 
 inline extern mbedtls-ssl-premaster-secret-ptr/dummy(s: intptr_t): int8
-  c inline "((mbedtls_ssl_premaster_secret*)#1)->dummy"
+  c inline "(unsigned char)(((union mbedtls_ssl_premaster_secret*)#1)->dummy)"
 
 pub inline fun mbedtls-ssl-premaster-secretc/dummy(^s: mbedtls-ssl-premaster-secretc<s::S>): int8
   s.with-ptr(mbedtls-ssl-premaster-secret-ptr/dummy)
@@ -3782,13 +4669,25 @@ pub inline fun mbedtls-ssl-premaster-secretcb/dummy(^s: mbedtls-ssl-premaster-se
   s.with-ptr(mbedtls-ssl-premaster-secret-ptr/dummy)
 
 inline extern mbedtls-ssl-premaster-secret-ptr/set-dummy(s: intptr_t, dummy: int8): ()
-  c inline "((mbedtls_ssl_premaster_secret*)#1)->dummy = #2"
+  c inline "((union mbedtls_ssl_premaster_secret*)#1)->dummy = (unsigned char)#2"
 
 pub inline fun mbedtls-ssl-premaster-secretc/set-dummy(^s: mbedtls-ssl-premaster-secretc<s::S>, dummy: int8): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-premaster-secret-ptr/set-dummy(dummy))
 
 pub inline fun mbedtls-ssl-premaster-secretcb/set-dummy(^s: mbedtls-ssl-premaster-secretcb<s::S>, dummy: int8): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-premaster-secret-ptr/set-dummy(dummy))
+
+pub inline fun mbedtls-ssl-premaster-secretc-wrapper/dummy(^s: mbedtls-ssl-premaster-secretc<s::S>): int
+  s.with-ptr(mbedtls-ssl-premaster-secret-ptr/dummy).int
+
+pub inline fun mbedtls-ssl-premaster-secretcb-wrapper/dummy(^s: mbedtls-ssl-premaster-secretcb<s::S>): int
+  s.with-ptr(mbedtls-ssl-premaster-secret-ptr/dummy).int
+
+pub inline fun mbedtls-ssl-premaster-secretc-wrapper/set-dummy(^s: mbedtls-ssl-premaster-secretc<s::S>, dummy: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-premaster-secret-ptr/set-dummy(dummy.int8))
+
+pub inline fun mbedtls-ssl-premaster-secretcb-wrapper/set-dummy(^s: mbedtls-ssl-premaster-secretcb<s::S>, dummy: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-premaster-secret-ptr/set-dummy(dummy.int8))
 
 type mbedtls_ssl_states
   MBEDTLS_SSL_HELLO_REQUEST
@@ -3962,12 +4861,12 @@ pub fun int/mbedtls_ssl_key_export_type(i: int): exn mbedtls_ssl_key_export_type
     6 -> MBEDTLS_SSL_KEY_EXPORT_TLS1_3_SERVER_APPLICATION_TRAFFIC_SECRET
 
 pub type mbedtls-ssl-user-data-t-c
-alias mbedtls-ssl-user-data-tc = owned-c<mbedtls-ssl-user-data-t-c>
-alias mbedtls-ssl-user-data-tcb<s::S> = borrowed-c<s,mbedtls-ssl-user-data-t-c>
-alias mbedtls-ssl-user-data-tca = owned-c<c-array<mbedtls-ssl-user-data-t-c>>
+pub alias mbedtls-ssl-user-data-tc = owned-c<mbedtls-ssl-user-data-t-c>
+pub alias mbedtls-ssl-user-data-tcb<s::S> = borrowed-c<s,mbedtls-ssl-user-data-t-c>
+pub alias mbedtls-ssl-user-data-tca = owned-c<c-array<mbedtls-ssl-user-data-t>>
 
 extern mbedtls-ssl-user-data-t/size-of(c: c-null<mbedtls-ssl-user-data-t-c>): int32
-  c inline "sizeof(mbedtls_ssl_user_data_t)"
+  c inline "sizeof(union mbedtls_ssl_user_data_t)"
 
 pub fun mbedtls-ssl-user-data-tc(): mbedtls-ssl-user-data-tc
   malloc(?size-of=mbedtls-ssl-user-data-t/size-of)
@@ -3982,7 +4881,7 @@ pub fun mbedtls-ssl-user-data-tc-array-calloc(n: int): mbedtls-ssl-user-data-tca
   malloc-c(n.int32, ?size-of=mbedtls-ssl-user-data-t/size-of)
 
 inline extern mbedtls-ssl-user-data-t-ptr/n(s: intptr_t): intptr_t
-  c inline "((mbedtls_ssl_user_data_t*)#1)->n"
+  c inline "(intptr_t)(((union mbedtls_ssl_user_data_t*)#1)->n)"
 
 pub inline fun mbedtls-ssl-user-data-tc/n(^s: mbedtls-ssl-user-data-tc): intptr_t
   s.with-ptr(mbedtls-ssl-user-data-t-ptr/n)
@@ -3991,7 +4890,7 @@ pub inline fun mbedtls-ssl-user-data-tcb/n(^s: mbedtls-ssl-user-data-tcb<s::S>):
   s.with-ptr(mbedtls-ssl-user-data-t-ptr/n)
 
 inline extern mbedtls-ssl-user-data-t-ptr/set-n(s: intptr_t, n: intptr_t): ()
-  c inline "((mbedtls_ssl_user_data_t*)#1)->n = #2"
+  c inline "((union mbedtls_ssl_user_data_t*)#1)->n = (intptr_t)#2"
 
 pub inline fun mbedtls-ssl-user-data-tc/set-n(^s: mbedtls-ssl-user-data-tc, n: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-user-data-t-ptr/set-n(n))
@@ -3999,37 +4898,55 @@ pub inline fun mbedtls-ssl-user-data-tc/set-n(^s: mbedtls-ssl-user-data-tc, n: i
 pub inline fun mbedtls-ssl-user-data-tcb/set-n(^s: mbedtls-ssl-user-data-tcb<s::S>, n: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-user-data-t-ptr/set-n(n))
 
-inline extern mbedtls-ssl-user-data-t-ptr/p(s: intptr_t): owned-c<()>
-  c inline "((mbedtls_ssl_user_data_t*)#1)->p"
+inline extern mbedtls-ssl-user-data-t-ptr/p(s: intptr_t): intptr_t
+  c inline "(intptr_t)(((union mbedtls_ssl_user_data_t*)#1)->p)"
 
-pub inline fun mbedtls-ssl-user-data-tc/p(^s: mbedtls-ssl-user-data-tc): owned-c<()>
+pub inline fun mbedtls-ssl-user-data-tc/p(^s: mbedtls-ssl-user-data-tc): intptr_t
   s.with-ptr(mbedtls-ssl-user-data-t-ptr/p)
 
-pub inline fun mbedtls-ssl-user-data-tcb/p(^s: mbedtls-ssl-user-data-tcb<s::S>): owned-c<()>
+pub inline fun mbedtls-ssl-user-data-tcb/p(^s: mbedtls-ssl-user-data-tcb<s::S>): intptr_t
   s.with-ptr(mbedtls-ssl-user-data-t-ptr/p)
 
-inline extern mbedtls-ssl-user-data-t-ptr/set-p(s: intptr_t, p: owned-c<()>): ()
-  c inline "((mbedtls_ssl_user_data_t*)#1)->p = #2"
+inline extern mbedtls-ssl-user-data-t-ptr/set-p(s: intptr_t, p: intptr_t): ()
+  c inline "((union mbedtls_ssl_user_data_t*)#1)->p = (kk_unit_t*)#2"
 
-pub inline fun mbedtls-ssl-user-data-tc/set-p(^s: mbedtls-ssl-user-data-tc, p: owned-c<()>): ()
+pub inline fun mbedtls-ssl-user-data-tc/set-p(^s: mbedtls-ssl-user-data-tc, p: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-user-data-t-ptr/set-p(p))
 
-pub inline fun mbedtls-ssl-user-data-tcb/set-p(^s: mbedtls-ssl-user-data-tcb<s::S>, p: owned-c<()>): ()
+pub inline fun mbedtls-ssl-user-data-tcb/set-p(^s: mbedtls-ssl-user-data-tcb<s::S>, p: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-user-data-t-ptr/set-p(p))
 
+pub inline fun mbedtls-ssl-user-data-tc-wrapper/p(^s: mbedtls-ssl-user-data-tc): owned-c<()>
+  s.with-ptr(mbedtls-ssl-user-data-t-ptr/p).c-own
+
+pub inline fun mbedtls-ssl-user-data-tcb-wrapper/p(^s: mbedtls-ssl-user-data-tcb<s::S>): owned-c<()>
+  s.with-ptr(mbedtls-ssl-user-data-t-ptr/p).c-own
+
+pub inline fun mbedtls-ssl-user-data-tc-wrapper/set-p(^s: mbedtls-ssl-user-data-tc, p: owned-c<()>): ()
+  with koka-ptr <- p.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-user-data-t-ptr/set-p(koka-ptr))
+
+pub inline fun mbedtls-ssl-user-data-tcb-wrapper/set-p(^s: mbedtls-ssl-user-data-tcb<s::S>, p: owned-c<()>): ()
+  with koka-ptr <- p.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-user-data-t-ptr/set-p(koka-ptr))
+
+pub struct psa-mac-operation-s
 pub type psa-mac-operation-s-c
-alias psa-mac-operation-s-cc = owned-c<psa-mac-operation-s-c>
-alias psa-mac-operation-s-ccb<s::S> = borrowed-c<s,psa-mac-operation-s-c>
-alias psa-mac-operation-s-cca = owned-c<c-array<psa-mac-operation-s-c>>
+pub alias psa-mac-operation-sc = owned-c<psa-mac-operation-s-c>
+pub alias psa-mac-operation-scb<s::S> = borrowed-c<s,psa-mac-operation-s-c>
+pub alias psa-mac-operation-sca = owned-c<c-array<psa-mac-operation-s>>
+
+pub fun psa-mac-operation-s/to-koka(s: psa-mac-operation-sc): psa-mac-operation-s
+  Psa-mac-operation-s()
 
 // \brief          The GCM context structure.
 pub type mbedtls-gcm-context-c
-alias mbedtls-gcm-contextc<s::S> = owned-c<mbedtls-gcm-context-c>
-alias mbedtls-gcm-contextcb<s::S> = borrowed-c<s,mbedtls-gcm-context-c>
-alias mbedtls-gcm-contextca<s::S> = owned-c<c-array<mbedtls-gcm-context-c>>
+pub alias mbedtls-gcm-contextc<s::S> = owned-c<mbedtls-gcm-context-c>
+pub alias mbedtls-gcm-contextcb<s::S> = borrowed-c<s,mbedtls-gcm-context-c>
+pub alias mbedtls-gcm-contextca<s::S> = owned-c<c-array<mbedtls-gcm-context>>
 
 extern mbedtls-gcm-context/size-of(c: c-null<mbedtls-gcm-context-c>): int32
-  c inline "sizeof(mbedtls_gcm_context)"
+  c inline "sizeof(struct mbedtls_gcm_context)"
 
 pub fun mbedtls-gcm-contextc(): mbedtls-gcm-contextc<s::S>
   malloc(?size-of=mbedtls-gcm-context/size-of)
@@ -4044,7 +4961,7 @@ pub fun mbedtls-gcm-contextc-array-calloc(n: int): mbedtls-gcm-contextca<s::S>
   malloc-c(n.int32, ?size-of=mbedtls-gcm-context/size-of)
 
 inline extern mbedtls-gcm-context-ptr/private_cipher_ctx(s: intptr_t): mbedtls-cipher-context-t-c
-  c inline "((mbedtls_gcm_context*)#1)->private_cipher_ctx"
+  c inline "(mbedtls_cipher_context_t)(((struct mbedtls_gcm_context*)#1)->private_cipher_ctx)"
 
 pub inline fun mbedtls-gcm-contextc/private_cipher_ctx(^s: mbedtls-gcm-contextc<s::S>): mbedtls-cipher-context-t-c
   s.with-ptr(mbedtls-gcm-context-ptr/private_cipher_ctx)
@@ -4053,7 +4970,7 @@ pub inline fun mbedtls-gcm-contextcb/private_cipher_ctx(^s: mbedtls-gcm-contextc
   s.with-ptr(mbedtls-gcm-context-ptr/private_cipher_ctx)
 
 inline extern mbedtls-gcm-context-ptr/set-private_cipher_ctx(s: intptr_t, private_cipher_ctx: mbedtls-cipher-context-t-c): ()
-  c inline "((mbedtls_gcm_context*)#1)->private_cipher_ctx = #2"
+  c inline "((struct mbedtls_gcm_context*)#1)->private_cipher_ctx = (mbedtls_cipher_context_t)#2"
 
 pub inline fun mbedtls-gcm-contextc/set-private_cipher_ctx(^s: mbedtls-gcm-contextc<s::S>, private_cipher_ctx: mbedtls-cipher-context-t-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-gcm-context-ptr/set-private_cipher_ctx(private_cipher_ctx))
@@ -4062,7 +4979,7 @@ pub inline fun mbedtls-gcm-contextcb/set-private_cipher_ctx(^s: mbedtls-gcm-cont
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-gcm-context-ptr/set-private_cipher_ctx(private_cipher_ctx))
 
 inline extern mbedtls-gcm-context-ptr/private_len(s: intptr_t): int64
-  c inline "((mbedtls_gcm_context*)#1)->private_len"
+  c inline "(int64_t)(((struct mbedtls_gcm_context*)#1)->private_len)"
 
 pub inline fun mbedtls-gcm-contextc/private_len(^s: mbedtls-gcm-contextc<s::S>): int64
   s.with-ptr(mbedtls-gcm-context-ptr/private_len)
@@ -4071,7 +4988,7 @@ pub inline fun mbedtls-gcm-contextcb/private_len(^s: mbedtls-gcm-contextcb<s::S>
   s.with-ptr(mbedtls-gcm-context-ptr/private_len)
 
 inline extern mbedtls-gcm-context-ptr/set-private_len(s: intptr_t, private_len: int64): ()
-  c inline "((mbedtls_gcm_context*)#1)->private_len = #2"
+  c inline "((struct mbedtls_gcm_context*)#1)->private_len = (int64_t)#2"
 
 pub inline fun mbedtls-gcm-contextc/set-private_len(^s: mbedtls-gcm-contextc<s::S>, private_len: int64): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-gcm-context-ptr/set-private_len(private_len))
@@ -4079,8 +4996,20 @@ pub inline fun mbedtls-gcm-contextc/set-private_len(^s: mbedtls-gcm-contextc<s::
 pub inline fun mbedtls-gcm-contextcb/set-private_len(^s: mbedtls-gcm-contextcb<s::S>, private_len: int64): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-gcm-context-ptr/set-private_len(private_len))
 
+pub inline fun mbedtls-gcm-contextc-wrapper/private_len(^s: mbedtls-gcm-contextc<s::S>): int
+  s.with-ptr(mbedtls-gcm-context-ptr/private_len).int
+
+pub inline fun mbedtls-gcm-contextcb-wrapper/private_len(^s: mbedtls-gcm-contextcb<s::S>): int
+  s.with-ptr(mbedtls-gcm-context-ptr/private_len).int
+
+pub inline fun mbedtls-gcm-contextc-wrapper/set-private_len(^s: mbedtls-gcm-contextc<s::S>, private_len: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-gcm-context-ptr/set-private_len(private_len.int64))
+
+pub inline fun mbedtls-gcm-contextcb-wrapper/set-private_len(^s: mbedtls-gcm-contextcb<s::S>, private_len: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-gcm-context-ptr/set-private_len(private_len.int64))
+
 inline extern mbedtls-gcm-context-ptr/private_add_len(s: intptr_t): int64
-  c inline "((mbedtls_gcm_context*)#1)->private_add_len"
+  c inline "(int64_t)(((struct mbedtls_gcm_context*)#1)->private_add_len)"
 
 pub inline fun mbedtls-gcm-contextc/private_add_len(^s: mbedtls-gcm-contextc<s::S>): int64
   s.with-ptr(mbedtls-gcm-context-ptr/private_add_len)
@@ -4089,7 +5018,7 @@ pub inline fun mbedtls-gcm-contextcb/private_add_len(^s: mbedtls-gcm-contextcb<s
   s.with-ptr(mbedtls-gcm-context-ptr/private_add_len)
 
 inline extern mbedtls-gcm-context-ptr/set-private_add_len(s: intptr_t, private_add_len: int64): ()
-  c inline "((mbedtls_gcm_context*)#1)->private_add_len = #2"
+  c inline "((struct mbedtls_gcm_context*)#1)->private_add_len = (int64_t)#2"
 
 pub inline fun mbedtls-gcm-contextc/set-private_add_len(^s: mbedtls-gcm-contextc<s::S>, private_add_len: int64): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-gcm-context-ptr/set-private_add_len(private_add_len))
@@ -4097,8 +5026,20 @@ pub inline fun mbedtls-gcm-contextc/set-private_add_len(^s: mbedtls-gcm-contextc
 pub inline fun mbedtls-gcm-contextcb/set-private_add_len(^s: mbedtls-gcm-contextcb<s::S>, private_add_len: int64): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-gcm-context-ptr/set-private_add_len(private_add_len))
 
+pub inline fun mbedtls-gcm-contextc-wrapper/private_add_len(^s: mbedtls-gcm-contextc<s::S>): int
+  s.with-ptr(mbedtls-gcm-context-ptr/private_add_len).int
+
+pub inline fun mbedtls-gcm-contextcb-wrapper/private_add_len(^s: mbedtls-gcm-contextcb<s::S>): int
+  s.with-ptr(mbedtls-gcm-context-ptr/private_add_len).int
+
+pub inline fun mbedtls-gcm-contextc-wrapper/set-private_add_len(^s: mbedtls-gcm-contextc<s::S>, private_add_len: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-gcm-context-ptr/set-private_add_len(private_add_len.int64))
+
+pub inline fun mbedtls-gcm-contextcb-wrapper/set-private_add_len(^s: mbedtls-gcm-contextcb<s::S>, private_add_len: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-gcm-context-ptr/set-private_add_len(private_add_len.int64))
+
 inline extern mbedtls-gcm-context-ptr/private_mode(s: intptr_t): int8
-  c inline "((mbedtls_gcm_context*)#1)->private_mode"
+  c inline "(unsigned char)(((struct mbedtls_gcm_context*)#1)->private_mode)"
 
 pub inline fun mbedtls-gcm-contextc/private_mode(^s: mbedtls-gcm-contextc<s::S>): int8
   s.with-ptr(mbedtls-gcm-context-ptr/private_mode)
@@ -4107,7 +5048,7 @@ pub inline fun mbedtls-gcm-contextcb/private_mode(^s: mbedtls-gcm-contextcb<s::S
   s.with-ptr(mbedtls-gcm-context-ptr/private_mode)
 
 inline extern mbedtls-gcm-context-ptr/set-private_mode(s: intptr_t, private_mode: int8): ()
-  c inline "((mbedtls_gcm_context*)#1)->private_mode = #2"
+  c inline "((struct mbedtls_gcm_context*)#1)->private_mode = (unsigned char)#2"
 
 pub inline fun mbedtls-gcm-contextc/set-private_mode(^s: mbedtls-gcm-contextc<s::S>, private_mode: int8): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-gcm-context-ptr/set-private_mode(private_mode))
@@ -4115,8 +5056,20 @@ pub inline fun mbedtls-gcm-contextc/set-private_mode(^s: mbedtls-gcm-contextc<s:
 pub inline fun mbedtls-gcm-contextcb/set-private_mode(^s: mbedtls-gcm-contextcb<s::S>, private_mode: int8): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-gcm-context-ptr/set-private_mode(private_mode))
 
+pub inline fun mbedtls-gcm-contextc-wrapper/private_mode(^s: mbedtls-gcm-contextc<s::S>): int
+  s.with-ptr(mbedtls-gcm-context-ptr/private_mode).int
+
+pub inline fun mbedtls-gcm-contextcb-wrapper/private_mode(^s: mbedtls-gcm-contextcb<s::S>): int
+  s.with-ptr(mbedtls-gcm-context-ptr/private_mode).int
+
+pub inline fun mbedtls-gcm-contextc-wrapper/set-private_mode(^s: mbedtls-gcm-contextc<s::S>, private_mode: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-gcm-context-ptr/set-private_mode(private_mode.int8))
+
+pub inline fun mbedtls-gcm-contextcb-wrapper/set-private_mode(^s: mbedtls-gcm-contextcb<s::S>, private_mode: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-gcm-context-ptr/set-private_mode(private_mode.int8))
+
 inline extern mbedtls-gcm-context-ptr/private_acceleration(s: intptr_t): int8
-  c inline "((mbedtls_gcm_context*)#1)->private_acceleration"
+  c inline "(unsigned char)(((struct mbedtls_gcm_context*)#1)->private_acceleration)"
 
 pub inline fun mbedtls-gcm-contextc/private_acceleration(^s: mbedtls-gcm-contextc<s::S>): int8
   s.with-ptr(mbedtls-gcm-context-ptr/private_acceleration)
@@ -4125,7 +5078,7 @@ pub inline fun mbedtls-gcm-contextcb/private_acceleration(^s: mbedtls-gcm-contex
   s.with-ptr(mbedtls-gcm-context-ptr/private_acceleration)
 
 inline extern mbedtls-gcm-context-ptr/set-private_acceleration(s: intptr_t, private_acceleration: int8): ()
-  c inline "((mbedtls_gcm_context*)#1)->private_acceleration = #2"
+  c inline "((struct mbedtls_gcm_context*)#1)->private_acceleration = (unsigned char)#2"
 
 pub inline fun mbedtls-gcm-contextc/set-private_acceleration(^s: mbedtls-gcm-contextc<s::S>, private_acceleration: int8): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-gcm-context-ptr/set-private_acceleration(private_acceleration))
@@ -4133,15 +5086,27 @@ pub inline fun mbedtls-gcm-contextc/set-private_acceleration(^s: mbedtls-gcm-con
 pub inline fun mbedtls-gcm-contextcb/set-private_acceleration(^s: mbedtls-gcm-contextcb<s::S>, private_acceleration: int8): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-gcm-context-ptr/set-private_acceleration(private_acceleration))
 
+pub inline fun mbedtls-gcm-contextc-wrapper/private_acceleration(^s: mbedtls-gcm-contextc<s::S>): int
+  s.with-ptr(mbedtls-gcm-context-ptr/private_acceleration).int
+
+pub inline fun mbedtls-gcm-contextcb-wrapper/private_acceleration(^s: mbedtls-gcm-contextcb<s::S>): int
+  s.with-ptr(mbedtls-gcm-context-ptr/private_acceleration).int
+
+pub inline fun mbedtls-gcm-contextc-wrapper/set-private_acceleration(^s: mbedtls-gcm-contextc<s::S>, private_acceleration: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-gcm-context-ptr/set-private_acceleration(private_acceleration.int8))
+
+pub inline fun mbedtls-gcm-contextcb-wrapper/set-private_acceleration(^s: mbedtls-gcm-contextcb<s::S>, private_acceleration: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-gcm-context-ptr/set-private_acceleration(private_acceleration.int8))
+
 // \brief    The CCM context-type definition. The CCM context is passed
 // to the APIs called.
 pub type mbedtls-ccm-context-c
-alias mbedtls-ccm-contextc<s::S> = owned-c<mbedtls-ccm-context-c>
-alias mbedtls-ccm-contextcb<s::S> = borrowed-c<s,mbedtls-ccm-context-c>
-alias mbedtls-ccm-contextca<s::S> = owned-c<c-array<mbedtls-ccm-context-c>>
+pub alias mbedtls-ccm-contextc<s::S> = owned-c<mbedtls-ccm-context-c>
+pub alias mbedtls-ccm-contextcb<s::S> = borrowed-c<s,mbedtls-ccm-context-c>
+pub alias mbedtls-ccm-contextca<s::S> = owned-c<c-array<mbedtls-ccm-context>>
 
 extern mbedtls-ccm-context/size-of(c: c-null<mbedtls-ccm-context-c>): int32
-  c inline "sizeof(mbedtls_ccm_context)"
+  c inline "sizeof(struct mbedtls_ccm_context)"
 
 pub fun mbedtls-ccm-contextc(): mbedtls-ccm-contextc<s::S>
   malloc(?size-of=mbedtls-ccm-context/size-of)
@@ -4156,7 +5121,7 @@ pub fun mbedtls-ccm-contextc-array-calloc(n: int): mbedtls-ccm-contextca<s::S>
   malloc-c(n.int32, ?size-of=mbedtls-ccm-context/size-of)
 
 inline extern mbedtls-ccm-context-ptr/private_plaintext_len(s: intptr_t): ssize_t
-  c inline "((mbedtls_ccm_context*)#1)->private_plaintext_len"
+  c inline "(ssize_t)(((struct mbedtls_ccm_context*)#1)->private_plaintext_len)"
 
 pub inline fun mbedtls-ccm-contextc/private_plaintext_len(^s: mbedtls-ccm-contextc<s::S>): ssize_t
   s.with-ptr(mbedtls-ccm-context-ptr/private_plaintext_len)
@@ -4165,7 +5130,7 @@ pub inline fun mbedtls-ccm-contextcb/private_plaintext_len(^s: mbedtls-ccm-conte
   s.with-ptr(mbedtls-ccm-context-ptr/private_plaintext_len)
 
 inline extern mbedtls-ccm-context-ptr/set-private_plaintext_len(s: intptr_t, private_plaintext_len: ssize_t): ()
-  c inline "((mbedtls_ccm_context*)#1)->private_plaintext_len = #2"
+  c inline "((struct mbedtls_ccm_context*)#1)->private_plaintext_len = (ssize_t)#2"
 
 pub inline fun mbedtls-ccm-contextc/set-private_plaintext_len(^s: mbedtls-ccm-contextc<s::S>, private_plaintext_len: ssize_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ccm-context-ptr/set-private_plaintext_len(private_plaintext_len))
@@ -4174,7 +5139,7 @@ pub inline fun mbedtls-ccm-contextcb/set-private_plaintext_len(^s: mbedtls-ccm-c
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ccm-context-ptr/set-private_plaintext_len(private_plaintext_len))
 
 inline extern mbedtls-ccm-context-ptr/private_add_len(s: intptr_t): ssize_t
-  c inline "((mbedtls_ccm_context*)#1)->private_add_len"
+  c inline "(ssize_t)(((struct mbedtls_ccm_context*)#1)->private_add_len)"
 
 pub inline fun mbedtls-ccm-contextc/private_add_len(^s: mbedtls-ccm-contextc<s::S>): ssize_t
   s.with-ptr(mbedtls-ccm-context-ptr/private_add_len)
@@ -4183,7 +5148,7 @@ pub inline fun mbedtls-ccm-contextcb/private_add_len(^s: mbedtls-ccm-contextcb<s
   s.with-ptr(mbedtls-ccm-context-ptr/private_add_len)
 
 inline extern mbedtls-ccm-context-ptr/set-private_add_len(s: intptr_t, private_add_len: ssize_t): ()
-  c inline "((mbedtls_ccm_context*)#1)->private_add_len = #2"
+  c inline "((struct mbedtls_ccm_context*)#1)->private_add_len = (ssize_t)#2"
 
 pub inline fun mbedtls-ccm-contextc/set-private_add_len(^s: mbedtls-ccm-contextc<s::S>, private_add_len: ssize_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ccm-context-ptr/set-private_add_len(private_add_len))
@@ -4192,7 +5157,7 @@ pub inline fun mbedtls-ccm-contextcb/set-private_add_len(^s: mbedtls-ccm-context
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ccm-context-ptr/set-private_add_len(private_add_len))
 
 inline extern mbedtls-ccm-context-ptr/private_tag_len(s: intptr_t): ssize_t
-  c inline "((mbedtls_ccm_context*)#1)->private_tag_len"
+  c inline "(ssize_t)(((struct mbedtls_ccm_context*)#1)->private_tag_len)"
 
 pub inline fun mbedtls-ccm-contextc/private_tag_len(^s: mbedtls-ccm-contextc<s::S>): ssize_t
   s.with-ptr(mbedtls-ccm-context-ptr/private_tag_len)
@@ -4201,7 +5166,7 @@ pub inline fun mbedtls-ccm-contextcb/private_tag_len(^s: mbedtls-ccm-contextcb<s
   s.with-ptr(mbedtls-ccm-context-ptr/private_tag_len)
 
 inline extern mbedtls-ccm-context-ptr/set-private_tag_len(s: intptr_t, private_tag_len: ssize_t): ()
-  c inline "((mbedtls_ccm_context*)#1)->private_tag_len = #2"
+  c inline "((struct mbedtls_ccm_context*)#1)->private_tag_len = (ssize_t)#2"
 
 pub inline fun mbedtls-ccm-contextc/set-private_tag_len(^s: mbedtls-ccm-contextc<s::S>, private_tag_len: ssize_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ccm-context-ptr/set-private_tag_len(private_tag_len))
@@ -4210,7 +5175,7 @@ pub inline fun mbedtls-ccm-contextcb/set-private_tag_len(^s: mbedtls-ccm-context
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ccm-context-ptr/set-private_tag_len(private_tag_len))
 
 inline extern mbedtls-ccm-context-ptr/private_processed(s: intptr_t): ssize_t
-  c inline "((mbedtls_ccm_context*)#1)->private_processed"
+  c inline "(ssize_t)(((struct mbedtls_ccm_context*)#1)->private_processed)"
 
 pub inline fun mbedtls-ccm-contextc/private_processed(^s: mbedtls-ccm-contextc<s::S>): ssize_t
   s.with-ptr(mbedtls-ccm-context-ptr/private_processed)
@@ -4219,7 +5184,7 @@ pub inline fun mbedtls-ccm-contextcb/private_processed(^s: mbedtls-ccm-contextcb
   s.with-ptr(mbedtls-ccm-context-ptr/private_processed)
 
 inline extern mbedtls-ccm-context-ptr/set-private_processed(s: intptr_t, private_processed: ssize_t): ()
-  c inline "((mbedtls_ccm_context*)#1)->private_processed = #2"
+  c inline "((struct mbedtls_ccm_context*)#1)->private_processed = (ssize_t)#2"
 
 pub inline fun mbedtls-ccm-contextc/set-private_processed(^s: mbedtls-ccm-contextc<s::S>, private_processed: ssize_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ccm-context-ptr/set-private_processed(private_processed))
@@ -4228,7 +5193,7 @@ pub inline fun mbedtls-ccm-contextcb/set-private_processed(^s: mbedtls-ccm-conte
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ccm-context-ptr/set-private_processed(private_processed))
 
 inline extern mbedtls-ccm-context-ptr/private_q(s: intptr_t): int32
-  c inline "((mbedtls_ccm_context*)#1)->private_q"
+  c inline "(unsigned int)(((struct mbedtls_ccm_context*)#1)->private_q)"
 
 pub inline fun mbedtls-ccm-contextc/private_q(^s: mbedtls-ccm-contextc<s::S>): int32
   s.with-ptr(mbedtls-ccm-context-ptr/private_q)
@@ -4237,7 +5202,7 @@ pub inline fun mbedtls-ccm-contextcb/private_q(^s: mbedtls-ccm-contextcb<s::S>):
   s.with-ptr(mbedtls-ccm-context-ptr/private_q)
 
 inline extern mbedtls-ccm-context-ptr/set-private_q(s: intptr_t, private_q: int32): ()
-  c inline "((mbedtls_ccm_context*)#1)->private_q = #2"
+  c inline "((struct mbedtls_ccm_context*)#1)->private_q = (unsigned int)#2"
 
 pub inline fun mbedtls-ccm-contextc/set-private_q(^s: mbedtls-ccm-contextc<s::S>, private_q: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ccm-context-ptr/set-private_q(private_q))
@@ -4245,8 +5210,20 @@ pub inline fun mbedtls-ccm-contextc/set-private_q(^s: mbedtls-ccm-contextc<s::S>
 pub inline fun mbedtls-ccm-contextcb/set-private_q(^s: mbedtls-ccm-contextcb<s::S>, private_q: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ccm-context-ptr/set-private_q(private_q))
 
+pub inline fun mbedtls-ccm-contextc-wrapper/private_q(^s: mbedtls-ccm-contextc<s::S>): int
+  s.with-ptr(mbedtls-ccm-context-ptr/private_q).int
+
+pub inline fun mbedtls-ccm-contextcb-wrapper/private_q(^s: mbedtls-ccm-contextcb<s::S>): int
+  s.with-ptr(mbedtls-ccm-context-ptr/private_q).int
+
+pub inline fun mbedtls-ccm-contextc-wrapper/set-private_q(^s: mbedtls-ccm-contextc<s::S>, private_q: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ccm-context-ptr/set-private_q(private_q.int32))
+
+pub inline fun mbedtls-ccm-contextcb-wrapper/set-private_q(^s: mbedtls-ccm-contextcb<s::S>, private_q: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ccm-context-ptr/set-private_q(private_q.int32))
+
 inline extern mbedtls-ccm-context-ptr/private_mode(s: intptr_t): int32
-  c inline "((mbedtls_ccm_context*)#1)->private_mode"
+  c inline "(unsigned int)(((struct mbedtls_ccm_context*)#1)->private_mode)"
 
 pub inline fun mbedtls-ccm-contextc/private_mode(^s: mbedtls-ccm-contextc<s::S>): int32
   s.with-ptr(mbedtls-ccm-context-ptr/private_mode)
@@ -4255,7 +5232,7 @@ pub inline fun mbedtls-ccm-contextcb/private_mode(^s: mbedtls-ccm-contextcb<s::S
   s.with-ptr(mbedtls-ccm-context-ptr/private_mode)
 
 inline extern mbedtls-ccm-context-ptr/set-private_mode(s: intptr_t, private_mode: int32): ()
-  c inline "((mbedtls_ccm_context*)#1)->private_mode = #2"
+  c inline "((struct mbedtls_ccm_context*)#1)->private_mode = (unsigned int)#2"
 
 pub inline fun mbedtls-ccm-contextc/set-private_mode(^s: mbedtls-ccm-contextc<s::S>, private_mode: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ccm-context-ptr/set-private_mode(private_mode))
@@ -4263,8 +5240,20 @@ pub inline fun mbedtls-ccm-contextc/set-private_mode(^s: mbedtls-ccm-contextc<s:
 pub inline fun mbedtls-ccm-contextcb/set-private_mode(^s: mbedtls-ccm-contextcb<s::S>, private_mode: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ccm-context-ptr/set-private_mode(private_mode))
 
+pub inline fun mbedtls-ccm-contextc-wrapper/private_mode(^s: mbedtls-ccm-contextc<s::S>): int
+  s.with-ptr(mbedtls-ccm-context-ptr/private_mode).int
+
+pub inline fun mbedtls-ccm-contextcb-wrapper/private_mode(^s: mbedtls-ccm-contextcb<s::S>): int
+  s.with-ptr(mbedtls-ccm-context-ptr/private_mode).int
+
+pub inline fun mbedtls-ccm-contextc-wrapper/set-private_mode(^s: mbedtls-ccm-contextc<s::S>, private_mode: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ccm-context-ptr/set-private_mode(private_mode.int32))
+
+pub inline fun mbedtls-ccm-contextcb-wrapper/set-private_mode(^s: mbedtls-ccm-contextcb<s::S>, private_mode: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ccm-context-ptr/set-private_mode(private_mode.int32))
+
 inline extern mbedtls-ccm-context-ptr/private_cipher_ctx(s: intptr_t): mbedtls-cipher-context-t-c
-  c inline "((mbedtls_ccm_context*)#1)->private_cipher_ctx"
+  c inline "(mbedtls_cipher_context_t)(((struct mbedtls_ccm_context*)#1)->private_cipher_ctx)"
 
 pub inline fun mbedtls-ccm-contextc/private_cipher_ctx(^s: mbedtls-ccm-contextc<s::S>): mbedtls-cipher-context-t-c
   s.with-ptr(mbedtls-ccm-context-ptr/private_cipher_ctx)
@@ -4273,7 +5262,7 @@ pub inline fun mbedtls-ccm-contextcb/private_cipher_ctx(^s: mbedtls-ccm-contextc
   s.with-ptr(mbedtls-ccm-context-ptr/private_cipher_ctx)
 
 inline extern mbedtls-ccm-context-ptr/set-private_cipher_ctx(s: intptr_t, private_cipher_ctx: mbedtls-cipher-context-t-c): ()
-  c inline "((mbedtls_ccm_context*)#1)->private_cipher_ctx = #2"
+  c inline "((struct mbedtls_ccm_context*)#1)->private_cipher_ctx = (mbedtls_cipher_context_t)#2"
 
 pub inline fun mbedtls-ccm-contextc/set-private_cipher_ctx(^s: mbedtls-ccm-contextc<s::S>, private_cipher_ctx: mbedtls-cipher-context-t-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ccm-context-ptr/set-private_cipher_ctx(private_cipher_ctx))
@@ -4282,7 +5271,7 @@ pub inline fun mbedtls-ccm-contextcb/set-private_cipher_ctx(^s: mbedtls-ccm-cont
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ccm-context-ptr/set-private_cipher_ctx(private_cipher_ctx))
 
 inline extern mbedtls-ccm-context-ptr/private_state(s: intptr_t): int32
-  c inline "((mbedtls_ccm_context*)#1)->private_state"
+  c inline "(int)(((struct mbedtls_ccm_context*)#1)->private_state)"
 
 pub inline fun mbedtls-ccm-contextc/private_state(^s: mbedtls-ccm-contextc<s::S>): int32
   s.with-ptr(mbedtls-ccm-context-ptr/private_state)
@@ -4291,7 +5280,7 @@ pub inline fun mbedtls-ccm-contextcb/private_state(^s: mbedtls-ccm-contextcb<s::
   s.with-ptr(mbedtls-ccm-context-ptr/private_state)
 
 inline extern mbedtls-ccm-context-ptr/set-private_state(s: intptr_t, private_state: int32): ()
-  c inline "((mbedtls_ccm_context*)#1)->private_state = #2"
+  c inline "((struct mbedtls_ccm_context*)#1)->private_state = (int)#2"
 
 pub inline fun mbedtls-ccm-contextc/set-private_state(^s: mbedtls-ccm-contextc<s::S>, private_state: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ccm-context-ptr/set-private_state(private_state))
@@ -4299,13 +5288,25 @@ pub inline fun mbedtls-ccm-contextc/set-private_state(^s: mbedtls-ccm-contextc<s
 pub inline fun mbedtls-ccm-contextcb/set-private_state(^s: mbedtls-ccm-contextcb<s::S>, private_state: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ccm-context-ptr/set-private_state(private_state))
 
+pub inline fun mbedtls-ccm-contextc-wrapper/private_state(^s: mbedtls-ccm-contextc<s::S>): int
+  s.with-ptr(mbedtls-ccm-context-ptr/private_state).int
+
+pub inline fun mbedtls-ccm-contextcb-wrapper/private_state(^s: mbedtls-ccm-contextcb<s::S>): int
+  s.with-ptr(mbedtls-ccm-context-ptr/private_state).int
+
+pub inline fun mbedtls-ccm-contextc-wrapper/set-private_state(^s: mbedtls-ccm-contextc<s::S>, private_state: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ccm-context-ptr/set-private_state(private_state.int32))
+
+pub inline fun mbedtls-ccm-contextcb-wrapper/set-private_state(^s: mbedtls-ccm-contextcb<s::S>, private_state: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ccm-context-ptr/set-private_state(private_state.int32))
+
 pub type mbedtls-poly1305-context-c
-alias mbedtls-poly1305-contextc<s::S> = owned-c<mbedtls-poly1305-context-c>
-alias mbedtls-poly1305-contextcb<s::S> = borrowed-c<s,mbedtls-poly1305-context-c>
-alias mbedtls-poly1305-contextca<s::S> = owned-c<c-array<mbedtls-poly1305-context-c>>
+pub alias mbedtls-poly1305-contextc<s::S> = owned-c<mbedtls-poly1305-context-c>
+pub alias mbedtls-poly1305-contextcb<s::S> = borrowed-c<s,mbedtls-poly1305-context-c>
+pub alias mbedtls-poly1305-contextca<s::S> = owned-c<c-array<mbedtls-poly1305-context>>
 
 extern mbedtls-poly1305-context/size-of(c: c-null<mbedtls-poly1305-context-c>): int32
-  c inline "sizeof(mbedtls_poly1305_context)"
+  c inline "sizeof(struct mbedtls_poly1305_context)"
 
 pub fun mbedtls-poly1305-contextc(): mbedtls-poly1305-contextc<s::S>
   malloc(?size-of=mbedtls-poly1305-context/size-of)
@@ -4320,7 +5321,7 @@ pub fun mbedtls-poly1305-contextc-array-calloc(n: int): mbedtls-poly1305-context
   malloc-c(n.int32, ?size-of=mbedtls-poly1305-context/size-of)
 
 inline extern mbedtls-poly1305-context-ptr/private_queue_len(s: intptr_t): ssize_t
-  c inline "((mbedtls_poly1305_context*)#1)->private_queue_len"
+  c inline "(ssize_t)(((struct mbedtls_poly1305_context*)#1)->private_queue_len)"
 
 pub inline fun mbedtls-poly1305-contextc/private_queue_len(^s: mbedtls-poly1305-contextc<s::S>): ssize_t
   s.with-ptr(mbedtls-poly1305-context-ptr/private_queue_len)
@@ -4329,7 +5330,7 @@ pub inline fun mbedtls-poly1305-contextcb/private_queue_len(^s: mbedtls-poly1305
   s.with-ptr(mbedtls-poly1305-context-ptr/private_queue_len)
 
 inline extern mbedtls-poly1305-context-ptr/set-private_queue_len(s: intptr_t, private_queue_len: ssize_t): ()
-  c inline "((mbedtls_poly1305_context*)#1)->private_queue_len = #2"
+  c inline "((struct mbedtls_poly1305_context*)#1)->private_queue_len = (ssize_t)#2"
 
 pub inline fun mbedtls-poly1305-contextc/set-private_queue_len(^s: mbedtls-poly1305-contextc<s::S>, private_queue_len: ssize_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-poly1305-context-ptr/set-private_queue_len(private_queue_len))
@@ -4338,12 +5339,12 @@ pub inline fun mbedtls-poly1305-contextcb/set-private_queue_len(^s: mbedtls-poly
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-poly1305-context-ptr/set-private_queue_len(private_queue_len))
 
 pub type mbedtls-chacha20-context-c
-alias mbedtls-chacha20-contextc<s::S> = owned-c<mbedtls-chacha20-context-c>
-alias mbedtls-chacha20-contextcb<s::S> = borrowed-c<s,mbedtls-chacha20-context-c>
-alias mbedtls-chacha20-contextca<s::S> = owned-c<c-array<mbedtls-chacha20-context-c>>
+pub alias mbedtls-chacha20-contextc<s::S> = owned-c<mbedtls-chacha20-context-c>
+pub alias mbedtls-chacha20-contextcb<s::S> = borrowed-c<s,mbedtls-chacha20-context-c>
+pub alias mbedtls-chacha20-contextca<s::S> = owned-c<c-array<mbedtls-chacha20-context>>
 
 extern mbedtls-chacha20-context/size-of(c: c-null<mbedtls-chacha20-context-c>): int32
-  c inline "sizeof(mbedtls_chacha20_context)"
+  c inline "sizeof(struct mbedtls_chacha20_context)"
 
 pub fun mbedtls-chacha20-contextc(): mbedtls-chacha20-contextc<s::S>
   malloc(?size-of=mbedtls-chacha20-context/size-of)
@@ -4358,7 +5359,7 @@ pub fun mbedtls-chacha20-contextc-array-calloc(n: int): mbedtls-chacha20-context
   malloc-c(n.int32, ?size-of=mbedtls-chacha20-context/size-of)
 
 inline extern mbedtls-chacha20-context-ptr/private_keystream_bytes_used(s: intptr_t): ssize_t
-  c inline "((mbedtls_chacha20_context*)#1)->private_keystream_bytes_used"
+  c inline "(ssize_t)(((struct mbedtls_chacha20_context*)#1)->private_keystream_bytes_used)"
 
 pub inline fun mbedtls-chacha20-contextc/private_keystream_bytes_used(^s: mbedtls-chacha20-contextc<s::S>): ssize_t
   s.with-ptr(mbedtls-chacha20-context-ptr/private_keystream_bytes_used)
@@ -4367,7 +5368,7 @@ pub inline fun mbedtls-chacha20-contextcb/private_keystream_bytes_used(^s: mbedt
   s.with-ptr(mbedtls-chacha20-context-ptr/private_keystream_bytes_used)
 
 inline extern mbedtls-chacha20-context-ptr/set-private_keystream_bytes_used(s: intptr_t, private_keystream_bytes_used: ssize_t): ()
-  c inline "((mbedtls_chacha20_context*)#1)->private_keystream_bytes_used = #2"
+  c inline "((struct mbedtls_chacha20_context*)#1)->private_keystream_bytes_used = (ssize_t)#2"
 
 pub inline fun mbedtls-chacha20-contextc/set-private_keystream_bytes_used(^s: mbedtls-chacha20-contextc<s::S>, private_keystream_bytes_used: ssize_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-chacha20-context-ptr/set-private_keystream_bytes_used(private_keystream_bytes_used))
@@ -4376,20 +5377,20 @@ pub inline fun mbedtls-chacha20-contextcb/set-private_keystream_bytes_used(^s: m
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-chacha20-context-ptr/set-private_keystream_bytes_used(private_keystream_bytes_used))
 
 pub struct mbedtls-chachapoly-context
-  private-chacha20-ctx: mbedtls-chacha20-context-c
-  private-poly1305-ctx: mbedtls-poly1305-context-c
-  private-aad-len: int64
-  private-ciphertext-len: int64
-  private-state: int32
+  private-chacha20-ctx: mbedtls-chacha20-context
+  private-poly1305-ctx: mbedtls-poly1305-context
+  private-aad-len: int
+  private-ciphertext-len: int
+  private-state: int
   private-mode: int32
 
 pub type mbedtls-chachapoly-context-c
-alias mbedtls-chachapoly-contextc = owned-c<mbedtls-chachapoly-context-c>
-alias mbedtls-chachapoly-contextcb<s::S> = borrowed-c<s,mbedtls-chachapoly-context-c>
-alias mbedtls-chachapoly-contextca = owned-c<c-array<mbedtls-chachapoly-context-c>>
+pub alias mbedtls-chachapoly-contextc = owned-c<mbedtls-chachapoly-context-c>
+pub alias mbedtls-chachapoly-contextcb<s::S> = borrowed-c<s,mbedtls-chachapoly-context-c>
+pub alias mbedtls-chachapoly-contextca = owned-c<c-array<mbedtls-chachapoly-context>>
 
 extern mbedtls-chachapoly-context/size-of(c: c-null<mbedtls-chachapoly-context-c>): int32
-  c inline "sizeof(mbedtls_chachapoly_context)"
+  c inline "sizeof(struct mbedtls_chachapoly_context)"
 
 pub fun mbedtls-chachapoly-contextc(): mbedtls-chachapoly-contextc
   malloc(?size-of=mbedtls-chachapoly-context/size-of)
@@ -4404,7 +5405,7 @@ pub fun mbedtls-chachapoly-contextc-array-calloc(n: int): mbedtls-chachapoly-con
   malloc-c(n.int32, ?size-of=mbedtls-chachapoly-context/size-of)
 
 inline extern mbedtls-chachapoly-context-ptr/private-chacha20-ctx(s: intptr_t): mbedtls-chacha20-context-c
-  c inline "((mbedtls_chachapoly_context*)#1)->private_chacha20_ctx"
+  c inline "(mbedtls_chacha20_context)(((struct mbedtls_chachapoly_context*)#1)->private_chacha20_ctx)"
 
 pub inline fun mbedtls-chachapoly-contextc/private-chacha20-ctx(^s: mbedtls-chachapoly-contextc): mbedtls-chacha20-context-c
   s.with-ptr(mbedtls-chachapoly-context-ptr/private-chacha20-ctx)
@@ -4413,7 +5414,7 @@ pub inline fun mbedtls-chachapoly-contextcb/private-chacha20-ctx(^s: mbedtls-cha
   s.with-ptr(mbedtls-chachapoly-context-ptr/private-chacha20-ctx)
 
 inline extern mbedtls-chachapoly-context-ptr/set-private-chacha20-ctx(s: intptr_t, private-chacha20-ctx: mbedtls-chacha20-context-c): ()
-  c inline "((mbedtls_chachapoly_context*)#1)->private_chacha20_ctx = #2"
+  c inline "((struct mbedtls_chachapoly_context*)#1)->private_chacha20_ctx = (mbedtls_chacha20_context)#2"
 
 pub inline fun mbedtls-chachapoly-contextc/set-private-chacha20-ctx(^s: mbedtls-chachapoly-contextc, private-chacha20-ctx: mbedtls-chacha20-context-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-chachapoly-context-ptr/set-private-chacha20-ctx(private-chacha20-ctx))
@@ -4422,7 +5423,7 @@ pub inline fun mbedtls-chachapoly-contextcb/set-private-chacha20-ctx(^s: mbedtls
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-chachapoly-context-ptr/set-private-chacha20-ctx(private-chacha20-ctx))
 
 inline extern mbedtls-chachapoly-context-ptr/private-poly1305-ctx(s: intptr_t): mbedtls-poly1305-context-c
-  c inline "((mbedtls_chachapoly_context*)#1)->private_poly1305_ctx"
+  c inline "(mbedtls_poly1305_context)(((struct mbedtls_chachapoly_context*)#1)->private_poly1305_ctx)"
 
 pub inline fun mbedtls-chachapoly-contextc/private-poly1305-ctx(^s: mbedtls-chachapoly-contextc): mbedtls-poly1305-context-c
   s.with-ptr(mbedtls-chachapoly-context-ptr/private-poly1305-ctx)
@@ -4431,7 +5432,7 @@ pub inline fun mbedtls-chachapoly-contextcb/private-poly1305-ctx(^s: mbedtls-cha
   s.with-ptr(mbedtls-chachapoly-context-ptr/private-poly1305-ctx)
 
 inline extern mbedtls-chachapoly-context-ptr/set-private-poly1305-ctx(s: intptr_t, private-poly1305-ctx: mbedtls-poly1305-context-c): ()
-  c inline "((mbedtls_chachapoly_context*)#1)->private_poly1305_ctx = #2"
+  c inline "((struct mbedtls_chachapoly_context*)#1)->private_poly1305_ctx = (mbedtls_poly1305_context)#2"
 
 pub inline fun mbedtls-chachapoly-contextc/set-private-poly1305-ctx(^s: mbedtls-chachapoly-contextc, private-poly1305-ctx: mbedtls-poly1305-context-c): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-chachapoly-context-ptr/set-private-poly1305-ctx(private-poly1305-ctx))
@@ -4440,7 +5441,7 @@ pub inline fun mbedtls-chachapoly-contextcb/set-private-poly1305-ctx(^s: mbedtls
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-chachapoly-context-ptr/set-private-poly1305-ctx(private-poly1305-ctx))
 
 inline extern mbedtls-chachapoly-context-ptr/private-aad-len(s: intptr_t): int64
-  c inline "((mbedtls_chachapoly_context*)#1)->private_aad_len"
+  c inline "(int64_t)(((struct mbedtls_chachapoly_context*)#1)->private_aad_len)"
 
 pub inline fun mbedtls-chachapoly-contextc/private-aad-len(^s: mbedtls-chachapoly-contextc): int64
   s.with-ptr(mbedtls-chachapoly-context-ptr/private-aad-len)
@@ -4449,7 +5450,7 @@ pub inline fun mbedtls-chachapoly-contextcb/private-aad-len(^s: mbedtls-chachapo
   s.with-ptr(mbedtls-chachapoly-context-ptr/private-aad-len)
 
 inline extern mbedtls-chachapoly-context-ptr/set-private-aad-len(s: intptr_t, private-aad-len: int64): ()
-  c inline "((mbedtls_chachapoly_context*)#1)->private_aad_len = #2"
+  c inline "((struct mbedtls_chachapoly_context*)#1)->private_aad_len = (int64_t)#2"
 
 pub inline fun mbedtls-chachapoly-contextc/set-private-aad-len(^s: mbedtls-chachapoly-contextc, private-aad-len: int64): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-chachapoly-context-ptr/set-private-aad-len(private-aad-len))
@@ -4457,8 +5458,20 @@ pub inline fun mbedtls-chachapoly-contextc/set-private-aad-len(^s: mbedtls-chach
 pub inline fun mbedtls-chachapoly-contextcb/set-private-aad-len(^s: mbedtls-chachapoly-contextcb<s::S>, private-aad-len: int64): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-chachapoly-context-ptr/set-private-aad-len(private-aad-len))
 
+pub inline fun mbedtls-chachapoly-contextc-wrapper/private-aad-len(^s: mbedtls-chachapoly-contextc): int
+  s.with-ptr(mbedtls-chachapoly-context-ptr/private-aad-len).int
+
+pub inline fun mbedtls-chachapoly-contextcb-wrapper/private-aad-len(^s: mbedtls-chachapoly-contextcb<s::S>): int
+  s.with-ptr(mbedtls-chachapoly-context-ptr/private-aad-len).int
+
+pub inline fun mbedtls-chachapoly-contextc-wrapper/set-private-aad-len(^s: mbedtls-chachapoly-contextc, private-aad-len: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-chachapoly-context-ptr/set-private-aad-len(private-aad-len.int64))
+
+pub inline fun mbedtls-chachapoly-contextcb-wrapper/set-private-aad-len(^s: mbedtls-chachapoly-contextcb<s::S>, private-aad-len: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-chachapoly-context-ptr/set-private-aad-len(private-aad-len.int64))
+
 inline extern mbedtls-chachapoly-context-ptr/private-ciphertext-len(s: intptr_t): int64
-  c inline "((mbedtls_chachapoly_context*)#1)->private_ciphertext_len"
+  c inline "(int64_t)(((struct mbedtls_chachapoly_context*)#1)->private_ciphertext_len)"
 
 pub inline fun mbedtls-chachapoly-contextc/private-ciphertext-len(^s: mbedtls-chachapoly-contextc): int64
   s.with-ptr(mbedtls-chachapoly-context-ptr/private-ciphertext-len)
@@ -4467,7 +5480,7 @@ pub inline fun mbedtls-chachapoly-contextcb/private-ciphertext-len(^s: mbedtls-c
   s.with-ptr(mbedtls-chachapoly-context-ptr/private-ciphertext-len)
 
 inline extern mbedtls-chachapoly-context-ptr/set-private-ciphertext-len(s: intptr_t, private-ciphertext-len: int64): ()
-  c inline "((mbedtls_chachapoly_context*)#1)->private_ciphertext_len = #2"
+  c inline "((struct mbedtls_chachapoly_context*)#1)->private_ciphertext_len = (int64_t)#2"
 
 pub inline fun mbedtls-chachapoly-contextc/set-private-ciphertext-len(^s: mbedtls-chachapoly-contextc, private-ciphertext-len: int64): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-chachapoly-context-ptr/set-private-ciphertext-len(private-ciphertext-len))
@@ -4475,8 +5488,20 @@ pub inline fun mbedtls-chachapoly-contextc/set-private-ciphertext-len(^s: mbedtl
 pub inline fun mbedtls-chachapoly-contextcb/set-private-ciphertext-len(^s: mbedtls-chachapoly-contextcb<s::S>, private-ciphertext-len: int64): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-chachapoly-context-ptr/set-private-ciphertext-len(private-ciphertext-len))
 
+pub inline fun mbedtls-chachapoly-contextc-wrapper/private-ciphertext-len(^s: mbedtls-chachapoly-contextc): int
+  s.with-ptr(mbedtls-chachapoly-context-ptr/private-ciphertext-len).int
+
+pub inline fun mbedtls-chachapoly-contextcb-wrapper/private-ciphertext-len(^s: mbedtls-chachapoly-contextcb<s::S>): int
+  s.with-ptr(mbedtls-chachapoly-context-ptr/private-ciphertext-len).int
+
+pub inline fun mbedtls-chachapoly-contextc-wrapper/set-private-ciphertext-len(^s: mbedtls-chachapoly-contextc, private-ciphertext-len: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-chachapoly-context-ptr/set-private-ciphertext-len(private-ciphertext-len.int64))
+
+pub inline fun mbedtls-chachapoly-contextcb-wrapper/set-private-ciphertext-len(^s: mbedtls-chachapoly-contextcb<s::S>, private-ciphertext-len: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-chachapoly-context-ptr/set-private-ciphertext-len(private-ciphertext-len.int64))
+
 inline extern mbedtls-chachapoly-context-ptr/private-state(s: intptr_t): int32
-  c inline "((mbedtls_chachapoly_context*)#1)->private_state"
+  c inline "(int)(((struct mbedtls_chachapoly_context*)#1)->private_state)"
 
 pub inline fun mbedtls-chachapoly-contextc/private-state(^s: mbedtls-chachapoly-contextc): int32
   s.with-ptr(mbedtls-chachapoly-context-ptr/private-state)
@@ -4485,7 +5510,7 @@ pub inline fun mbedtls-chachapoly-contextcb/private-state(^s: mbedtls-chachapoly
   s.with-ptr(mbedtls-chachapoly-context-ptr/private-state)
 
 inline extern mbedtls-chachapoly-context-ptr/set-private-state(s: intptr_t, private-state: int32): ()
-  c inline "((mbedtls_chachapoly_context*)#1)->private_state = #2"
+  c inline "((struct mbedtls_chachapoly_context*)#1)->private_state = (int)#2"
 
 pub inline fun mbedtls-chachapoly-contextc/set-private-state(^s: mbedtls-chachapoly-contextc, private-state: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-chachapoly-context-ptr/set-private-state(private-state))
@@ -4493,8 +5518,20 @@ pub inline fun mbedtls-chachapoly-contextc/set-private-state(^s: mbedtls-chachap
 pub inline fun mbedtls-chachapoly-contextcb/set-private-state(^s: mbedtls-chachapoly-contextcb<s::S>, private-state: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-chachapoly-context-ptr/set-private-state(private-state))
 
+pub inline fun mbedtls-chachapoly-contextc-wrapper/private-state(^s: mbedtls-chachapoly-contextc): int
+  s.with-ptr(mbedtls-chachapoly-context-ptr/private-state).int
+
+pub inline fun mbedtls-chachapoly-contextcb-wrapper/private-state(^s: mbedtls-chachapoly-contextcb<s::S>): int
+  s.with-ptr(mbedtls-chachapoly-context-ptr/private-state).int
+
+pub inline fun mbedtls-chachapoly-contextc-wrapper/set-private-state(^s: mbedtls-chachapoly-contextc, private-state: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-chachapoly-context-ptr/set-private-state(private-state.int32))
+
+pub inline fun mbedtls-chachapoly-contextcb-wrapper/set-private-state(^s: mbedtls-chachapoly-contextcb<s::S>, private-state: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-chachapoly-context-ptr/set-private-state(private-state.int32))
+
 inline extern mbedtls-chachapoly-context-ptr/private-mode(s: intptr_t): int32
-  c inline "((mbedtls_chachapoly_context*)#1)->private_mode"
+  c inline "(int32_t)(((struct mbedtls_chachapoly_context*)#1)->private_mode)"
 
 pub inline fun mbedtls-chachapoly-contextc/private-mode(^s: mbedtls-chachapoly-contextc): int32
   s.with-ptr(mbedtls-chachapoly-context-ptr/private-mode)
@@ -4503,7 +5540,7 @@ pub inline fun mbedtls-chachapoly-contextcb/private-mode(^s: mbedtls-chachapoly-
   s.with-ptr(mbedtls-chachapoly-context-ptr/private-mode)
 
 inline extern mbedtls-chachapoly-context-ptr/set-private-mode(s: intptr_t, private-mode: int32): ()
-  c inline "((mbedtls_chachapoly_context*)#1)->private_mode = #2"
+  c inline "((struct mbedtls_chachapoly_context*)#1)->private_mode = (int32_t)#2"
 
 pub inline fun mbedtls-chachapoly-contextc/set-private-mode(^s: mbedtls-chachapoly-contextc, private-mode: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-chachapoly-context-ptr/set-private-mode(private-mode))
@@ -4512,24 +5549,33 @@ pub inline fun mbedtls-chachapoly-contextcb/set-private-mode(^s: mbedtls-chachap
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-chachapoly-context-ptr/set-private-mode(private-mode))
 
 pub fun mbedtls-chachapoly-context/to-koka(s: mbedtls-chachapoly-contextc): mbedtls-chachapoly-context
-  Mbedtls-chachapoly-context(s.mbedtls-chachapoly-contextc/private-chacha20-ctx, s.mbedtls-chachapoly-contextc/private-poly1305-ctx, s.mbedtls-chachapoly-contextc/private-aad-len, s.mbedtls-chachapoly-contextc/private-ciphertext-len, s.mbedtls-chachapoly-contextc/private-state, s.mbedtls-chachapoly-contextc/private-mode)
-pub type mbedtls-psa-aead-operation-t-c
-alias mbedtls-psa-aead-operation-t-cc = owned-c<mbedtls-psa-aead-operation-t-c>
-alias mbedtls-psa-aead-operation-t-ccb<s::S> = borrowed-c<s,mbedtls-psa-aead-operation-t-c>
-alias mbedtls-psa-aead-operation-t-cca = owned-c<c-array<mbedtls-psa-aead-operation-t-c>>
+  Mbedtls-chachapoly-context(s.mbedtls-chachapoly-contextc/private-chacha20-ctx, s.mbedtls-chachapoly-contextc/private-poly1305-ctx, s.mbedtls-chachapoly-contextc/private-aad-len.int, s.mbedtls-chachapoly-contextc/private-ciphertext-len.int, s.mbedtls-chachapoly-contextc/private-state.int, s.mbedtls-chachapoly-contextc/private-mode)
 
+pub struct mbedtls-psa-aead-operation-t
+pub type mbedtls-psa-aead-operation-t-c
+pub alias mbedtls-psa-aead-operation-tc = owned-c<mbedtls-psa-aead-operation-t-c>
+pub alias mbedtls-psa-aead-operation-tcb<s::S> = borrowed-c<s,mbedtls-psa-aead-operation-t-c>
+pub alias mbedtls-psa-aead-operation-tca = owned-c<c-array<mbedtls-psa-aead-operation-t>>
+
+pub fun mbedtls-psa-aead-operation-t/to-koka(s: mbedtls-psa-aead-operation-tc): mbedtls-psa-aead-operation-t
+  Mbedtls-psa-aead-operation-t()
+
+pub struct psa-hkdf-key-derivation-t
 pub type psa-hkdf-key-derivation-t-c
-alias psa-hkdf-key-derivation-t-cc = owned-c<psa-hkdf-key-derivation-t-c>
-alias psa-hkdf-key-derivation-t-ccb<s::S> = borrowed-c<s,psa-hkdf-key-derivation-t-c>
-alias psa-hkdf-key-derivation-t-cca = owned-c<c-array<psa-hkdf-key-derivation-t-c>>
+pub alias psa-hkdf-key-derivation-tc = owned-c<psa-hkdf-key-derivation-t-c>
+pub alias psa-hkdf-key-derivation-tcb<s::S> = borrowed-c<s,psa-hkdf-key-derivation-t-c>
+pub alias psa-hkdf-key-derivation-tca = owned-c<c-array<psa-hkdf-key-derivation-t>>
+
+pub fun psa-hkdf-key-derivation-t/to-koka(s: psa-hkdf-key-derivation-tc): psa-hkdf-key-derivation-t
+  Psa-hkdf-key-derivation-t()
 
 pub type psa-tls12-ecjpake-to-pms-t-c
-alias psa-tls12-ecjpake-to-pms-tc<s::S> = owned-c<psa-tls12-ecjpake-to-pms-t-c>
-alias psa-tls12-ecjpake-to-pms-tcb<s::S> = borrowed-c<s,psa-tls12-ecjpake-to-pms-t-c>
-alias psa-tls12-ecjpake-to-pms-tca<s::S> = owned-c<c-array<psa-tls12-ecjpake-to-pms-t-c>>
+pub alias psa-tls12-ecjpake-to-pms-tc<s::S> = owned-c<psa-tls12-ecjpake-to-pms-t-c>
+pub alias psa-tls12-ecjpake-to-pms-tcb<s::S> = borrowed-c<s,psa-tls12-ecjpake-to-pms-t-c>
+pub alias psa-tls12-ecjpake-to-pms-tca<s::S> = owned-c<c-array<psa-tls12-ecjpake-to-pms-t>>
 
 extern psa-tls12-ecjpake-to-pms-t/size-of(c: c-null<psa-tls12-ecjpake-to-pms-t-c>): int32
-  c inline "sizeof(psa_tls12_ecjpake_to_pms_t)"
+  c inline "sizeof(struct psa_tls12_ecjpake_to_pms_t)"
 
 pub fun psa-tls12-ecjpake-to-pms-tc(): psa-tls12-ecjpake-to-pms-tc<s::S>
   malloc(?size-of=psa-tls12-ecjpake-to-pms-t/size-of)
@@ -4544,12 +5590,12 @@ pub fun psa-tls12-ecjpake-to-pms-tc-array-calloc(n: int): psa-tls12-ecjpake-to-p
   malloc-c(n.int32, ?size-of=psa-tls12-ecjpake-to-pms-t/size-of)
 
 pub type psa-tls12-prf-key-derivation-s-c
-alias psa-tls12-prf-key-derivation-sc<s::S> = owned-c<psa-tls12-prf-key-derivation-s-c>
-alias psa-tls12-prf-key-derivation-scb<s::S> = borrowed-c<s,psa-tls12-prf-key-derivation-s-c>
-alias psa-tls12-prf-key-derivation-sca<s::S> = owned-c<c-array<psa-tls12-prf-key-derivation-s-c>>
+pub alias psa-tls12-prf-key-derivation-sc<s::S> = owned-c<psa-tls12-prf-key-derivation-s-c>
+pub alias psa-tls12-prf-key-derivation-scb<s::S> = borrowed-c<s,psa-tls12-prf-key-derivation-s-c>
+pub alias psa-tls12-prf-key-derivation-sca<s::S> = owned-c<c-array<psa-tls12-prf-key-derivation-s>>
 
 extern psa-tls12-prf-key-derivation-s/size-of(c: c-null<psa-tls12-prf-key-derivation-s-c>): int32
-  c inline "sizeof(psa_tls12_prf_key_derivation_s)"
+  c inline "sizeof(struct psa_tls12_prf_key_derivation_s)"
 
 pub fun psa-tls12-prf-key-derivation-sc(): psa-tls12-prf-key-derivation-sc<s::S>
   malloc(?size-of=psa-tls12-prf-key-derivation-s/size-of)
@@ -4564,7 +5610,7 @@ pub fun psa-tls12-prf-key-derivation-sc-array-calloc(n: int): psa-tls12-prf-key-
   malloc-c(n.int32, ?size-of=psa-tls12-prf-key-derivation-s/size-of)
 
 inline extern psa-tls12-prf-key-derivation-s-ptr/private_left_in_block(s: intptr_t): int8
-  c inline "((psa_tls12_prf_key_derivation_s*)#1)->private_left_in_block"
+  c inline "(uint8_t)(((struct psa_tls12_prf_key_derivation_s*)#1)->private_left_in_block)"
 
 pub inline fun psa-tls12-prf-key-derivation-sc/private_left_in_block(^s: psa-tls12-prf-key-derivation-sc<s::S>): int8
   s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_left_in_block)
@@ -4573,7 +5619,7 @@ pub inline fun psa-tls12-prf-key-derivation-scb/private_left_in_block(^s: psa-tl
   s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_left_in_block)
 
 inline extern psa-tls12-prf-key-derivation-s-ptr/set-private_left_in_block(s: intptr_t, private_left_in_block: int8): ()
-  c inline "((psa_tls12_prf_key_derivation_s*)#1)->private_left_in_block = #2"
+  c inline "((struct psa_tls12_prf_key_derivation_s*)#1)->private_left_in_block = (uint8_t)#2"
 
 pub inline fun psa-tls12-prf-key-derivation-sc/set-private_left_in_block(^s: psa-tls12-prf-key-derivation-sc<s::S>, private_left_in_block: int8): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_left_in_block(private_left_in_block))
@@ -4581,8 +5627,20 @@ pub inline fun psa-tls12-prf-key-derivation-sc/set-private_left_in_block(^s: psa
 pub inline fun psa-tls12-prf-key-derivation-scb/set-private_left_in_block(^s: psa-tls12-prf-key-derivation-scb<s::S>, private_left_in_block: int8): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_left_in_block(private_left_in_block))
 
+pub inline fun psa-tls12-prf-key-derivation-sc-wrapper/private_left_in_block(^s: psa-tls12-prf-key-derivation-sc<s::S>): int
+  s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_left_in_block).int
+
+pub inline fun psa-tls12-prf-key-derivation-scb-wrapper/private_left_in_block(^s: psa-tls12-prf-key-derivation-scb<s::S>): int
+  s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_left_in_block).int
+
+pub inline fun psa-tls12-prf-key-derivation-sc-wrapper/set-private_left_in_block(^s: psa-tls12-prf-key-derivation-sc<s::S>, private_left_in_block: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_left_in_block(private_left_in_block.int8))
+
+pub inline fun psa-tls12-prf-key-derivation-scb-wrapper/set-private_left_in_block(^s: psa-tls12-prf-key-derivation-scb<s::S>, private_left_in_block: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_left_in_block(private_left_in_block.int8))
+
 inline extern psa-tls12-prf-key-derivation-s-ptr/private_block_number(s: intptr_t): int8
-  c inline "((psa_tls12_prf_key_derivation_s*)#1)->private_block_number"
+  c inline "(uint8_t)(((struct psa_tls12_prf_key_derivation_s*)#1)->private_block_number)"
 
 pub inline fun psa-tls12-prf-key-derivation-sc/private_block_number(^s: psa-tls12-prf-key-derivation-sc<s::S>): int8
   s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_block_number)
@@ -4591,7 +5649,7 @@ pub inline fun psa-tls12-prf-key-derivation-scb/private_block_number(^s: psa-tls
   s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_block_number)
 
 inline extern psa-tls12-prf-key-derivation-s-ptr/set-private_block_number(s: intptr_t, private_block_number: int8): ()
-  c inline "((psa_tls12_prf_key_derivation_s*)#1)->private_block_number = #2"
+  c inline "((struct psa_tls12_prf_key_derivation_s*)#1)->private_block_number = (uint8_t)#2"
 
 pub inline fun psa-tls12-prf-key-derivation-sc/set-private_block_number(^s: psa-tls12-prf-key-derivation-sc<s::S>, private_block_number: int8): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_block_number(private_block_number))
@@ -4599,8 +5657,20 @@ pub inline fun psa-tls12-prf-key-derivation-sc/set-private_block_number(^s: psa-
 pub inline fun psa-tls12-prf-key-derivation-scb/set-private_block_number(^s: psa-tls12-prf-key-derivation-scb<s::S>, private_block_number: int8): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_block_number(private_block_number))
 
+pub inline fun psa-tls12-prf-key-derivation-sc-wrapper/private_block_number(^s: psa-tls12-prf-key-derivation-sc<s::S>): int
+  s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_block_number).int
+
+pub inline fun psa-tls12-prf-key-derivation-scb-wrapper/private_block_number(^s: psa-tls12-prf-key-derivation-scb<s::S>): int
+  s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_block_number).int
+
+pub inline fun psa-tls12-prf-key-derivation-sc-wrapper/set-private_block_number(^s: psa-tls12-prf-key-derivation-sc<s::S>, private_block_number: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_block_number(private_block_number.int8))
+
+pub inline fun psa-tls12-prf-key-derivation-scb-wrapper/set-private_block_number(^s: psa-tls12-prf-key-derivation-scb<s::S>, private_block_number: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_block_number(private_block_number.int8))
+
 inline extern psa-tls12-prf-key-derivation-s-ptr/private_state(s: intptr_t): int32
-  c inline "((psa_tls12_prf_key_derivation_s*)#1)->private_state"
+  c inline "(int32_t)(((struct psa_tls12_prf_key_derivation_s*)#1)->private_state)"
 
 pub inline fun psa-tls12-prf-key-derivation-sc/private_state(^s: psa-tls12-prf-key-derivation-sc<s::S>): int32
   s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_state)
@@ -4609,7 +5679,7 @@ pub inline fun psa-tls12-prf-key-derivation-scb/private_state(^s: psa-tls12-prf-
   s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_state)
 
 inline extern psa-tls12-prf-key-derivation-s-ptr/set-private_state(s: intptr_t, private_state: int32): ()
-  c inline "((psa_tls12_prf_key_derivation_s*)#1)->private_state = #2"
+  c inline "((struct psa_tls12_prf_key_derivation_s*)#1)->private_state = (int32_t)#2"
 
 pub inline fun psa-tls12-prf-key-derivation-sc/set-private_state(^s: psa-tls12-prf-key-derivation-sc<s::S>, private_state: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_state(private_state))
@@ -4617,26 +5687,40 @@ pub inline fun psa-tls12-prf-key-derivation-sc/set-private_state(^s: psa-tls12-p
 pub inline fun psa-tls12-prf-key-derivation-scb/set-private_state(^s: psa-tls12-prf-key-derivation-scb<s::S>, private_state: int32): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_state(private_state))
 
-inline extern psa-tls12-prf-key-derivation-s-ptr/private_secret(s: intptr_t): owned-c<int8>
-  c inline "((psa_tls12_prf_key_derivation_s*)#1)->private_secret"
+inline extern psa-tls12-prf-key-derivation-s-ptr/private_secret(s: intptr_t): intptr_t
+  c inline "(intptr_t)(((struct psa_tls12_prf_key_derivation_s*)#1)->private_secret)"
 
-pub inline fun psa-tls12-prf-key-derivation-sc/private_secret(^s: psa-tls12-prf-key-derivation-sc<s::S>): owned-c<int8>
+pub inline fun psa-tls12-prf-key-derivation-sc/private_secret(^s: psa-tls12-prf-key-derivation-sc<s::S>): intptr_t
   s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_secret)
 
-pub inline fun psa-tls12-prf-key-derivation-scb/private_secret(^s: psa-tls12-prf-key-derivation-scb<s::S>): owned-c<int8>
+pub inline fun psa-tls12-prf-key-derivation-scb/private_secret(^s: psa-tls12-prf-key-derivation-scb<s::S>): intptr_t
   s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_secret)
 
-inline extern psa-tls12-prf-key-derivation-s-ptr/set-private_secret(s: intptr_t, private_secret: owned-c<int8>): ()
-  c inline "((psa_tls12_prf_key_derivation_s*)#1)->private_secret = #2"
+inline extern psa-tls12-prf-key-derivation-s-ptr/set-private_secret(s: intptr_t, private_secret: intptr_t): ()
+  c inline "((struct psa_tls12_prf_key_derivation_s*)#1)->private_secret = (uint8_t*)#2"
 
-pub inline fun psa-tls12-prf-key-derivation-sc/set-private_secret(^s: psa-tls12-prf-key-derivation-sc<s::S>, private_secret: owned-c<int8>): ()
+pub inline fun psa-tls12-prf-key-derivation-sc/set-private_secret(^s: psa-tls12-prf-key-derivation-sc<s::S>, private_secret: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_secret(private_secret))
 
-pub inline fun psa-tls12-prf-key-derivation-scb/set-private_secret(^s: psa-tls12-prf-key-derivation-scb<s::S>, private_secret: owned-c<int8>): ()
+pub inline fun psa-tls12-prf-key-derivation-scb/set-private_secret(^s: psa-tls12-prf-key-derivation-scb<s::S>, private_secret: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_secret(private_secret))
+
+pub inline fun psa-tls12-prf-key-derivation-sc-wrapper/private_secret(^s: psa-tls12-prf-key-derivation-sc<s::S>): owned-c<int8>
+  s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_secret).c-own
+
+pub inline fun psa-tls12-prf-key-derivation-scb-wrapper/private_secret(^s: psa-tls12-prf-key-derivation-scb<s::S>): owned-c<int8>
+  s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_secret).c-own
+
+pub inline fun psa-tls12-prf-key-derivation-sc-wrapper/set-private_secret(^s: psa-tls12-prf-key-derivation-sc<s::S>, private_secret: owned-c<int8>): ()
+  with koka-ptr <- private_secret.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_secret(koka-ptr))
+
+pub inline fun psa-tls12-prf-key-derivation-scb-wrapper/set-private_secret(^s: psa-tls12-prf-key-derivation-scb<s::S>, private_secret: owned-c<int8>): ()
+  with koka-ptr <- private_secret.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_secret(koka-ptr))
 
 inline extern psa-tls12-prf-key-derivation-s-ptr/private_secret_length(s: intptr_t): ssize_t
-  c inline "((psa_tls12_prf_key_derivation_s*)#1)->private_secret_length"
+  c inline "(ssize_t)(((struct psa_tls12_prf_key_derivation_s*)#1)->private_secret_length)"
 
 pub inline fun psa-tls12-prf-key-derivation-sc/private_secret_length(^s: psa-tls12-prf-key-derivation-sc<s::S>): ssize_t
   s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_secret_length)
@@ -4645,7 +5729,7 @@ pub inline fun psa-tls12-prf-key-derivation-scb/private_secret_length(^s: psa-tl
   s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_secret_length)
 
 inline extern psa-tls12-prf-key-derivation-s-ptr/set-private_secret_length(s: intptr_t, private_secret_length: ssize_t): ()
-  c inline "((psa_tls12_prf_key_derivation_s*)#1)->private_secret_length = #2"
+  c inline "((struct psa_tls12_prf_key_derivation_s*)#1)->private_secret_length = (ssize_t)#2"
 
 pub inline fun psa-tls12-prf-key-derivation-sc/set-private_secret_length(^s: psa-tls12-prf-key-derivation-sc<s::S>, private_secret_length: ssize_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_secret_length(private_secret_length))
@@ -4653,26 +5737,40 @@ pub inline fun psa-tls12-prf-key-derivation-sc/set-private_secret_length(^s: psa
 pub inline fun psa-tls12-prf-key-derivation-scb/set-private_secret_length(^s: psa-tls12-prf-key-derivation-scb<s::S>, private_secret_length: ssize_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_secret_length(private_secret_length))
 
-inline extern psa-tls12-prf-key-derivation-s-ptr/private_seed(s: intptr_t): owned-c<int8>
-  c inline "((psa_tls12_prf_key_derivation_s*)#1)->private_seed"
+inline extern psa-tls12-prf-key-derivation-s-ptr/private_seed(s: intptr_t): intptr_t
+  c inline "(intptr_t)(((struct psa_tls12_prf_key_derivation_s*)#1)->private_seed)"
 
-pub inline fun psa-tls12-prf-key-derivation-sc/private_seed(^s: psa-tls12-prf-key-derivation-sc<s::S>): owned-c<int8>
+pub inline fun psa-tls12-prf-key-derivation-sc/private_seed(^s: psa-tls12-prf-key-derivation-sc<s::S>): intptr_t
   s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_seed)
 
-pub inline fun psa-tls12-prf-key-derivation-scb/private_seed(^s: psa-tls12-prf-key-derivation-scb<s::S>): owned-c<int8>
+pub inline fun psa-tls12-prf-key-derivation-scb/private_seed(^s: psa-tls12-prf-key-derivation-scb<s::S>): intptr_t
   s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_seed)
 
-inline extern psa-tls12-prf-key-derivation-s-ptr/set-private_seed(s: intptr_t, private_seed: owned-c<int8>): ()
-  c inline "((psa_tls12_prf_key_derivation_s*)#1)->private_seed = #2"
+inline extern psa-tls12-prf-key-derivation-s-ptr/set-private_seed(s: intptr_t, private_seed: intptr_t): ()
+  c inline "((struct psa_tls12_prf_key_derivation_s*)#1)->private_seed = (uint8_t*)#2"
 
-pub inline fun psa-tls12-prf-key-derivation-sc/set-private_seed(^s: psa-tls12-prf-key-derivation-sc<s::S>, private_seed: owned-c<int8>): ()
+pub inline fun psa-tls12-prf-key-derivation-sc/set-private_seed(^s: psa-tls12-prf-key-derivation-sc<s::S>, private_seed: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_seed(private_seed))
 
-pub inline fun psa-tls12-prf-key-derivation-scb/set-private_seed(^s: psa-tls12-prf-key-derivation-scb<s::S>, private_seed: owned-c<int8>): ()
+pub inline fun psa-tls12-prf-key-derivation-scb/set-private_seed(^s: psa-tls12-prf-key-derivation-scb<s::S>, private_seed: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_seed(private_seed))
+
+pub inline fun psa-tls12-prf-key-derivation-sc-wrapper/private_seed(^s: psa-tls12-prf-key-derivation-sc<s::S>): owned-c<int8>
+  s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_seed).c-own
+
+pub inline fun psa-tls12-prf-key-derivation-scb-wrapper/private_seed(^s: psa-tls12-prf-key-derivation-scb<s::S>): owned-c<int8>
+  s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_seed).c-own
+
+pub inline fun psa-tls12-prf-key-derivation-sc-wrapper/set-private_seed(^s: psa-tls12-prf-key-derivation-sc<s::S>, private_seed: owned-c<int8>): ()
+  with koka-ptr <- private_seed.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_seed(koka-ptr))
+
+pub inline fun psa-tls12-prf-key-derivation-scb-wrapper/set-private_seed(^s: psa-tls12-prf-key-derivation-scb<s::S>, private_seed: owned-c<int8>): ()
+  with koka-ptr <- private_seed.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_seed(koka-ptr))
 
 inline extern psa-tls12-prf-key-derivation-s-ptr/private_seed_length(s: intptr_t): ssize_t
-  c inline "((psa_tls12_prf_key_derivation_s*)#1)->private_seed_length"
+  c inline "(ssize_t)(((struct psa_tls12_prf_key_derivation_s*)#1)->private_seed_length)"
 
 pub inline fun psa-tls12-prf-key-derivation-sc/private_seed_length(^s: psa-tls12-prf-key-derivation-sc<s::S>): ssize_t
   s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_seed_length)
@@ -4681,7 +5779,7 @@ pub inline fun psa-tls12-prf-key-derivation-scb/private_seed_length(^s: psa-tls1
   s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_seed_length)
 
 inline extern psa-tls12-prf-key-derivation-s-ptr/set-private_seed_length(s: intptr_t, private_seed_length: ssize_t): ()
-  c inline "((psa_tls12_prf_key_derivation_s*)#1)->private_seed_length = #2"
+  c inline "((struct psa_tls12_prf_key_derivation_s*)#1)->private_seed_length = (ssize_t)#2"
 
 pub inline fun psa-tls12-prf-key-derivation-sc/set-private_seed_length(^s: psa-tls12-prf-key-derivation-sc<s::S>, private_seed_length: ssize_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_seed_length(private_seed_length))
@@ -4689,26 +5787,40 @@ pub inline fun psa-tls12-prf-key-derivation-sc/set-private_seed_length(^s: psa-t
 pub inline fun psa-tls12-prf-key-derivation-scb/set-private_seed_length(^s: psa-tls12-prf-key-derivation-scb<s::S>, private_seed_length: ssize_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_seed_length(private_seed_length))
 
-inline extern psa-tls12-prf-key-derivation-s-ptr/private_label(s: intptr_t): owned-c<int8>
-  c inline "((psa_tls12_prf_key_derivation_s*)#1)->private_label"
+inline extern psa-tls12-prf-key-derivation-s-ptr/private_label(s: intptr_t): intptr_t
+  c inline "(intptr_t)(((struct psa_tls12_prf_key_derivation_s*)#1)->private_label)"
 
-pub inline fun psa-tls12-prf-key-derivation-sc/private_label(^s: psa-tls12-prf-key-derivation-sc<s::S>): owned-c<int8>
+pub inline fun psa-tls12-prf-key-derivation-sc/private_label(^s: psa-tls12-prf-key-derivation-sc<s::S>): intptr_t
   s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_label)
 
-pub inline fun psa-tls12-prf-key-derivation-scb/private_label(^s: psa-tls12-prf-key-derivation-scb<s::S>): owned-c<int8>
+pub inline fun psa-tls12-prf-key-derivation-scb/private_label(^s: psa-tls12-prf-key-derivation-scb<s::S>): intptr_t
   s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_label)
 
-inline extern psa-tls12-prf-key-derivation-s-ptr/set-private_label(s: intptr_t, private_label: owned-c<int8>): ()
-  c inline "((psa_tls12_prf_key_derivation_s*)#1)->private_label = #2"
+inline extern psa-tls12-prf-key-derivation-s-ptr/set-private_label(s: intptr_t, private_label: intptr_t): ()
+  c inline "((struct psa_tls12_prf_key_derivation_s*)#1)->private_label = (uint8_t*)#2"
 
-pub inline fun psa-tls12-prf-key-derivation-sc/set-private_label(^s: psa-tls12-prf-key-derivation-sc<s::S>, private_label: owned-c<int8>): ()
+pub inline fun psa-tls12-prf-key-derivation-sc/set-private_label(^s: psa-tls12-prf-key-derivation-sc<s::S>, private_label: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_label(private_label))
 
-pub inline fun psa-tls12-prf-key-derivation-scb/set-private_label(^s: psa-tls12-prf-key-derivation-scb<s::S>, private_label: owned-c<int8>): ()
+pub inline fun psa-tls12-prf-key-derivation-scb/set-private_label(^s: psa-tls12-prf-key-derivation-scb<s::S>, private_label: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_label(private_label))
+
+pub inline fun psa-tls12-prf-key-derivation-sc-wrapper/private_label(^s: psa-tls12-prf-key-derivation-sc<s::S>): owned-c<int8>
+  s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_label).c-own
+
+pub inline fun psa-tls12-prf-key-derivation-scb-wrapper/private_label(^s: psa-tls12-prf-key-derivation-scb<s::S>): owned-c<int8>
+  s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_label).c-own
+
+pub inline fun psa-tls12-prf-key-derivation-sc-wrapper/set-private_label(^s: psa-tls12-prf-key-derivation-sc<s::S>, private_label: owned-c<int8>): ()
+  with koka-ptr <- private_label.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_label(koka-ptr))
+
+pub inline fun psa-tls12-prf-key-derivation-scb-wrapper/set-private_label(^s: psa-tls12-prf-key-derivation-scb<s::S>, private_label: owned-c<int8>): ()
+  with koka-ptr <- private_label.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_label(koka-ptr))
 
 inline extern psa-tls12-prf-key-derivation-s-ptr/private_label_length(s: intptr_t): ssize_t
-  c inline "((psa_tls12_prf_key_derivation_s*)#1)->private_label_length"
+  c inline "(ssize_t)(((struct psa_tls12_prf_key_derivation_s*)#1)->private_label_length)"
 
 pub inline fun psa-tls12-prf-key-derivation-sc/private_label_length(^s: psa-tls12-prf-key-derivation-sc<s::S>): ssize_t
   s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_label_length)
@@ -4717,7 +5829,7 @@ pub inline fun psa-tls12-prf-key-derivation-scb/private_label_length(^s: psa-tls
   s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_label_length)
 
 inline extern psa-tls12-prf-key-derivation-s-ptr/set-private_label_length(s: intptr_t, private_label_length: ssize_t): ()
-  c inline "((psa_tls12_prf_key_derivation_s*)#1)->private_label_length = #2"
+  c inline "((struct psa_tls12_prf_key_derivation_s*)#1)->private_label_length = (ssize_t)#2"
 
 pub inline fun psa-tls12-prf-key-derivation-sc/set-private_label_length(^s: psa-tls12-prf-key-derivation-sc<s::S>, private_label_length: ssize_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_label_length(private_label_length))
@@ -4725,26 +5837,40 @@ pub inline fun psa-tls12-prf-key-derivation-sc/set-private_label_length(^s: psa-
 pub inline fun psa-tls12-prf-key-derivation-scb/set-private_label_length(^s: psa-tls12-prf-key-derivation-scb<s::S>, private_label_length: ssize_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_label_length(private_label_length))
 
-inline extern psa-tls12-prf-key-derivation-s-ptr/private_other_secret(s: intptr_t): owned-c<int8>
-  c inline "((psa_tls12_prf_key_derivation_s*)#1)->private_other_secret"
+inline extern psa-tls12-prf-key-derivation-s-ptr/private_other_secret(s: intptr_t): intptr_t
+  c inline "(intptr_t)(((struct psa_tls12_prf_key_derivation_s*)#1)->private_other_secret)"
 
-pub inline fun psa-tls12-prf-key-derivation-sc/private_other_secret(^s: psa-tls12-prf-key-derivation-sc<s::S>): owned-c<int8>
+pub inline fun psa-tls12-prf-key-derivation-sc/private_other_secret(^s: psa-tls12-prf-key-derivation-sc<s::S>): intptr_t
   s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_other_secret)
 
-pub inline fun psa-tls12-prf-key-derivation-scb/private_other_secret(^s: psa-tls12-prf-key-derivation-scb<s::S>): owned-c<int8>
+pub inline fun psa-tls12-prf-key-derivation-scb/private_other_secret(^s: psa-tls12-prf-key-derivation-scb<s::S>): intptr_t
   s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_other_secret)
 
-inline extern psa-tls12-prf-key-derivation-s-ptr/set-private_other_secret(s: intptr_t, private_other_secret: owned-c<int8>): ()
-  c inline "((psa_tls12_prf_key_derivation_s*)#1)->private_other_secret = #2"
+inline extern psa-tls12-prf-key-derivation-s-ptr/set-private_other_secret(s: intptr_t, private_other_secret: intptr_t): ()
+  c inline "((struct psa_tls12_prf_key_derivation_s*)#1)->private_other_secret = (uint8_t*)#2"
 
-pub inline fun psa-tls12-prf-key-derivation-sc/set-private_other_secret(^s: psa-tls12-prf-key-derivation-sc<s::S>, private_other_secret: owned-c<int8>): ()
+pub inline fun psa-tls12-prf-key-derivation-sc/set-private_other_secret(^s: psa-tls12-prf-key-derivation-sc<s::S>, private_other_secret: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_other_secret(private_other_secret))
 
-pub inline fun psa-tls12-prf-key-derivation-scb/set-private_other_secret(^s: psa-tls12-prf-key-derivation-scb<s::S>, private_other_secret: owned-c<int8>): ()
+pub inline fun psa-tls12-prf-key-derivation-scb/set-private_other_secret(^s: psa-tls12-prf-key-derivation-scb<s::S>, private_other_secret: intptr_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_other_secret(private_other_secret))
+
+pub inline fun psa-tls12-prf-key-derivation-sc-wrapper/private_other_secret(^s: psa-tls12-prf-key-derivation-sc<s::S>): owned-c<int8>
+  s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_other_secret).c-own
+
+pub inline fun psa-tls12-prf-key-derivation-scb-wrapper/private_other_secret(^s: psa-tls12-prf-key-derivation-scb<s::S>): owned-c<int8>
+  s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_other_secret).c-own
+
+pub inline fun psa-tls12-prf-key-derivation-sc-wrapper/set-private_other_secret(^s: psa-tls12-prf-key-derivation-sc<s::S>, private_other_secret: owned-c<int8>): ()
+  with koka-ptr <- private_other_secret.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_other_secret(koka-ptr))
+
+pub inline fun psa-tls12-prf-key-derivation-scb-wrapper/set-private_other_secret(^s: psa-tls12-prf-key-derivation-scb<s::S>, private_other_secret: owned-c<int8>): ()
+  with koka-ptr <- private_other_secret.with-ptr
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_other_secret(koka-ptr))
 
 inline extern psa-tls12-prf-key-derivation-s-ptr/private_other_secret_length(s: intptr_t): ssize_t
-  c inline "((psa_tls12_prf_key_derivation_s*)#1)->private_other_secret_length"
+  c inline "(ssize_t)(((struct psa_tls12_prf_key_derivation_s*)#1)->private_other_secret_length)"
 
 pub inline fun psa-tls12-prf-key-derivation-sc/private_other_secret_length(^s: psa-tls12-prf-key-derivation-sc<s::S>): ssize_t
   s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_other_secret_length)
@@ -4753,7 +5879,7 @@ pub inline fun psa-tls12-prf-key-derivation-scb/private_other_secret_length(^s: 
   s.with-ptr(psa-tls12-prf-key-derivation-s-ptr/private_other_secret_length)
 
 inline extern psa-tls12-prf-key-derivation-s-ptr/set-private_other_secret_length(s: intptr_t, private_other_secret_length: ssize_t): ()
-  c inline "((psa_tls12_prf_key_derivation_s*)#1)->private_other_secret_length = #2"
+  c inline "((struct psa_tls12_prf_key_derivation_s*)#1)->private_other_secret_length = (ssize_t)#2"
 
 pub inline fun psa-tls12-prf-key-derivation-sc/set-private_other_secret_length(^s: psa-tls12-prf-key-derivation-sc<s::S>, private_other_secret_length: ssize_t): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.psa-tls12-prf-key-derivation-s-ptr/set-private_other_secret_length(private_other_secret_length))
