@@ -1,4 +1,4 @@
 [submodule "deps/mbedtls"]
 	path = deps/mbedtls
 	url = git@github.com:Mbed-TLS/mbedtls.git
-	branch = development
+	branch = main
