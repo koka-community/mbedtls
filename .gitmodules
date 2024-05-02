@@ -2,3 +2,4 @@
 	path = deps/mbedtls
 	url = git@github.com:Mbed-TLS/mbedtls.git
 	branch = main
+	shallow = true
