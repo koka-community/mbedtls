@@ -35,33 +35,27 @@ ffigen:
     // Use of this source code is governed by a
     // MIT-style license that can be found in the LICENSE file.
   functions:
-    include:
-      - "mbedtls*"
-      - "psa*"
     exclude:
-      - (_)+.*
+      - (-)+.*
   structs:
-    include:
-      - "mbedtls*"
-      - "psa*"
     exclude:
-      - (_)+.*
+      - (-)+.*
     member-rename:
       '.*':
-        '_(.*)': '$1'
+        '-(.*)': '$1'
     dependency-only: opaque
   enums:
     exclude:
-      - (_)+.*
+      - (-)+.*
   unions:
     exclude:
-      - (_)+.*
+      - (-)+.*
   globals:
     exclude:
-      - (_)+.*
+      - (-)+.*
   macros:
     exclude:
-      - (_)+.*
+      - (-)+.*
   typedefs:
     exclude:
-      - (_)+.*
+      - (-)+.*
