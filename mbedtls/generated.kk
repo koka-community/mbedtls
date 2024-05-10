@@ -14,125 +14,6 @@ import std/num/float64
 extern import
   c { vcpkg="mbedtls" }
 
-// \brief       PEM context setup
-// 
-// \param ctx   context to be initialized
-pub extern external/mbedtls-pem-init(^ctx1: c-pointer<mbedtls-pem-context-c>): ()
-  c inline "(void)mbedtls_pem_init((struct mbedtls_pem_context*)#1)"
-
-// \brief       Read a buffer for PEM information and store the resulting
-// data into the specified context buffers.
-// 
-// \param ctx       context to use
-// \param header    header string to seek and expect
-// \param footer    footer string to seek and expect
-// \param data      source data to look in (must be nul-terminated)
-// \param pwd       password for decryption (can be NULL)
-// \param pwdlen    length of password
-// \param use_len   destination for total length used from data buffer. It is
-// set after header is correctly read, so unless you get
-// MBEDTLS_ERR_PEM_BAD_INPUT_DATA or
-// MBEDTLS_ERR_PEM_NO_HEADER_FOOTER_PRESENT, use_len is
-// the length to skip.
-// 
-// \note            Attempts to check password correctness by verifying if
-// the decrypted text starts with an ASN.1 sequence of
-// appropriate length
-// 
-// \note            \c mbedtls_pem_free must be called on PEM context before
-// the PEM context can be reused in another call to
-// \c mbedtls_pem_read_buffer
-// 
-// \return          0 on success, or a specific PEM error code
-pub extern external/mbedtls-pem-read-buffer(^ctx1: c-pointer<mbedtls-pem-context-c>, ^header: c-pointer<int>, ^footer: c-pointer<int>, ^data: c-pointer<int>, ^pwd: c-pointer<int>, ^pwdlen: ssize_t, ^use-len: c-pointer<int>): int32
-  c inline "(int)mbedtls_pem_read_buffer((struct mbedtls_pem_context*)#1, (char*)#2, (char*)#3, (unsigned char*)#4, (unsigned char*)#5, (size_t)#6, (size_t*)#7)"
-
-pub inline fun ffi/mbedtls-pem-read-buffer(^ctx1: c-pointer<mbedtls-pem-context-c>, ^header: c-pointer<int>, ^footer: c-pointer<int>, ^data: c-pointer<int>, ^pwd: c-pointer<int>, ^pwdlen: int, ^use-len: c-pointer<int>): <> int
-  external/mbedtls-pem-read-buffer(ctx1, header, footer, data, pwd, pwdlen.ssize_t, use-len).int
-
-// \brief       PEM context memory freeing
-// 
-// \param ctx   context to be freed
-pub extern external/mbedtls-pem-free(^ctx1: c-pointer<mbedtls-pem-context-c>): ()
-  c inline "(void)mbedtls_pem_free((struct mbedtls_pem_context*)#1)"
-
-// \brief           Write a buffer of PEM information from a DER encoded
-// buffer.
-// 
-// \param header    The header string to write.
-// \param footer    The footer string to write.
-// \param der_data  The DER data to encode.
-// \param der_len   The length of the DER data \p der_data in Bytes.
-// \param buf       The buffer to write to.
-// \param buf_len   The length of the output buffer \p buf in Bytes.
-// \param olen      The address at which to store the total length written
-// or required (if \p buf_len is not enough).
-// 
-// \note            You may pass \c NULL for \p buf and \c 0 for \p buf_len
-// to request the length of the resulting PEM buffer in
-// `*olen`.
-// 
-// \note            This function may be called with overlapping \p der_data
-// and \p buf buffers.
-// 
-// \return          \c 0 on success.
-// \return          #MBEDTLS_ERR_BASE64_BUFFER_TOO_SMALL if \p buf isn't large
-// enough to hold the PEM buffer. In  this case, `*olen` holds
-// the required minimum size of \p buf.
-// \return          Another PEM or BASE64 error code on other kinds of failure.
-pub extern external/mbedtls-pem-write-buffer(^header: c-pointer<int>, ^footer: c-pointer<int>, ^der-data: c-pointer<int>, ^der-len: ssize_t, ^buf: c-pointer<int>, ^buf-len: ssize_t, ^olen: c-pointer<int>): int32
-  c inline "(int)mbedtls_pem_write_buffer((char*)#1, (char*)#2, (unsigned char*)#3, (size_t)#4, (unsigned char*)#5, (size_t)#6, (size_t*)#7)"
-
-pub inline fun ffi/mbedtls-pem-write-buffer(^header: c-pointer<int>, ^footer: c-pointer<int>, ^der-data: c-pointer<int>, ^der-len: int, ^buf: c-pointer<int>, ^buf-len: int, ^olen: c-pointer<int>): <> int
-  external/mbedtls-pem-write-buffer(header, footer, der-data, der-len.ssize_t, buf, buf-len.ssize_t, olen).int
-
-// \brief Translate an Mbed TLS error code into a string representation.
-// The result is truncated if necessary and always includes a
-// terminating null byte.
-// 
-// \param errnum    error code
-// \param buffer    buffer to place representation in
-// \param buflen    length of the buffer
-pub extern external/mbedtls-strerror(^errnum: int32, ^buffer: c-pointer<int>, ^buflen: ssize_t): ()
-  c inline "(void)mbedtls_strerror((int)#1, (char*)#2, (size_t)#3)"
-
-pub inline fun ffi/mbedtls-strerror(^errnum: int, ^buffer: c-pointer<int>, ^buflen: int): <> ()
-  external/mbedtls-strerror(errnum.int32, buffer, buflen.ssize_t)
-
-// \brief Translate the high-level part of an Mbed TLS error code into a string
-// representation.
-// 
-// This function returns a const pointer to an un-modifiable string. The caller
-// must not try to modify the string. It is intended to be used mostly for
-// logging purposes.
-// 
-// \param error_code    error code
-// 
-// \return The string representation of the error code, or \c NULL if the error
-// code is unknown.
-pub extern external/mbedtls-high-level-strerr(^error-code: int32): c-pointer<int>
-  c inline "(intptr_t)mbedtls_high_level_strerr((int)#1)"
-
-pub inline fun ffi/mbedtls-high-level-strerr(^error-code: int): <> c-pointer<int>
-  external/mbedtls-high-level-strerr(error-code.int32)
-
-// \brief Translate the low-level part of an Mbed TLS error code into a string
-// representation.
-// 
-// This function returns a const pointer to an un-modifiable string. The caller
-// must not try to modify the string. It is intended to be used mostly for
-// logging purposes.
-// 
-// \param error_code    error code
-// 
-// \return The string representation of the error code, or \c NULL if the error
-// code is unknown.
-pub extern external/mbedtls-low-level-strerr(^error-code: int32): c-pointer<int>
-  c inline "(intptr_t)mbedtls_low_level_strerr((int)#1)"
-
-pub inline fun ffi/mbedtls-low-level-strerr(^error-code: int): <> c-pointer<int>
-  external/mbedtls-low-level-strerr(error-code.int32)
-
 // \brief   Get time in milliseconds.
 // 
 // \return Monotonically-increasing current time in milliseconds.
@@ -1073,423 +954,962 @@ pub extern external/mbedtls-mpi-self-test(^verbose: int32): int32
 pub inline fun ffi/mbedtls-mpi-self-test(^verbose: int): <> int
   external/mbedtls-mpi-self-test(verbose.int32).int
 
-// \brief       Get the length of an ASN.1 element.
-// Updates the pointer to immediately behind the length.
-// 
-// \param p     On entry, \c *p points to the first byte of the length,
-// i.e. immediately after the tag.
-// On successful completion, \c *p points to the first byte
-// after the length, i.e. the first byte of the content.
-// On error, the value of \c *p is undefined.
-// \param end   End of data.
-// \param len   On successful completion, \c *len contains the length
-// read from the ASN.1 input.
-// 
-// \return      0 if successful.
-// \return      #MBEDTLS_ERR_ASN1_OUT_OF_DATA if the ASN.1 element
-// would end beyond \p end.
-// \return      #MBEDTLS_ERR_ASN1_INVALID_LENGTH if the length is unparsable.
-pub extern external/mbedtls-asn1-get-len(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^len: c-pointer<int>): int32
-  c inline "(int)mbedtls_asn1_get_len((unsigned char**)#1, (unsigned char*)#2, (size_t*)#3)"
+pub extern external/mbedtls-ecp-get-type(^grp: c-pointer<mbedtls-ecp-group-c>): int32
+  c inline "(int32_t)mbedtls_ecp_get_type((struct mbedtls_ecp_group*)#1)"
 
-pub inline fun ffi/mbedtls-asn1-get-len(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^len: c-pointer<int>): <> int
-  external/mbedtls-asn1-get-len(p, end, len).int
+pub inline fun ffi/mbedtls-ecp-get-type(^grp: c-pointer<mbedtls-ecp-group-c>): <exn> mbedtls-ecp-curve-type
+  external/mbedtls-ecp-get-type(grp).int/mbedtls-ecp-curve-type
 
-// \brief       Get the tag and length of the element.
-// Check for the requested tag.
-// Updates the pointer to immediately behind the tag and length.
+// \brief           This function retrieves the information defined in
+// mbedtls_ecp_curve_info() for all supported curves.
 // 
-// \param p     On entry, \c *p points to the start of the ASN.1 element.
-// On successful completion, \c *p points to the first byte
-// after the length, i.e. the first byte of the content.
-// On error, the value of \c *p is undefined.
-// \param end   End of data.
-// \param len   On successful completion, \c *len contains the length
-// read from the ASN.1 input.
-// \param tag   The expected tag.
+// \note            This function returns information about all curves
+// supported by the library. Some curves may not be
+// supported for all algorithms. Call mbedtls_ecdh_can_do()
+// or mbedtls_ecdsa_can_do() to check if a curve is
+// supported for ECDH or ECDSA.
 // 
-// \return      0 if successful.
-// \return      #MBEDTLS_ERR_ASN1_UNEXPECTED_TAG if the data does not start
-// with the requested tag.
-// \return      #MBEDTLS_ERR_ASN1_OUT_OF_DATA if the ASN.1 element
-// would end beyond \p end.
-// \return      #MBEDTLS_ERR_ASN1_INVALID_LENGTH if the length is unparsable.
-pub extern external/mbedtls-asn1-get-tag(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^len: c-pointer<int>, ^tag: int32): int32
-  c inline "(int)mbedtls_asn1_get_tag((unsigned char**)#1, (unsigned char*)#2, (size_t*)#3, (int)#4)"
+// \return          A statically allocated array. The last entry is 0.
+pub extern external/mbedtls-ecp-curve-list(): c-pointer<mbedtls-ecp-curve-info-c>
+  c inline "(intptr_t)mbedtls_ecp_curve_list()"
 
-pub inline fun ffi/mbedtls-asn1-get-tag(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^len: c-pointer<int>, ^tag: int): <> int
-  external/mbedtls-asn1-get-tag(p, end, len, tag.int32).int
+// \brief           This function retrieves the list of internal group
+// identifiers of all supported curves in the order of
+// preference.
+// 
+// \note            This function returns information about all curves
+// supported by the library. Some curves may not be
+// supported for all algorithms. Call mbedtls_ecdh_can_do()
+// or mbedtls_ecdsa_can_do() to check if a curve is
+// supported for ECDH or ECDSA.
+// 
+// \return          A statically allocated array,
+// terminated with MBEDTLS_ECP_DP_NONE.
+pub extern external/mbedtls-ecp-grp-id-list(): c-pointer<mbedtls-ecp-group-id>
+  c inline "(intptr_t)mbedtls_ecp_grp_id_list()"
 
-// \brief       Retrieve a boolean ASN.1 tag and its value.
-// Updates the pointer to immediately behind the full tag.
+// \brief           This function retrieves curve information from an internal
+// group identifier.
 // 
-// \param p     On entry, \c *p points to the start of the ASN.1 element.
-// On successful completion, \c *p points to the first byte
-// beyond the ASN.1 element.
-// On error, the value of \c *p is undefined.
-// \param end   End of data.
-// \param val   On success, the parsed value (\c 0 or \c 1).
+// \param grp_id    An \c MBEDTLS_ECP_DP_XXX value.
 // 
-// \return      0 if successful.
-// \return      An ASN.1 error code if the input does not start with
-// a valid ASN.1 BOOLEAN.
-pub extern external/mbedtls-asn1-get-bool(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^val: c-pointer<int>): int32
-  c inline "(int)mbedtls_asn1_get_bool((unsigned char**)#1, (unsigned char*)#2, (int*)#3)"
+// \return          The associated curve information on success.
+// \return          NULL on failure.
+pub extern external/mbedtls-ecp-curve-info-from-grp-id(^grp-id: int32): c-pointer<mbedtls-ecp-curve-info-c>
+  c inline "(intptr_t)mbedtls_ecp_curve_info_from_grp_id((int32_t)#1)"
 
-pub inline fun ffi/mbedtls-asn1-get-bool(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^val: c-pointer<int>): <> int
-  external/mbedtls-asn1-get-bool(p, end, val).int
+pub inline fun ffi/mbedtls-ecp-curve-info-from-grp-id(^grp-id: mbedtls-ecp-group-id): <exn> c-pointer<mbedtls-ecp-curve-info-c>
+  external/mbedtls-ecp-curve-info-from-grp-id(grp-id.mbedtls-ecp-group-id/int)
 
-// \brief       Retrieve an integer ASN.1 tag and its value.
-// Updates the pointer to immediately behind the full tag.
+// \brief           This function retrieves curve information from a TLS
+// NamedCurve value.
 // 
-// \param p     On entry, \c *p points to the start of the ASN.1 element.
-// On successful completion, \c *p points to the first byte
-// beyond the ASN.1 element.
-// On error, the value of \c *p is undefined.
-// \param end   End of data.
-// \param val   On success, the parsed value.
+// \param tls_id    An \c MBEDTLS_ECP_DP_XXX value.
 // 
-// \return      0 if successful.
-// \return      An ASN.1 error code if the input does not start with
-// a valid ASN.1 INTEGER.
-// \return      #MBEDTLS_ERR_ASN1_INVALID_LENGTH if the parsed value does
-// not fit in an \c int.
-pub extern external/mbedtls-asn1-get-int(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^val: c-pointer<int>): int32
-  c inline "(int)mbedtls_asn1_get_int((unsigned char**)#1, (unsigned char*)#2, (int*)#3)"
+// \return          The associated curve information on success.
+// \return          NULL on failure.
+pub extern external/mbedtls-ecp-curve-info-from-tls-id(^tls-id: int16): c-pointer<mbedtls-ecp-curve-info-c>
+  c inline "(intptr_t)mbedtls_ecp_curve_info_from_tls_id((int16_t)#1)"
 
-pub inline fun ffi/mbedtls-asn1-get-int(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^val: c-pointer<int>): <> int
-  external/mbedtls-asn1-get-int(p, end, val).int
+pub inline fun ffi/mbedtls-ecp-curve-info-from-tls-id(^tls-id: int): <> c-pointer<mbedtls-ecp-curve-info-c>
+  external/mbedtls-ecp-curve-info-from-tls-id(tls-id.int16)
 
-// \brief       Retrieve an enumerated ASN.1 tag and its value.
-// Updates the pointer to immediately behind the full tag.
+// \brief           This function retrieves curve information from a
+// human-readable name.
 // 
-// \param p     On entry, \c *p points to the start of the ASN.1 element.
-// On successful completion, \c *p points to the first byte
-// beyond the ASN.1 element.
-// On error, the value of \c *p is undefined.
-// \param end   End of data.
-// \param val   On success, the parsed value.
+// \param name      The human-readable name.
 // 
-// \return      0 if successful.
-// \return      An ASN.1 error code if the input does not start with
-// a valid ASN.1 ENUMERATED.
-// \return      #MBEDTLS_ERR_ASN1_INVALID_LENGTH if the parsed value does
-// not fit in an \c int.
-pub extern external/mbedtls-asn1-get-enum(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^val: c-pointer<int>): int32
-  c inline "(int)mbedtls_asn1_get_enum((unsigned char**)#1, (unsigned char*)#2, (int*)#3)"
+// \return          The associated curve information on success.
+// \return          NULL on failure.
+pub extern external/mbedtls-ecp-curve-info-from-name(^name: c-pointer<int>): c-pointer<mbedtls-ecp-curve-info-c>
+  c inline "(intptr_t)mbedtls_ecp_curve_info_from_name((char*)#1)"
 
-pub inline fun ffi/mbedtls-asn1-get-enum(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^val: c-pointer<int>): <> int
-  external/mbedtls-asn1-get-enum(p, end, val).int
+// \brief           This function initializes a point as zero.
+// 
+// \param pt        The point to initialize.
+pub extern external/mbedtls-ecp-point-init(^pt: c-pointer<mbedtls-ecp-point-c>): ()
+  c inline "(void)mbedtls_ecp_point_init((struct mbedtls_ecp_point*)#1)"
 
-// \brief       Retrieve a bitstring ASN.1 tag and its value.
-// Updates the pointer to immediately behind the full tag.
+// \brief           This function initializes an ECP group context
+// without loading any domain parameters.
 // 
-// \param p     On entry, \c *p points to the start of the ASN.1 element.
-// On successful completion, \c *p is equal to \p end.
-// On error, the value of \c *p is undefined.
-// \param end   End of data.
-// \param bs    On success, ::mbedtls_asn1_bitstring information about
-// the parsed value.
-// 
-// \return      0 if successful.
-// \return      #MBEDTLS_ERR_ASN1_LENGTH_MISMATCH if the input contains
-// extra data after a valid BIT STRING.
-// \return      An ASN.1 error code if the input does not start with
-// a valid ASN.1 BIT STRING.
-pub extern external/mbedtls-asn1-get-bitstring(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^bs: c-pointer<mbedtls-asn1-bitstring-c>): int32
-  c inline "(int)mbedtls_asn1_get_bitstring((unsigned char**)#1, (unsigned char*)#2, (struct mbedtls_asn1_bitstring*)#3)"
+// \note            After this function is called, domain parameters
+// for various ECP groups can be loaded through the
+// mbedtls_ecp_group_load() or mbedtls_ecp_tls_read_group()
+// functions.
+pub extern external/mbedtls-ecp-group-init(^grp: c-pointer<mbedtls-ecp-group-c>): ()
+  c inline "(void)mbedtls_ecp_group_init((struct mbedtls_ecp_group*)#1)"
 
-pub inline fun ffi/mbedtls-asn1-get-bitstring(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^bs: c-pointer<mbedtls-asn1-bitstring-c>): <> int
-  external/mbedtls-asn1-get-bitstring(p, end, bs).int
+// \brief           This function initializes a key pair as an invalid one.
+// 
+// \param key       The key pair to initialize.
+pub extern external/mbedtls-ecp-keypair-init(^key: c-pointer<mbedtls-ecp-keypair-c>): ()
+  c inline "(void)mbedtls_ecp_keypair_init((struct mbedtls_ecp_keypair*)#1)"
 
-// \brief       Retrieve a bitstring ASN.1 tag without unused bits and its
-// value.
-// Updates the pointer to the beginning of the bit/octet string.
+// \brief           This function frees the components of a point.
 // 
-// \param p     On entry, \c *p points to the start of the ASN.1 element.
-// On successful completion, \c *p points to the first byte
-// of the content of the BIT STRING.
-// On error, the value of \c *p is undefined.
-// \param end   End of data.
-// \param len   On success, \c *len is the length of the content in bytes.
-// 
-// \return      0 if successful.
-// \return      #MBEDTLS_ERR_ASN1_INVALID_DATA if the input starts with
-// a valid BIT STRING with a nonzero number of unused bits.
-// \return      An ASN.1 error code if the input does not start with
-// a valid ASN.1 BIT STRING.
-pub extern external/mbedtls-asn1-get-bitstring-null(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^len: c-pointer<int>): int32
-  c inline "(int)mbedtls_asn1_get_bitstring_null((unsigned char**)#1, (unsigned char*)#2, (size_t*)#3)"
+// \param pt        The point to free.
+pub extern external/mbedtls-ecp-point-free(^pt: c-pointer<mbedtls-ecp-point-c>): ()
+  c inline "(void)mbedtls_ecp_point_free((struct mbedtls_ecp_point*)#1)"
 
-pub inline fun ffi/mbedtls-asn1-get-bitstring-null(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^len: c-pointer<int>): <> int
-  external/mbedtls-asn1-get-bitstring-null(p, end, len).int
+// \brief           This function frees the components of an ECP group.
+// 
+// \param grp       The group to free. This may be \c NULL, in which
+// case this function returns immediately. If it is not
+// \c NULL, it must point to an initialized ECP group.
+pub extern external/mbedtls-ecp-group-free(^grp: c-pointer<mbedtls-ecp-group-c>): ()
+  c inline "(void)mbedtls_ecp_group_free((struct mbedtls_ecp_group*)#1)"
 
-// \brief       Parses and splits an ASN.1 "SEQUENCE OF <tag>".
-// Updates the pointer to immediately behind the full sequence tag.
+// \brief           This function frees the components of a key pair.
 // 
-// This function allocates memory for the sequence elements. You can free
-// the allocated memory with mbedtls_asn1_sequence_free().
-// 
-// \note        On error, this function may return a partial list in \p cur.
-// You must set `cur->next = NULL` before calling this function!
-// Otherwise it is impossible to distinguish a previously non-null
-// pointer from a pointer to an object allocated by this function.
-// 
-// \note        If the sequence is empty, this function does not modify
-// \c *cur. If the sequence is valid and non-empty, this
-// function sets `cur->buf.tag` to \p tag. This allows
-// callers to distinguish between an empty sequence and
-// a one-element sequence.
-// 
-// \param p     On entry, \c *p points to the start of the ASN.1 element.
-// On successful completion, \c *p is equal to \p end.
-// On error, the value of \c *p is undefined.
-// \param end   End of data.
-// \param cur   A ::mbedtls_asn1_sequence which this function fills.
-// When this function returns, \c *cur is the head of a linked
-// list. Each node in this list is allocated with
-// mbedtls_calloc() apart from \p cur itself, and should
-// therefore be freed with mbedtls_free().
-// The list describes the content of the sequence.
-// The head of the list (i.e. \c *cur itself) describes the
-// first element, `*cur->next` describes the second element, etc.
-// For each element, `buf.tag == tag`, `buf.len` is the length
-// of the content of the content of the element, and `buf.p`
-// points to the first byte of the content (i.e. immediately
-// past the length of the element).
-// Note that list elements may be allocated even on error.
-// \param tag   Each element of the sequence must have this tag.
-// 
-// \return      0 if successful.
-// \return      #MBEDTLS_ERR_ASN1_LENGTH_MISMATCH if the input contains
-// extra data after a valid SEQUENCE OF \p tag.
-// \return      #MBEDTLS_ERR_ASN1_UNEXPECTED_TAG if the input starts with
-// an ASN.1 SEQUENCE in which an element has a tag that
-// is different from \p tag.
-// \return      #MBEDTLS_ERR_ASN1_ALLOC_FAILED if a memory allocation failed.
-// \return      An ASN.1 error code if the input does not start with
-// a valid ASN.1 SEQUENCE.
-pub extern external/mbedtls-asn1-get-sequence-of(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^cur: c-pointer<mbedtls-asn1-sequence-c>, ^tag: int32): int32
-  c inline "(int)mbedtls_asn1_get_sequence_of((unsigned char**)#1, (unsigned char*)#2, (struct mbedtls_asn1_sequence*)#3, (int)#4)"
+// \param key       The key pair to free. This may be \c NULL, in which
+// case this function returns immediately. If it is not
+// \c NULL, it must point to an initialized ECP key pair.
+pub extern external/mbedtls-ecp-keypair-free(^key: c-pointer<mbedtls-ecp-keypair-c>): ()
+  c inline "(void)mbedtls_ecp_keypair_free((struct mbedtls_ecp_keypair*)#1)"
 
-pub inline fun ffi/mbedtls-asn1-get-sequence-of(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^cur: c-pointer<mbedtls-asn1-sequence-c>, ^tag: int): <> int
-  external/mbedtls-asn1-get-sequence-of(p, end, cur, tag.int32).int
+// \brief           This function copies the contents of point \p Q into
+// point \p P.
+// 
+// \param P         The destination point. This must be initialized.
+// \param Q         The source point. This must be initialized.
+// 
+// \return          \c 0 on success.
+// \return          #MBEDTLS_ERR_MPI_ALLOC_FAILED on memory-allocation failure.
+// \return          Another negative error code for other kinds of failure.
+pub extern external/mbedtls-ecp-copy(^p: c-pointer<mbedtls-ecp-point-c>, ^q: c-pointer<mbedtls-ecp-point-c>): int32
+  c inline "(int)mbedtls_ecp_copy((struct mbedtls_ecp_point*)#1, (struct mbedtls_ecp_point*)#2)"
 
-// \brief          Free a heap-allocated linked list presentation of
-// an ASN.1 sequence, including the first element.
-// 
-// There are two common ways to manage the memory used for the representation
-// of a parsed ASN.1 sequence:
-// - Allocate a head node `mbedtls_asn1_sequence *head` with mbedtls_calloc().
-// Pass this node as the `cur` argument to mbedtls_asn1_get_sequence_of().
-// When you have finished processing the sequence,
-// call mbedtls_asn1_sequence_free() on `head`.
-// - Allocate a head node `mbedtls_asn1_sequence *head` in any manner,
-// for example on the stack. Make sure that `head->next == NULL`.
-// Pass `head` as the `cur` argument to mbedtls_asn1_get_sequence_of().
-// When you have finished processing the sequence,
-// call mbedtls_asn1_sequence_free() on `head->cur`,
-// then free `head` itself in the appropriate manner.
-// 
-// \param seq      The address of the first sequence component. This may
-// be \c NULL, in which case this functions returns
-// immediately.
-pub extern external/mbedtls-asn1-sequence-free(^seq: c-pointer<mbedtls-asn1-sequence-c>): ()
-  c inline "(void)mbedtls_asn1_sequence_free((struct mbedtls_asn1_sequence*)#1)"
+pub inline fun ffi/mbedtls-ecp-copy(^p: c-pointer<mbedtls-ecp-point-c>, ^q: c-pointer<mbedtls-ecp-point-c>): <> int
+  external/mbedtls-ecp-copy(p, q).int
 
-// \brief                Traverse an ASN.1 SEQUENCE container and
-// call a callback for each entry.
+// \brief           This function copies the contents of group \p src into
+// group \p dst.
 // 
-// This function checks that the input is a SEQUENCE of elements that
-// each have a "must" tag, and calls a callback function on the elements
-// that have a "may" tag.
+// \param dst       The destination group. This must be initialized.
+// \param src       The source group. This must be initialized.
 // 
-// For example, to validate that the input is a SEQUENCE of `tag1` and call
-// `cb` on each element, use
-// ```
-// mbedtls_asn1_traverse_sequence_of(&p, end, 0xff, tag1, 0, 0, cb, ctx);
-// ```
-// 
-// To validate that the input is a SEQUENCE of ANY and call `cb` on
-// each element, use
-// ```
-// mbedtls_asn1_traverse_sequence_of(&p, end, 0, 0, 0, 0, cb, ctx);
-// ```
-// 
-// To validate that the input is a SEQUENCE of CHOICE {NULL, OCTET STRING}
-// and call `cb` on each element that is an OCTET STRING, use
-// ```
-// mbedtls_asn1_traverse_sequence_of(&p, end, 0xfe, 0x04, 0xff, 0x04, cb, ctx);
-// ```
-// 
-// The callback is called on the elements with a "may" tag from left to
-// right. If the input is not a valid SEQUENCE of elements with a "must" tag,
-// the callback is called on the elements up to the leftmost point where
-// the input is invalid.
-// 
-// \warning              This function is still experimental and may change
-// at any time.
-// 
-// \param p              The address of the pointer to the beginning of
-// the ASN.1 SEQUENCE header. This is updated to
-// point to the end of the ASN.1 SEQUENCE container
-// on a successful invocation.
-// \param end            The end of the ASN.1 SEQUENCE container.
-// \param tag_must_mask  A mask to be applied to the ASN.1 tags found within
-// the SEQUENCE before comparing to \p tag_must_val.
-// \param tag_must_val   The required value of each ASN.1 tag found in the
-// SEQUENCE, after masking with \p tag_must_mask.
-// Mismatching tags lead to an error.
-// For example, a value of \c 0 for both \p tag_must_mask
-// and \p tag_must_val means that every tag is allowed,
-// while a value of \c 0xFF for \p tag_must_mask means
-// that \p tag_must_val is the only allowed tag.
-// \param tag_may_mask   A mask to be applied to the ASN.1 tags found within
-// the SEQUENCE before comparing to \p tag_may_val.
-// \param tag_may_val    The desired value of each ASN.1 tag found in the
-// SEQUENCE, after masking with \p tag_may_mask.
-// Mismatching tags will be silently ignored.
-// For example, a value of \c 0 for \p tag_may_mask and
-// \p tag_may_val means that any tag will be considered,
-// while a value of \c 0xFF for \p tag_may_mask means
-// that all tags with value different from \p tag_may_val
-// will be ignored.
-// \param cb             The callback to trigger for each component
-// in the ASN.1 SEQUENCE that matches \p tag_may_val.
-// The callback function is called with the following
-// parameters:
-// - \p ctx.
-// - The tag of the current element.
-// - A pointer to the start of the current element's
-// content inside the input.
-// - The length of the content of the current element.
-// If the callback returns a non-zero value,
-// the function stops immediately,
-// forwarding the callback's return value.
-// \param ctx            The context to be passed to the callback \p cb.
-// 
-// \return               \c 0 if successful the entire ASN.1 SEQUENCE
-// was traversed without parsing or callback errors.
-// \return               #MBEDTLS_ERR_ASN1_LENGTH_MISMATCH if the input
-// contains extra data after a valid SEQUENCE
-// of elements with an accepted tag.
-// \return               #MBEDTLS_ERR_ASN1_UNEXPECTED_TAG if the input starts
-// with an ASN.1 SEQUENCE in which an element has a tag
-// that is not accepted.
-// \return               An ASN.1 error code if the input does not start with
-// a valid ASN.1 SEQUENCE.
-// \return               A non-zero error code forwarded from the callback
-// \p cb in case the latter returns a non-zero value.
-pub extern external/mbedtls-asn1-traverse-sequence-of(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^tag-must-mask: int8, ^tag-must-val: int8, ^tag-may-mask: int8, ^tag-may-val: int8, ^cb: c-pointer<intptr_t>, ^ctx1: c-pointer<()>): int32
-  c inline "(int)mbedtls_asn1_traverse_sequence_of((unsigned char**)#1, (unsigned char*)#2, (unsigned char)#3, (unsigned char)#4, (unsigned char)#5, (unsigned char)#6, (int (*)(void*, int, unsigned char*, size_t))#7, (void*)#8)"
+// \return          \c 0 on success.
+// \return          #MBEDTLS_ERR_MPI_ALLOC_FAILED on memory-allocation failure.
+// \return          Another negative error code on other kinds of failure.
+pub extern external/mbedtls-ecp-group-copy(^dst: c-pointer<mbedtls-ecp-group-c>, ^src: c-pointer<mbedtls-ecp-group-c>): int32
+  c inline "(int)mbedtls_ecp_group_copy((struct mbedtls_ecp_group*)#1, (struct mbedtls_ecp_group*)#2)"
 
-pub inline fun ffi/mbedtls-asn1-traverse-sequence-of(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^tag-must-mask: int, ^tag-must-val: int, ^tag-may-mask: int, ^tag-may-val: int, ^cb: c-pointer<intptr_t>, ^ctx1: c-pointer<()>): <> int
-  external/mbedtls-asn1-traverse-sequence-of(p, end, tag-must-mask.int8, tag-must-val.int8, tag-may-mask.int8, tag-may-val.int8, cb, ctx1).int
+pub inline fun ffi/mbedtls-ecp-group-copy(^dst: c-pointer<mbedtls-ecp-group-c>, ^src: c-pointer<mbedtls-ecp-group-c>): <> int
+  external/mbedtls-ecp-group-copy(dst, src).int
 
-// \brief       Retrieve an integer ASN.1 tag and its value.
-// Updates the pointer to immediately behind the full tag.
+// \brief           This function sets a point to the point at infinity.
 // 
-// \param p     On entry, \c *p points to the start of the ASN.1 element.
-// On successful completion, \c *p points to the first byte
-// beyond the ASN.1 element.
-// On error, the value of \c *p is undefined.
-// \param end   End of data.
-// \param X     On success, the parsed value.
+// \param pt        The point to set. This must be initialized.
 // 
-// \return      0 if successful.
-// \return      An ASN.1 error code if the input does not start with
-// a valid ASN.1 INTEGER.
-// \return      #MBEDTLS_ERR_ASN1_INVALID_LENGTH if the parsed value does
-// not fit in an \c int.
-// \return      An MPI error code if the parsed value is too large.
-pub extern external/mbedtls-asn1-get-mpi(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^x: c-pointer<mbedtls-mpi-c>): int32
-  c inline "(int)mbedtls_asn1_get_mpi((unsigned char**)#1, (unsigned char*)#2, (struct mbedtls_mpi*)#3)"
+// \return          \c 0 on success.
+// \return          #MBEDTLS_ERR_MPI_ALLOC_FAILED on memory-allocation failure.
+// \return          Another negative error code on other kinds of failure.
+pub extern external/mbedtls-ecp-set-zero(^pt: c-pointer<mbedtls-ecp-point-c>): int32
+  c inline "(int)mbedtls_ecp_set_zero((struct mbedtls_ecp_point*)#1)"
 
-pub inline fun ffi/mbedtls-asn1-get-mpi(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^x: c-pointer<mbedtls-mpi-c>): <> int
-  external/mbedtls-asn1-get-mpi(p, end, x).int
+pub inline fun ffi/mbedtls-ecp-set-zero(^pt: c-pointer<mbedtls-ecp-point-c>): <> int
+  external/mbedtls-ecp-set-zero(pt).int
 
-// \brief       Retrieve an AlgorithmIdentifier ASN.1 sequence.
-// Updates the pointer to immediately behind the full
-// AlgorithmIdentifier.
+// \brief           This function checks if a point is the point at infinity.
 // 
-// \param p     On entry, \c *p points to the start of the ASN.1 element.
-// On successful completion, \c *p points to the first byte
-// beyond the AlgorithmIdentifier element.
-// On error, the value of \c *p is undefined.
-// \param end   End of data.
-// \param alg   The buffer to receive the OID.
-// \param params The buffer to receive the parameters.
-// This is zeroized if there are no parameters.
+// \param pt        The point to test. This must be initialized.
 // 
-// \return      0 if successful or a specific ASN.1 or MPI error code.
-pub extern external/mbedtls-asn1-get-alg(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^alg: c-pointer<mbedtls-asn1-buf-c>, ^params: c-pointer<mbedtls-asn1-buf-c>): int32
-  c inline "(int)mbedtls_asn1_get_alg((unsigned char**)#1, (unsigned char*)#2, (struct mbedtls_asn1_buf*)#3, (struct mbedtls_asn1_buf*)#4)"
+// \return          \c 1 if the point is zero.
+// \return          \c 0 if the point is non-zero.
+// \return          A negative error code on failure.
+pub extern external/mbedtls-ecp-is-zero(^pt: c-pointer<mbedtls-ecp-point-c>): int32
+  c inline "(int)mbedtls_ecp_is_zero((struct mbedtls_ecp_point*)#1)"
 
-pub inline fun ffi/mbedtls-asn1-get-alg(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^alg: c-pointer<mbedtls-asn1-buf-c>, ^params: c-pointer<mbedtls-asn1-buf-c>): <> int
-  external/mbedtls-asn1-get-alg(p, end, alg, params).int
+pub inline fun ffi/mbedtls-ecp-is-zero(^pt: c-pointer<mbedtls-ecp-point-c>): <> int
+  external/mbedtls-ecp-is-zero(pt).int
 
-// \brief       Retrieve an AlgorithmIdentifier ASN.1 sequence with NULL or no
-// params.
-// Updates the pointer to immediately behind the full
-// AlgorithmIdentifier.
+// \brief           This function compares two points.
 // 
-// \param p     On entry, \c *p points to the start of the ASN.1 element.
-// On successful completion, \c *p points to the first byte
-// beyond the AlgorithmIdentifier element.
-// On error, the value of \c *p is undefined.
-// \param end   End of data.
-// \param alg   The buffer to receive the OID.
+// \note            This assumes that the points are normalized. Otherwise,
+// they may compare as "not equal" even if they are.
 // 
-// \return      0 if successful or a specific ASN.1 or MPI error code.
-pub extern external/mbedtls-asn1-get-alg-null(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^alg: c-pointer<mbedtls-asn1-buf-c>): int32
-  c inline "(int)mbedtls_asn1_get_alg_null((unsigned char**)#1, (unsigned char*)#2, (struct mbedtls_asn1_buf*)#3)"
+// \param P         The first point to compare. This must be initialized.
+// \param Q         The second point to compare. This must be initialized.
+// 
+// \return          \c 0 if the points are equal.
+// \return          #MBEDTLS_ERR_ECP_BAD_INPUT_DATA if the points are not equal.
+pub extern external/mbedtls-ecp-point-cmp(^p: c-pointer<mbedtls-ecp-point-c>, ^q: c-pointer<mbedtls-ecp-point-c>): int32
+  c inline "(int)mbedtls_ecp_point_cmp((struct mbedtls_ecp_point*)#1, (struct mbedtls_ecp_point*)#2)"
 
-pub inline fun ffi/mbedtls-asn1-get-alg-null(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^alg: c-pointer<mbedtls-asn1-buf-c>): <> int
-  external/mbedtls-asn1-get-alg-null(p, end, alg).int
+pub inline fun ffi/mbedtls-ecp-point-cmp(^p: c-pointer<mbedtls-ecp-point-c>, ^q: c-pointer<mbedtls-ecp-point-c>): <> int
+  external/mbedtls-ecp-point-cmp(p, q).int
 
-// \brief       Find a specific named_data entry in a sequence or list based on
-// the OID.
+// \brief           This function imports a non-zero point from two ASCII
+// strings.
 // 
-// \param list  The list to seek through
-// \param oid   The OID to look for
-// \param len   Size of the OID
+// \param P         The destination point. This must be initialized.
+// \param radix     The numeric base of the input.
+// \param x         The first affine coordinate, as a null-terminated string.
+// \param y         The second affine coordinate, as a null-terminated string.
 // 
-// \return      NULL if not found, or a pointer to the existing entry.
-pub extern external/mbedtls-asn1-find-named-data(^list: c-pointer<mbedtls-asn1-named-data-c>, ^oid: c-pointer<int>, ^len: ssize_t): c-pointer<mbedtls-asn1-named-data-c>
-  c inline "(intptr_t)mbedtls_asn1_find_named_data((struct mbedtls_asn1_named_data*)#1, (char*)#2, (size_t)#3)"
+// \return          \c 0 on success.
+// \return          An \c MBEDTLS_ERR_MPI_XXX error code on failure.
+pub extern external/mbedtls-ecp-point-read-string(^p: c-pointer<mbedtls-ecp-point-c>, ^radix: int32, ^x: c-pointer<int>, ^y: c-pointer<int>): int32
+  c inline "(int)mbedtls_ecp_point_read_string((struct mbedtls_ecp_point*)#1, (int)#2, (char*)#3, (char*)#4)"
 
-pub inline fun ffi/mbedtls-asn1-find-named-data(^list: c-pointer<mbedtls-asn1-named-data-c>, ^oid: c-pointer<int>, ^len: int): <> c-pointer<mbedtls-asn1-named-data-c>
-  external/mbedtls-asn1-find-named-data(list, oid, len.ssize_t)
+pub inline fun ffi/mbedtls-ecp-point-read-string(^p: c-pointer<mbedtls-ecp-point-c>, ^radix: int, ^x: c-pointer<int>, ^y: c-pointer<int>): <> int
+  external/mbedtls-ecp-point-read-string(p, radix.int32, x, y).int
 
-// \brief       Free a mbedtls_asn1_named_data entry
+// \brief           This function exports a point into unsigned binary data.
 // 
-// \deprecated  This function is deprecated and will be removed in a
-// future version of the library.
-// Please use mbedtls_asn1_free_named_data_list()
-// or mbedtls_asn1_free_named_data_list_shallow().
+// \param grp       The group to which the point should belong.
+// This must be initialized and have group parameters
+// set, for example through mbedtls_ecp_group_load().
+// \param P         The point to export. This must be initialized.
+// \param format    The point format. This must be either
+// #MBEDTLS_ECP_PF_COMPRESSED or #MBEDTLS_ECP_PF_UNCOMPRESSED.
+// (For groups without these formats, this parameter is
+// ignored. But it still has to be either of the above
+// values.)
+// \param olen      The address at which to store the length of
+// the output in Bytes. This must not be \c NULL.
+// \param buf       The output buffer. This must be a writable buffer
+// of length \p buflen Bytes.
+// \param buflen    The length of the output buffer \p buf in Bytes.
 // 
-// \param entry The named data entry to free.
-// This function calls mbedtls_free() on
-// `entry->oid.p` and `entry->val.p`.
-pub extern external/mbedtls-asn1-free-named-data(^entry: c-pointer<mbedtls-asn1-named-data-c>): ()
-  c inline "(void)mbedtls_asn1_free_named_data((struct mbedtls_asn1_named_data*)#1)"
+// \return          \c 0 on success.
+// \return          #MBEDTLS_ERR_ECP_BUFFER_TOO_SMALL if the output buffer
+// is too small to hold the point.
+// \return          #MBEDTLS_ERR_ECP_FEATURE_UNAVAILABLE if the point format
+// or the export for the given group is not implemented.
+// \return          Another negative error code on other kinds of failure.
+pub extern external/mbedtls-ecp-point-write-binary(^grp: c-pointer<mbedtls-ecp-group-c>, ^p: c-pointer<mbedtls-ecp-point-c>, ^format: int32, ^olen: c-pointer<int>, ^buf: c-pointer<int>, ^buflen: ssize_t): int32
+  c inline "(int)mbedtls_ecp_point_write_binary((struct mbedtls_ecp_group*)#1, (struct mbedtls_ecp_point*)#2, (int)#3, (size_t*)#4, (unsigned char*)#5, (size_t)#6)"
 
-// \brief       Free all entries in a mbedtls_asn1_named_data list.
-// 
-// \param head  Pointer to the head of the list of named data entries to free.
-// This function calls mbedtls_free() on
-// `entry->oid.p` and `entry->val.p` and then on `entry`
-// for each list entry, and sets \c *head to \c NULL.
-pub extern external/mbedtls-asn1-free-named-data-list(^head: c-pointer<c-pointer<mbedtls-asn1-named-data-c>>): ()
-  c inline "(void)mbedtls_asn1_free_named_data_list((struct mbedtls_asn1_named_data**)#1)"
+pub inline fun ffi/mbedtls-ecp-point-write-binary(^grp: c-pointer<mbedtls-ecp-group-c>, ^p: c-pointer<mbedtls-ecp-point-c>, ^format: int, ^olen: c-pointer<int>, ^buf: c-pointer<int>, ^buflen: int): <> int
+  external/mbedtls-ecp-point-write-binary(grp, p, format.int32, olen, buf, buflen.ssize_t).int
 
-// \brief       Free all shallow entries in a mbedtls_asn1_named_data list,
-// but do not free internal pointer targets.
+// \brief           This function imports a point from unsigned binary data.
 // 
-// \param name  Head of the list of named data entries to free.
-// This function calls mbedtls_free() on each list element.
-pub extern external/mbedtls-asn1-free-named-data-list-shallow(^name: c-pointer<mbedtls-asn1-named-data-c>): ()
-  c inline "(void)mbedtls_asn1_free_named_data_list_shallow((struct mbedtls_asn1_named_data*)#1)"
+// \note            This function does not check that the point actually
+// belongs to the given group, see mbedtls_ecp_check_pubkey()
+// for that.
+// 
+// \note            For compressed points, see #MBEDTLS_ECP_PF_COMPRESSED for
+// limitations.
+// 
+// \param grp       The group to which the point should belong.
+// This must be initialized and have group parameters
+// set, for example through mbedtls_ecp_group_load().
+// \param P         The destination context to import the point to.
+// This must be initialized.
+// \param buf       The input buffer. This must be a readable buffer
+// of length \p ilen Bytes.
+// \param ilen      The length of the input buffer \p buf in Bytes.
+// 
+// \return          \c 0 on success.
+// \return          #MBEDTLS_ERR_ECP_BAD_INPUT_DATA if the input is invalid.
+// \return          #MBEDTLS_ERR_MPI_ALLOC_FAILED on memory-allocation failure.
+// \return          #MBEDTLS_ERR_ECP_FEATURE_UNAVAILABLE if the import for the
+// given group is not implemented.
+pub extern external/mbedtls-ecp-point-read-binary(^grp: c-pointer<mbedtls-ecp-group-c>, ^p: c-pointer<mbedtls-ecp-point-c>, ^buf: c-pointer<int>, ^ilen: ssize_t): int32
+  c inline "(int)mbedtls_ecp_point_read_binary((struct mbedtls_ecp_group*)#1, (struct mbedtls_ecp_point*)#2, (unsigned char*)#3, (size_t)#4)"
+
+pub inline fun ffi/mbedtls-ecp-point-read-binary(^grp: c-pointer<mbedtls-ecp-group-c>, ^p: c-pointer<mbedtls-ecp-point-c>, ^buf: c-pointer<int>, ^ilen: int): <> int
+  external/mbedtls-ecp-point-read-binary(grp, p, buf, ilen.ssize_t).int
+
+// \brief           This function imports a point from a TLS ECPoint record.
+// 
+// \note            On function return, \p *buf is updated to point immediately
+// after the ECPoint record.
+// 
+// \param grp       The ECP group to use.
+// This must be initialized and have group parameters
+// set, for example through mbedtls_ecp_group_load().
+// \param pt        The destination point.
+// \param buf       The address of the pointer to the start of the input buffer.
+// \param len       The length of the buffer.
+// 
+// \return          \c 0 on success.
+// \return          An \c MBEDTLS_ERR_MPI_XXX error code on initialization
+// failure.
+// \return          #MBEDTLS_ERR_ECP_BAD_INPUT_DATA if input is invalid.
+pub extern external/mbedtls-ecp-tls-read-point(^grp: c-pointer<mbedtls-ecp-group-c>, ^pt: c-pointer<mbedtls-ecp-point-c>, ^buf: c-pointer<c-pointer<int>>, ^len: ssize_t): int32
+  c inline "(int)mbedtls_ecp_tls_read_point((struct mbedtls_ecp_group*)#1, (struct mbedtls_ecp_point*)#2, (unsigned char**)#3, (size_t)#4)"
+
+pub inline fun ffi/mbedtls-ecp-tls-read-point(^grp: c-pointer<mbedtls-ecp-group-c>, ^pt: c-pointer<mbedtls-ecp-point-c>, ^buf: c-pointer<c-pointer<int>>, ^len: int): <> int
+  external/mbedtls-ecp-tls-read-point(grp, pt, buf, len.ssize_t).int
+
+// \brief           This function exports a point as a TLS ECPoint record
+// defined in RFC 4492, Section 5.4.
+// 
+// \param grp       The ECP group to use.
+// This must be initialized and have group parameters
+// set, for example through mbedtls_ecp_group_load().
+// \param pt        The point to be exported. This must be initialized.
+// \param format    The point format to use. This must be either
+// #MBEDTLS_ECP_PF_COMPRESSED or #MBEDTLS_ECP_PF_UNCOMPRESSED.
+// \param olen      The address at which to store the length in Bytes
+// of the data written.
+// \param buf       The target buffer. This must be a writable buffer of
+// length \p blen Bytes.
+// \param blen      The length of the target buffer \p buf in Bytes.
+// 
+// \return          \c 0 on success.
+// \return          #MBEDTLS_ERR_ECP_BAD_INPUT_DATA if the input is invalid.
+// \return          #MBEDTLS_ERR_ECP_BUFFER_TOO_SMALL if the target buffer
+// is too small to hold the exported point.
+// \return          Another negative error code on other kinds of failure.
+pub extern external/mbedtls-ecp-tls-write-point(^grp: c-pointer<mbedtls-ecp-group-c>, ^pt: c-pointer<mbedtls-ecp-point-c>, ^format: int32, ^olen: c-pointer<int>, ^buf: c-pointer<int>, ^blen: ssize_t): int32
+  c inline "(int)mbedtls_ecp_tls_write_point((struct mbedtls_ecp_group*)#1, (struct mbedtls_ecp_point*)#2, (int)#3, (size_t*)#4, (unsigned char*)#5, (size_t)#6)"
+
+pub inline fun ffi/mbedtls-ecp-tls-write-point(^grp: c-pointer<mbedtls-ecp-group-c>, ^pt: c-pointer<mbedtls-ecp-point-c>, ^format: int, ^olen: c-pointer<int>, ^buf: c-pointer<int>, ^blen: int): <> int
+  external/mbedtls-ecp-tls-write-point(grp, pt, format.int32, olen, buf, blen.ssize_t).int
+
+// \brief           This function sets up an ECP group context
+// from a standardized set of domain parameters.
+// 
+// \note            The index should be a value of the NamedCurve enum,
+// as defined in <em>RFC-4492: Elliptic Curve Cryptography
+// (ECC) Cipher Suites for Transport Layer Security (TLS)</em>,
+// usually in the form of an \c MBEDTLS_ECP_DP_XXX macro.
+// 
+// \param grp       The group context to setup. This must be initialized.
+// \param id        The identifier of the domain parameter set to load.
+// 
+// \return          \c 0 on success.
+// \return          #MBEDTLS_ERR_ECP_FEATURE_UNAVAILABLE if \p id doesn't
+// correspond to a known group.
+// \return          Another negative error code on other kinds of failure.
+pub extern external/mbedtls-ecp-group-load(^grp: c-pointer<mbedtls-ecp-group-c>, ^id: int32): int32
+  c inline "(int)mbedtls_ecp_group_load((struct mbedtls_ecp_group*)#1, (int32_t)#2)"
+
+pub inline fun ffi/mbedtls-ecp-group-load(^grp: c-pointer<mbedtls-ecp-group-c>, ^id: mbedtls-ecp-group-id): <exn> int
+  external/mbedtls-ecp-group-load(grp, id.mbedtls-ecp-group-id/int).int
+
+// \brief           This function sets up an ECP group context from a TLS
+// ECParameters record as defined in RFC 4492, Section 5.4.
+// 
+// \note            The read pointer \p buf is updated to point right after
+// the ECParameters record on exit.
+// 
+// \param grp       The group context to setup. This must be initialized.
+// \param buf       The address of the pointer to the start of the input buffer.
+// \param len       The length of the input buffer \c *buf in Bytes.
+// 
+// \return          \c 0 on success.
+// \return          #MBEDTLS_ERR_ECP_BAD_INPUT_DATA if input is invalid.
+// \return          #MBEDTLS_ERR_ECP_FEATURE_UNAVAILABLE if the group is not
+// recognized.
+// \return          Another negative error code on other kinds of failure.
+pub extern external/mbedtls-ecp-tls-read-group(^grp: c-pointer<mbedtls-ecp-group-c>, ^buf: c-pointer<c-pointer<int>>, ^len: ssize_t): int32
+  c inline "(int)mbedtls_ecp_tls_read_group((struct mbedtls_ecp_group*)#1, (unsigned char**)#2, (size_t)#3)"
+
+pub inline fun ffi/mbedtls-ecp-tls-read-group(^grp: c-pointer<mbedtls-ecp-group-c>, ^buf: c-pointer<c-pointer<int>>, ^len: int): <> int
+  external/mbedtls-ecp-tls-read-group(grp, buf, len.ssize_t).int
+
+// \brief           This function extracts an elliptic curve group ID from a
+// TLS ECParameters record as defined in RFC 4492, Section 5.4.
+// 
+// \note            The read pointer \p buf is updated to point right after
+// the ECParameters record on exit.
+// 
+// \param grp       The address at which to store the group id.
+// This must not be \c NULL.
+// \param buf       The address of the pointer to the start of the input buffer.
+// \param len       The length of the input buffer \c *buf in Bytes.
+// 
+// \return          \c 0 on success.
+// \return          #MBEDTLS_ERR_ECP_BAD_INPUT_DATA if input is invalid.
+// \return          #MBEDTLS_ERR_ECP_FEATURE_UNAVAILABLE if the group is not
+// recognized.
+// \return          Another negative error code on other kinds of failure.
+pub extern external/mbedtls-ecp-tls-read-group-id(^grp: c-pointer<mbedtls-ecp-group-id>, ^buf: c-pointer<c-pointer<int>>, ^len: ssize_t): int32
+  c inline "(int)mbedtls_ecp_tls_read_group_id((int32_t*)#1, (unsigned char**)#2, (size_t)#3)"
+
+pub inline fun ffi/mbedtls-ecp-tls-read-group-id(^grp: c-pointer<mbedtls-ecp-group-id>, ^buf: c-pointer<c-pointer<int>>, ^len: int): <> int
+  external/mbedtls-ecp-tls-read-group-id(grp, buf, len.ssize_t).int
+
+// \brief           This function exports an elliptic curve as a TLS
+// ECParameters record as defined in RFC 4492, Section 5.4.
+// 
+// \param grp       The ECP group to be exported.
+// This must be initialized and have group parameters
+// set, for example through mbedtls_ecp_group_load().
+// \param olen      The address at which to store the number of Bytes written.
+// This must not be \c NULL.
+// \param buf       The buffer to write to. This must be a writable buffer
+// of length \p blen Bytes.
+// \param blen      The length of the output buffer \p buf in Bytes.
+// 
+// \return          \c 0 on success.
+// \return          #MBEDTLS_ERR_ECP_BUFFER_TOO_SMALL if the output
+// buffer is too small to hold the exported group.
+// \return          Another negative error code on other kinds of failure.
+pub extern external/mbedtls-ecp-tls-write-group(^grp: c-pointer<mbedtls-ecp-group-c>, ^olen: c-pointer<int>, ^buf: c-pointer<int>, ^blen: ssize_t): int32
+  c inline "(int)mbedtls_ecp_tls_write_group((struct mbedtls_ecp_group*)#1, (size_t*)#2, (unsigned char*)#3, (size_t)#4)"
+
+pub inline fun ffi/mbedtls-ecp-tls-write-group(^grp: c-pointer<mbedtls-ecp-group-c>, ^olen: c-pointer<int>, ^buf: c-pointer<int>, ^blen: int): <> int
+  external/mbedtls-ecp-tls-write-group(grp, olen, buf, blen.ssize_t).int
+
+// \brief           This function performs a scalar multiplication of a point
+// by an integer: \p R = \p m * \p P.
+// 
+// It is not thread-safe to use same group in multiple threads.
+// 
+// \note            To prevent timing attacks, this function
+// executes the exact same sequence of base-field
+// operations for any valid \p m. It avoids any if-branch or
+// array index depending on the value of \p m. It also uses
+// \p f_rng to randomize some intermediate results.
+// 
+// \param grp       The ECP group to use.
+// This must be initialized and have group parameters
+// set, for example through mbedtls_ecp_group_load().
+// \param R         The point in which to store the result of the calculation.
+// This must be initialized.
+// \param m         The integer by which to multiply. This must be initialized.
+// \param P         The point to multiply. This must be initialized.
+// \param f_rng     The RNG function. This must not be \c NULL.
+// \param p_rng     The RNG context to be passed to \p f_rng. This may be \c
+// NULL if \p f_rng doesn't need a context.
+// 
+// \return          \c 0 on success.
+// \return          #MBEDTLS_ERR_ECP_INVALID_KEY if \p m is not a valid private
+// key, or \p P is not a valid public key.
+// \return          #MBEDTLS_ERR_MPI_ALLOC_FAILED on memory-allocation failure.
+// \return          Another negative error code on other kinds of failure.
+pub extern external/mbedtls-ecp-mul(^grp: c-pointer<mbedtls-ecp-group-c>, ^r: c-pointer<mbedtls-ecp-point-c>, ^m: c-pointer<mbedtls-mpi-c>, ^p: c-pointer<mbedtls-ecp-point-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): int32
+  c inline "(int)mbedtls_ecp_mul((struct mbedtls_ecp_group*)#1, (struct mbedtls_ecp_point*)#2, (struct mbedtls_mpi*)#3, (struct mbedtls_ecp_point*)#4, (int (*)(void*, unsigned char*, size_t))#5, (void*)#6)"
+
+pub inline fun ffi/mbedtls-ecp-mul(^grp: c-pointer<mbedtls-ecp-group-c>, ^r: c-pointer<mbedtls-ecp-point-c>, ^m: c-pointer<mbedtls-mpi-c>, ^p: c-pointer<mbedtls-ecp-point-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): <> int
+  external/mbedtls-ecp-mul(grp, r, m, p, f-rng, p-rng).int
+
+// \brief           This function performs multiplication of a point by
+// an integer: \p R = \p m * \p P in a restartable way.
+// 
+// \see             mbedtls_ecp_mul()
+// 
+// \note            This function does the same as \c mbedtls_ecp_mul(), but
+// it can return early and restart according to the limit set
+// with \c mbedtls_ecp_set_max_ops() to reduce blocking.
+// 
+// \param grp       The ECP group to use.
+// This must be initialized and have group parameters
+// set, for example through mbedtls_ecp_group_load().
+// \param R         The point in which to store the result of the calculation.
+// This must be initialized.
+// \param m         The integer by which to multiply. This must be initialized.
+// \param P         The point to multiply. This must be initialized.
+// \param f_rng     The RNG function. This must not be \c NULL.
+// \param p_rng     The RNG context to be passed to \p f_rng. This may be \c
+// NULL if \p f_rng doesn't need a context.
+// \param rs_ctx    The restart context (NULL disables restart).
+// 
+// \return          \c 0 on success.
+// \return          #MBEDTLS_ERR_ECP_INVALID_KEY if \p m is not a valid private
+// key, or \p P is not a valid public key.
+// \return          #MBEDTLS_ERR_MPI_ALLOC_FAILED on memory-allocation failure.
+// \return          #MBEDTLS_ERR_ECP_IN_PROGRESS if maximum number of
+// operations was reached: see \c mbedtls_ecp_set_max_ops().
+// \return          Another negative error code on other kinds of failure.
+pub extern external/mbedtls-ecp-mul-restartable(^grp: c-pointer<mbedtls-ecp-group-c>, ^r: c-pointer<mbedtls-ecp-point-c>, ^m: c-pointer<mbedtls-mpi-c>, ^p: c-pointer<mbedtls-ecp-point-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>, ^rs-ctx: c-pointer<mbedtls-ecp-restart-ctx>): int32
+  c inline "(int)mbedtls_ecp_mul_restartable((struct mbedtls_ecp_group*)#1, (struct mbedtls_ecp_point*)#2, (struct mbedtls_mpi*)#3, (struct mbedtls_ecp_point*)#4, (int (*)(void*, unsigned char*, size_t))#5, (void*)#6, (mbedtls_ecp_restart_ctx*)#7)"
+
+pub inline fun ffi/mbedtls-ecp-mul-restartable(^grp: c-pointer<mbedtls-ecp-group-c>, ^r: c-pointer<mbedtls-ecp-point-c>, ^m: c-pointer<mbedtls-mpi-c>, ^p: c-pointer<mbedtls-ecp-point-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>, ^rs-ctx: c-pointer<mbedtls-ecp-restart-ctx>): <> int
+  external/mbedtls-ecp-mul-restartable(grp, r, m, p, f-rng, p-rng, rs-ctx).int
+
+// \brief           This function performs multiplication and addition of two
+// points by integers: \p R = \p m * \p P + \p n * \p Q
+// 
+// It is not thread-safe to use same group in multiple threads.
+// 
+// \note            In contrast to mbedtls_ecp_mul(), this function does not
+// guarantee a constant execution flow and timing.
+// 
+// \note            This function is only defined for short Weierstrass curves.
+// It may not be included in builds without any short
+// Weierstrass curve.
+// 
+// \param grp       The ECP group to use.
+// This must be initialized and have group parameters
+// set, for example through mbedtls_ecp_group_load().
+// \param R         The point in which to store the result of the calculation.
+// This must be initialized.
+// \param m         The integer by which to multiply \p P.
+// This must be initialized.
+// \param P         The point to multiply by \p m. This must be initialized.
+// \param n         The integer by which to multiply \p Q.
+// This must be initialized.
+// \param Q         The point to be multiplied by \p n.
+// This must be initialized.
+// 
+// \return          \c 0 on success.
+// \return          #MBEDTLS_ERR_ECP_INVALID_KEY if \p m or \p n are not
+// valid private keys, or \p P or \p Q are not valid public
+// keys.
+// \return          #MBEDTLS_ERR_MPI_ALLOC_FAILED on memory-allocation failure.
+// \return          #MBEDTLS_ERR_ECP_FEATURE_UNAVAILABLE if \p grp does not
+// designate a short Weierstrass curve.
+// \return          Another negative error code on other kinds of failure.
+pub extern external/mbedtls-ecp-muladd(^grp: c-pointer<mbedtls-ecp-group-c>, ^r: c-pointer<mbedtls-ecp-point-c>, ^m: c-pointer<mbedtls-mpi-c>, ^p: c-pointer<mbedtls-ecp-point-c>, ^n: c-pointer<mbedtls-mpi-c>, ^q: c-pointer<mbedtls-ecp-point-c>): int32
+  c inline "(int)mbedtls_ecp_muladd((struct mbedtls_ecp_group*)#1, (struct mbedtls_ecp_point*)#2, (struct mbedtls_mpi*)#3, (struct mbedtls_ecp_point*)#4, (struct mbedtls_mpi*)#5, (struct mbedtls_ecp_point*)#6)"
+
+pub inline fun ffi/mbedtls-ecp-muladd(^grp: c-pointer<mbedtls-ecp-group-c>, ^r: c-pointer<mbedtls-ecp-point-c>, ^m: c-pointer<mbedtls-mpi-c>, ^p: c-pointer<mbedtls-ecp-point-c>, ^n: c-pointer<mbedtls-mpi-c>, ^q: c-pointer<mbedtls-ecp-point-c>): <> int
+  external/mbedtls-ecp-muladd(grp, r, m, p, n, q).int
+
+// \brief           This function performs multiplication and addition of two
+// points by integers: \p R = \p m * \p P + \p n * \p Q in a
+// restartable way.
+// 
+// \see             \c mbedtls_ecp_muladd()
+// 
+// \note            This function works the same as \c mbedtls_ecp_muladd(),
+// but it can return early and restart according to the limit
+// set with \c mbedtls_ecp_set_max_ops() to reduce blocking.
+// 
+// \note            This function is only defined for short Weierstrass curves.
+// It may not be included in builds without any short
+// Weierstrass curve.
+// 
+// \param grp       The ECP group to use.
+// This must be initialized and have group parameters
+// set, for example through mbedtls_ecp_group_load().
+// \param R         The point in which to store the result of the calculation.
+// This must be initialized.
+// \param m         The integer by which to multiply \p P.
+// This must be initialized.
+// \param P         The point to multiply by \p m. This must be initialized.
+// \param n         The integer by which to multiply \p Q.
+// This must be initialized.
+// \param Q         The point to be multiplied by \p n.
+// This must be initialized.
+// \param rs_ctx    The restart context (NULL disables restart).
+// 
+// \return          \c 0 on success.
+// \return          #MBEDTLS_ERR_ECP_INVALID_KEY if \p m or \p n are not
+// valid private keys, or \p P or \p Q are not valid public
+// keys.
+// \return          #MBEDTLS_ERR_MPI_ALLOC_FAILED on memory-allocation failure.
+// \return          #MBEDTLS_ERR_ECP_FEATURE_UNAVAILABLE if \p grp does not
+// designate a short Weierstrass curve.
+// \return          #MBEDTLS_ERR_ECP_IN_PROGRESS if maximum number of
+// operations was reached: see \c mbedtls_ecp_set_max_ops().
+// \return          Another negative error code on other kinds of failure.
+pub extern external/mbedtls-ecp-muladd-restartable(^grp: c-pointer<mbedtls-ecp-group-c>, ^r: c-pointer<mbedtls-ecp-point-c>, ^m: c-pointer<mbedtls-mpi-c>, ^p: c-pointer<mbedtls-ecp-point-c>, ^n: c-pointer<mbedtls-mpi-c>, ^q: c-pointer<mbedtls-ecp-point-c>, ^rs-ctx: c-pointer<mbedtls-ecp-restart-ctx>): int32
+  c inline "(int)mbedtls_ecp_muladd_restartable((struct mbedtls_ecp_group*)#1, (struct mbedtls_ecp_point*)#2, (struct mbedtls_mpi*)#3, (struct mbedtls_ecp_point*)#4, (struct mbedtls_mpi*)#5, (struct mbedtls_ecp_point*)#6, (mbedtls_ecp_restart_ctx*)#7)"
+
+pub inline fun ffi/mbedtls-ecp-muladd-restartable(^grp: c-pointer<mbedtls-ecp-group-c>, ^r: c-pointer<mbedtls-ecp-point-c>, ^m: c-pointer<mbedtls-mpi-c>, ^p: c-pointer<mbedtls-ecp-point-c>, ^n: c-pointer<mbedtls-mpi-c>, ^q: c-pointer<mbedtls-ecp-point-c>, ^rs-ctx: c-pointer<mbedtls-ecp-restart-ctx>): <> int
+  external/mbedtls-ecp-muladd-restartable(grp, r, m, p, n, q, rs-ctx).int
+
+// \brief           This function checks that a point is a valid public key
+// on this curve.
+// 
+// It only checks that the point is non-zero, has
+// valid coordinates and lies on the curve. It does not verify
+// that it is indeed a multiple of \c G. This additional
+// check is computationally more expensive, is not required
+// by standards, and should not be necessary if the group
+// used has a small cofactor. In particular, it is useless for
+// the NIST groups which all have a cofactor of 1.
+// 
+// \note            This function uses bare components rather than an
+// ::mbedtls_ecp_keypair structure, to ease use with other
+// structures, such as ::mbedtls_ecdh_context or
+// ::mbedtls_ecdsa_context.
+// 
+// \param grp       The ECP group the point should belong to.
+// This must be initialized and have group parameters
+// set, for example through mbedtls_ecp_group_load().
+// \param pt        The point to check. This must be initialized.
+// 
+// \return          \c 0 if the point is a valid public key.
+// \return          #MBEDTLS_ERR_ECP_INVALID_KEY if the point is not
+// a valid public key for the given curve.
+// \return          Another negative error code on other kinds of failure.
+pub extern external/mbedtls-ecp-check-pubkey(^grp: c-pointer<mbedtls-ecp-group-c>, ^pt: c-pointer<mbedtls-ecp-point-c>): int32
+  c inline "(int)mbedtls_ecp_check_pubkey((struct mbedtls_ecp_group*)#1, (struct mbedtls_ecp_point*)#2)"
+
+pub inline fun ffi/mbedtls-ecp-check-pubkey(^grp: c-pointer<mbedtls-ecp-group-c>, ^pt: c-pointer<mbedtls-ecp-point-c>): <> int
+  external/mbedtls-ecp-check-pubkey(grp, pt).int
+
+// \brief           This function checks that an \c mbedtls_mpi is a
+// valid private key for this curve.
+// 
+// \note            This function uses bare components rather than an
+// ::mbedtls_ecp_keypair structure to ease use with other
+// structures, such as ::mbedtls_ecdh_context or
+// ::mbedtls_ecdsa_context.
+// 
+// \param grp       The ECP group the private key should belong to.
+// This must be initialized and have group parameters
+// set, for example through mbedtls_ecp_group_load().
+// \param d         The integer to check. This must be initialized.
+// 
+// \return          \c 0 if the point is a valid private key.
+// \return          #MBEDTLS_ERR_ECP_INVALID_KEY if the point is not a valid
+// private key for the given curve.
+// \return          Another negative error code on other kinds of failure.
+pub extern external/mbedtls-ecp-check-privkey(^grp: c-pointer<mbedtls-ecp-group-c>, ^d: c-pointer<mbedtls-mpi-c>): int32
+  c inline "(int)mbedtls_ecp_check_privkey((struct mbedtls_ecp_group*)#1, (struct mbedtls_mpi*)#2)"
+
+pub inline fun ffi/mbedtls-ecp-check-privkey(^grp: c-pointer<mbedtls-ecp-group-c>, ^d: c-pointer<mbedtls-mpi-c>): <> int
+  external/mbedtls-ecp-check-privkey(grp, d).int
+
+// \brief           This function generates a private key.
+// 
+// \param grp       The ECP group to generate a private key for.
+// This must be initialized and have group parameters
+// set, for example through mbedtls_ecp_group_load().
+// \param d         The destination MPI (secret part). This must be initialized.
+// \param f_rng     The RNG function. This must not be \c NULL.
+// \param p_rng     The RNG parameter to be passed to \p f_rng. This may be
+// \c NULL if \p f_rng doesn't need a context argument.
+// 
+// \return          \c 0 on success.
+// \return          An \c MBEDTLS_ERR_ECP_XXX or \c MBEDTLS_MPI_XXX error code
+// on failure.
+pub extern external/mbedtls-ecp-gen-privkey(^grp: c-pointer<mbedtls-ecp-group-c>, ^d: c-pointer<mbedtls-mpi-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): int32
+  c inline "(int)mbedtls_ecp_gen_privkey((struct mbedtls_ecp_group*)#1, (struct mbedtls_mpi*)#2, (int (*)(void*, unsigned char*, size_t))#3, (void*)#4)"
+
+pub inline fun ffi/mbedtls-ecp-gen-privkey(^grp: c-pointer<mbedtls-ecp-group-c>, ^d: c-pointer<mbedtls-mpi-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): <> int
+  external/mbedtls-ecp-gen-privkey(grp, d, f-rng, p-rng).int
+
+// \brief           This function generates a keypair with a configurable base
+// point.
+// 
+// \note            This function uses bare components rather than an
+// ::mbedtls_ecp_keypair structure to ease use with other
+// structures, such as ::mbedtls_ecdh_context or
+// ::mbedtls_ecdsa_context.
+// 
+// \param grp       The ECP group to generate a key pair for.
+// This must be initialized and have group parameters
+// set, for example through mbedtls_ecp_group_load().
+// \param G         The base point to use. This must be initialized
+// and belong to \p grp. It replaces the default base
+// point \c grp->G used by mbedtls_ecp_gen_keypair().
+// \param d         The destination MPI (secret part).
+// This must be initialized.
+// \param Q         The destination point (public part).
+// This must be initialized.
+// \param f_rng     The RNG function. This must not be \c NULL.
+// \param p_rng     The RNG context to be passed to \p f_rng. This may
+// be \c NULL if \p f_rng doesn't need a context argument.
+// 
+// \return          \c 0 on success.
+// \return          An \c MBEDTLS_ERR_ECP_XXX or \c MBEDTLS_MPI_XXX error code
+// on failure.
+pub extern external/mbedtls-ecp-gen-keypair-base(^grp: c-pointer<mbedtls-ecp-group-c>, ^g: c-pointer<mbedtls-ecp-point-c>, ^d: c-pointer<mbedtls-mpi-c>, ^q: c-pointer<mbedtls-ecp-point-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): int32
+  c inline "(int)mbedtls_ecp_gen_keypair_base((struct mbedtls_ecp_group*)#1, (struct mbedtls_ecp_point*)#2, (struct mbedtls_mpi*)#3, (struct mbedtls_ecp_point*)#4, (int (*)(void*, unsigned char*, size_t))#5, (void*)#6)"
+
+pub inline fun ffi/mbedtls-ecp-gen-keypair-base(^grp: c-pointer<mbedtls-ecp-group-c>, ^g: c-pointer<mbedtls-ecp-point-c>, ^d: c-pointer<mbedtls-mpi-c>, ^q: c-pointer<mbedtls-ecp-point-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): <> int
+  external/mbedtls-ecp-gen-keypair-base(grp, g, d, q, f-rng, p-rng).int
+
+// \brief           This function generates an ECP keypair.
+// 
+// \note            This function uses bare components rather than an
+// ::mbedtls_ecp_keypair structure to ease use with other
+// structures, such as ::mbedtls_ecdh_context or
+// ::mbedtls_ecdsa_context.
+// 
+// \param grp       The ECP group to generate a key pair for.
+// This must be initialized and have group parameters
+// set, for example through mbedtls_ecp_group_load().
+// \param d         The destination MPI (secret part).
+// This must be initialized.
+// \param Q         The destination point (public part).
+// This must be initialized.
+// \param f_rng     The RNG function. This must not be \c NULL.
+// \param p_rng     The RNG context to be passed to \p f_rng. This may
+// be \c NULL if \p f_rng doesn't need a context argument.
+// 
+// \return          \c 0 on success.
+// \return          An \c MBEDTLS_ERR_ECP_XXX or \c MBEDTLS_MPI_XXX error code
+// on failure.
+pub extern external/mbedtls-ecp-gen-keypair(^grp: c-pointer<mbedtls-ecp-group-c>, ^d: c-pointer<mbedtls-mpi-c>, ^q: c-pointer<mbedtls-ecp-point-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): int32
+  c inline "(int)mbedtls_ecp_gen_keypair((struct mbedtls_ecp_group*)#1, (struct mbedtls_mpi*)#2, (struct mbedtls_ecp_point*)#3, (int (*)(void*, unsigned char*, size_t))#4, (void*)#5)"
+
+pub inline fun ffi/mbedtls-ecp-gen-keypair(^grp: c-pointer<mbedtls-ecp-group-c>, ^d: c-pointer<mbedtls-mpi-c>, ^q: c-pointer<mbedtls-ecp-point-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): <> int
+  external/mbedtls-ecp-gen-keypair(grp, d, q, f-rng, p-rng).int
+
+// \brief           This function generates an ECP key.
+// 
+// \param grp_id    The ECP group identifier.
+// \param key       The destination key. This must be initialized.
+// \param f_rng     The RNG function to use. This must not be \c NULL.
+// \param p_rng     The RNG context to be passed to \p f_rng. This may
+// be \c NULL if \p f_rng doesn't need a context argument.
+// 
+// \return          \c 0 on success.
+// \return          An \c MBEDTLS_ERR_ECP_XXX or \c MBEDTLS_MPI_XXX error code
+// on failure.
+pub extern external/mbedtls-ecp-gen-key(^grp-id: int32, ^key: c-pointer<mbedtls-ecp-keypair-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): int32
+  c inline "(int)mbedtls_ecp_gen_key((int32_t)#1, (struct mbedtls_ecp_keypair*)#2, (int (*)(void*, unsigned char*, size_t))#3, (void*)#4)"
+
+pub inline fun ffi/mbedtls-ecp-gen-key(^grp-id: mbedtls-ecp-group-id, ^key: c-pointer<mbedtls-ecp-keypair-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): <exn> int
+  external/mbedtls-ecp-gen-key(grp-id.mbedtls-ecp-group-id/int, key, f-rng, p-rng).int
+
+// \brief          Set the public key in a key pair object.
+// 
+// \note            This function does not check that the point actually
+// belongs to the given group. Call mbedtls_ecp_check_pubkey()
+// on \p Q before calling this function to check that.
+// 
+// \note            This function does not check that the public key matches
+// the private key that is already in \p key, if any.
+// To check the consistency of the resulting key pair object,
+// call mbedtls_ecp_check_pub_priv() after setting both
+// the public key and the private key.
+// 
+// \param grp_id    The ECP group identifier.
+// \param key       The key pair object. It must be initialized.
+// If its group has already been set, it must match \p grp_id.
+// If its group has not been set, it will be set to \p grp_id.
+// If the public key has already been set, it is overwritten.
+// \param Q         The public key to copy. This must be a point on the
+// curve indicated by \p grp_id.
+// 
+// \return          \c 0 on success.
+// \return          #MBEDTLS_ERR_ECP_BAD_INPUT_DATA if \p key does not
+// match \p grp_id.
+// \return          #MBEDTLS_ERR_ECP_FEATURE_UNAVAILABLE if the operation for
+// the group is not implemented.
+// \return          #MBEDTLS_ERR_MPI_ALLOC_FAILED on memory-allocation failure.
+// \return          Another negative error code on other kinds of failure.
+pub extern external/mbedtls-ecp-set-public-key(^grp-id: int32, ^key: c-pointer<mbedtls-ecp-keypair-c>, ^q: c-pointer<mbedtls-ecp-point-c>): int32
+  c inline "(int)mbedtls_ecp_set_public_key((int32_t)#1, (struct mbedtls_ecp_keypair*)#2, (struct mbedtls_ecp_point*)#3)"
+
+pub inline fun ffi/mbedtls-ecp-set-public-key(^grp-id: mbedtls-ecp-group-id, ^key: c-pointer<mbedtls-ecp-keypair-c>, ^q: c-pointer<mbedtls-ecp-point-c>): <exn> int
+  external/mbedtls-ecp-set-public-key(grp-id.mbedtls-ecp-group-id/int, key, q).int
+
+// \brief           This function reads an elliptic curve private key.
+// 
+// \note            This function does not set the public key in the
+// key pair object. Without a public key, the key pair object
+// cannot be used with operations that require the public key.
+// Call mbedtls_ecp_keypair_calc_public() to set the public
+// key from the private key. Alternatively, you can call
+// mbedtls_ecp_set_public_key() to set the public key part,
+// and then optionally mbedtls_ecp_check_pub_priv() to check
+// that the private and public parts are consistent.
+// 
+// \note            If a public key has already been set in the key pair
+// object, this function does not check that it is consistent
+// with the private key. Call mbedtls_ecp_check_pub_priv()
+// after setting both the public key and the private key
+// to make that check.
+// 
+// \param grp_id    The ECP group identifier.
+// \param key       The destination key.
+// \param buf       The buffer containing the binary representation of the
+// key. (Big endian integer for Weierstrass curves, byte
+// string for Montgomery curves.)
+// \param buflen    The length of the buffer in bytes.
+// 
+// \return          \c 0 on success.
+// \return          #MBEDTLS_ERR_ECP_INVALID_KEY error if the key is
+// invalid.
+// \return          #MBEDTLS_ERR_MPI_ALLOC_FAILED if memory allocation failed.
+// \return          #MBEDTLS_ERR_ECP_FEATURE_UNAVAILABLE if the operation for
+// the group is not implemented.
+// \return          Another negative error code on different kinds of failure.
+pub extern external/mbedtls-ecp-read-key(^grp-id: int32, ^key: c-pointer<mbedtls-ecp-keypair-c>, ^buf: c-pointer<int>, ^buflen: ssize_t): int32
+  c inline "(int)mbedtls_ecp_read_key((int32_t)#1, (struct mbedtls_ecp_keypair*)#2, (unsigned char*)#3, (size_t)#4)"
+
+pub inline fun ffi/mbedtls-ecp-read-key(^grp-id: mbedtls-ecp-group-id, ^key: c-pointer<mbedtls-ecp-keypair-c>, ^buf: c-pointer<int>, ^buflen: int): <exn> int
+  external/mbedtls-ecp-read-key(grp-id.mbedtls-ecp-group-id/int, key, buf, buflen.ssize_t).int
+
+// \brief           This function exports an elliptic curve private key.
+// 
+// \deprecated      Note that although this function accepts an output
+// buffer that is smaller or larger than the key, most key
+// import interfaces require the output to have exactly
+// key's nominal length. It is generally simplest to
+// pass the key's nominal length as \c buflen, after
+// checking that the output buffer is large enough.
+// See the description of the \p buflen parameter for
+// how to calculate the nominal length.
+// To avoid this difficulty, use mbedtls_ecp_write_key_ext()
+// instead.
+// mbedtls_ecp_write_key() is deprecated and will be
+// removed in a future version of the library.
+// 
+// \note            If the private key was not set in \p key,
+// the output is unspecified. Future versions
+// may return an error in that case.
+// 
+// \param key       The private key.
+// \param buf       The output buffer for containing the binary representation
+// of the key.
+// For Weierstrass curves, this is the big-endian
+// representation, padded with null bytes at the beginning
+// to reach \p buflen bytes.
+// For Montgomery curves, this is the standard byte string
+// representation (which is little-endian), padded with
+// null bytes at the end to reach \p buflen bytes.
+// \param buflen    The total length of the buffer in bytes.
+// The length of the output is
+// (`grp->nbits` + 7) / 8 bytes
+// where `grp->nbits` is the private key size in bits.
+// For Weierstrass keys, if the output buffer is smaller,
+// leading zeros are trimmed to fit if possible. For
+// Montgomery keys, the output buffer must always be large
+// enough for the nominal length.
+// 
+// \return          \c 0 on success.
+// \return          #MBEDTLS_ERR_ECP_BUFFER_TOO_SMALL or
+// #MBEDTLS_ERR_MPI_BUFFER_TOO_SMALL if the \p key
+// representation is larger than the available space in \p buf.
+// \return          Another negative error code on different kinds of failure.
+pub extern external/mbedtls-ecp-write-key(^key: c-pointer<mbedtls-ecp-keypair-c>, ^buf: c-pointer<int>, ^buflen: ssize_t): int32
+  c inline "(int)mbedtls_ecp_write_key((struct mbedtls_ecp_keypair*)#1, (unsigned char*)#2, (size_t)#3)"
+
+pub inline fun ffi/mbedtls-ecp-write-key(^key: c-pointer<mbedtls-ecp-keypair-c>, ^buf: c-pointer<int>, ^buflen: int): <> int
+  external/mbedtls-ecp-write-key(key, buf, buflen.ssize_t).int
+
+// \brief           This function exports an elliptic curve private key.
+// 
+// \param key       The private key.
+// \param olen      On success, the length of the private key.
+// This is always (`grp->nbits` + 7) / 8 bytes
+// where `grp->nbits` is the private key size in bits.
+// \param buf       The output buffer for containing the binary representation
+// of the key.
+// \param buflen    The total length of the buffer in bytes.
+// #MBEDTLS_ECP_MAX_BYTES is always sufficient.
+// 
+// \return          \c 0 on success.
+// \return          #MBEDTLS_ERR_ECP_BUFFER_TOO_SMALL if the \p key
+// representation is larger than the available space in \p buf.
+// \return          #MBEDTLS_ERR_ECP_BAD_INPUT_DATA if no private key is
+// set in \p key.
+// \return          Another negative error code on different kinds of failure.
+pub extern external/mbedtls-ecp-write-key-ext(^key: c-pointer<mbedtls-ecp-keypair-c>, ^olen: c-pointer<int>, ^buf: c-pointer<int>, ^buflen: ssize_t): int32
+  c inline "(int)mbedtls_ecp_write_key_ext((struct mbedtls_ecp_keypair*)#1, (size_t*)#2, (unsigned char*)#3, (size_t)#4)"
+
+pub inline fun ffi/mbedtls-ecp-write-key-ext(^key: c-pointer<mbedtls-ecp-keypair-c>, ^olen: c-pointer<int>, ^buf: c-pointer<int>, ^buflen: int): <> int
+  external/mbedtls-ecp-write-key-ext(key, olen, buf, buflen.ssize_t).int
+
+// \brief           This function exports an elliptic curve public key.
+// 
+// \note            If the public key was not set in \p key,
+// the output is unspecified. Future versions
+// may return an error in that case.
+// 
+// \param key       The public key.
+// \param format    The point format. This must be either
+// #MBEDTLS_ECP_PF_COMPRESSED or #MBEDTLS_ECP_PF_UNCOMPRESSED.
+// (For groups without these formats, this parameter is
+// ignored. But it still has to be either of the above
+// values.)
+// \param olen      The address at which to store the length of
+// the output in Bytes. This must not be \c NULL.
+// \param buf       The output buffer. This must be a writable buffer
+// of length \p buflen Bytes.
+// \param buflen    The length of the output buffer \p buf in Bytes.
+// 
+// \return          \c 0 on success.
+// \return          #MBEDTLS_ERR_ECP_BUFFER_TOO_SMALL if the output buffer
+// is too small to hold the point.
+// \return          #MBEDTLS_ERR_ECP_FEATURE_UNAVAILABLE if the point format
+// or the export for the given group is not implemented.
+// \return          Another negative error code on other kinds of failure.
+pub extern external/mbedtls-ecp-write-public-key(^key: c-pointer<mbedtls-ecp-keypair-c>, ^format: int32, ^olen: c-pointer<int>, ^buf: c-pointer<int>, ^buflen: ssize_t): int32
+  c inline "(int)mbedtls_ecp_write_public_key((struct mbedtls_ecp_keypair*)#1, (int)#2, (size_t*)#3, (unsigned char*)#4, (size_t)#5)"
+
+pub inline fun ffi/mbedtls-ecp-write-public-key(^key: c-pointer<mbedtls-ecp-keypair-c>, ^format: int, ^olen: c-pointer<int>, ^buf: c-pointer<int>, ^buflen: int): <> int
+  external/mbedtls-ecp-write-public-key(key, format.int32, olen, buf, buflen.ssize_t).int
+
+// \brief           This function checks that the keypair objects
+// \p pub and \p prv have the same group and the
+// same public point, and that the private key in
+// \p prv is consistent with the public key.
+// 
+// \param pub       The keypair structure holding the public key. This
+// must be initialized. If it contains a private key, that
+// part is ignored.
+// \param prv       The keypair structure holding the full keypair.
+// This must be initialized.
+// \param f_rng     The RNG function. This must not be \c NULL.
+// \param p_rng     The RNG context to be passed to \p f_rng. This may be \c
+// NULL if \p f_rng doesn't need a context.
+// 
+// \return          \c 0 on success, meaning that the keys are valid and match.
+// \return          #MBEDTLS_ERR_ECP_BAD_INPUT_DATA if the keys are invalid or do not match.
+// \return          An \c MBEDTLS_ERR_ECP_XXX or an \c MBEDTLS_ERR_MPI_XXX
+// error code on calculation failure.
+pub extern external/mbedtls-ecp-check-pub-priv(^pub: c-pointer<mbedtls-ecp-keypair-c>, ^prv: c-pointer<mbedtls-ecp-keypair-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): int32
+  c inline "(int)mbedtls_ecp_check_pub_priv((struct mbedtls_ecp_keypair*)#1, (struct mbedtls_ecp_keypair*)#2, (int (*)(void*, unsigned char*, size_t))#3, (void*)#4)"
+
+pub inline fun ffi/mbedtls-ecp-check-pub-priv(^pub: c-pointer<mbedtls-ecp-keypair-c>, ^prv: c-pointer<mbedtls-ecp-keypair-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): <> int
+  external/mbedtls-ecp-check-pub-priv(pub, prv, f-rng, p-rng).int
+
+// \brief          Calculate the public key from a private key in a key pair.
+// 
+// \param key       A keypair structure. It must have a private key set.
+// If the public key is set, it will be overwritten.
+// \param f_rng     The RNG function. This must not be \c NULL.
+// \param p_rng     The RNG context to be passed to \p f_rng. This may be \c
+// NULL if \p f_rng doesn't need a context.
+// 
+// \return          \c 0 on success. The key pair object can be used for
+// operations that require the public key.
+// \return          An \c MBEDTLS_ERR_ECP_XXX or an \c MBEDTLS_ERR_MPI_XXX
+// error code on calculation failure.
+pub extern external/mbedtls-ecp-keypair-calc-public(^key: c-pointer<mbedtls-ecp-keypair-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): int32
+  c inline "(int)mbedtls_ecp_keypair_calc_public((struct mbedtls_ecp_keypair*)#1, (int (*)(void*, unsigned char*, size_t))#2, (void*)#3)"
+
+pub inline fun ffi/mbedtls-ecp-keypair-calc-public(^key: c-pointer<mbedtls-ecp-keypair-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): <> int
+  external/mbedtls-ecp-keypair-calc-public(key, f-rng, p-rng).int
+
+// \brief          Query the group that a key pair belongs to.
+// 
+// \param key       The key pair to query.
+// 
+// \return          The group ID for the group registered in the key pair
+// object.
+// This is \c MBEDTLS_ECP_DP_NONE if no group has been set
+// in the key pair object.
+pub extern external/mbedtls-ecp-keypair-get-group-id(^key: c-pointer<mbedtls-ecp-keypair-c>): int32
+  c inline "(int32_t)mbedtls_ecp_keypair_get_group_id((struct mbedtls_ecp_keypair*)#1)"
+
+pub inline fun ffi/mbedtls-ecp-keypair-get-group-id(^key: c-pointer<mbedtls-ecp-keypair-c>): <exn> mbedtls-ecp-group-id
+  external/mbedtls-ecp-keypair-get-group-id(key).int/mbedtls-ecp-group-id
+
+// \brief           This function exports generic key-pair parameters.
+// 
+// Each of the output parameters can be a null pointer
+// if you do not need that parameter.
+// 
+// \note            If the private key or the public key was not set in \p key,
+// the corresponding output is unspecified. Future versions
+// may return an error in that case.
+// 
+// \param key       The key pair to export from.
+// \param grp       Slot for exported ECP group.
+// It must either be null or point to an initialized ECP group.
+// \param d         Slot for the exported secret value.
+// It must either be null or point to an initialized mpi.
+// \param Q         Slot for the exported public value.
+// It must either be null or point to an initialized ECP point.
+// 
+// \return          \c 0 on success,
+// \return          #MBEDTLS_ERR_MPI_ALLOC_FAILED on memory-allocation failure.
+// \return          #MBEDTLS_ERR_ECP_FEATURE_UNAVAILABLE if key id doesn't
+// correspond to a known group.
+// \return          Another negative error code on other kinds of failure.
+pub extern external/mbedtls-ecp-export(^key: c-pointer<mbedtls-ecp-keypair-c>, ^grp: c-pointer<mbedtls-ecp-group-c>, ^d: c-pointer<mbedtls-mpi-c>, ^q: c-pointer<mbedtls-ecp-point-c>): int32
+  c inline "(int)mbedtls_ecp_export((struct mbedtls_ecp_keypair*)#1, (struct mbedtls_ecp_group*)#2, (struct mbedtls_mpi*)#3, (struct mbedtls_ecp_point*)#4)"
+
+pub inline fun ffi/mbedtls-ecp-export(^key: c-pointer<mbedtls-ecp-keypair-c>, ^grp: c-pointer<mbedtls-ecp-group-c>, ^d: c-pointer<mbedtls-mpi-c>, ^q: c-pointer<mbedtls-ecp-point-c>): <> int
+  external/mbedtls-ecp-export(key, grp, d, q).int
+
+// \brief          The ECP checkup routine.
+// 
+// \return         \c 0 on success.
+// \return         \c 1 on failure.
+pub extern external/mbedtls-ecp-self-test(^verbose: int32): int32
+  c inline "(int)mbedtls_ecp_self_test((int)#1)"
+
+pub inline fun ffi/mbedtls-ecp-self-test(^verbose: int): <> int
+  external/mbedtls-ecp-self-test(verbose.int32).int
 
 // \brief           This function returns the message-digest information
 // associated with the given digest type.
@@ -2833,963 +3253,6 @@ pub extern external/mbedtls-rsa-self-test(^verbose: int32): int32
 
 pub inline fun ffi/mbedtls-rsa-self-test(^verbose: int): <> int
   external/mbedtls-rsa-self-test(verbose.int32).int
-
-pub extern external/mbedtls-ecp-get-type(^grp: c-pointer<mbedtls-ecp-group-c>): int32
-  c inline "(int32_t)mbedtls_ecp_get_type((struct mbedtls_ecp_group*)#1)"
-
-pub inline fun ffi/mbedtls-ecp-get-type(^grp: c-pointer<mbedtls-ecp-group-c>): <exn> mbedtls-ecp-curve-type
-  external/mbedtls-ecp-get-type(grp).int/mbedtls-ecp-curve-type
-
-// \brief           This function retrieves the information defined in
-// mbedtls_ecp_curve_info() for all supported curves.
-// 
-// \note            This function returns information about all curves
-// supported by the library. Some curves may not be
-// supported for all algorithms. Call mbedtls_ecdh_can_do()
-// or mbedtls_ecdsa_can_do() to check if a curve is
-// supported for ECDH or ECDSA.
-// 
-// \return          A statically allocated array. The last entry is 0.
-pub extern external/mbedtls-ecp-curve-list(): c-pointer<mbedtls-ecp-curve-info-c>
-  c inline "(intptr_t)mbedtls_ecp_curve_list()"
-
-// \brief           This function retrieves the list of internal group
-// identifiers of all supported curves in the order of
-// preference.
-// 
-// \note            This function returns information about all curves
-// supported by the library. Some curves may not be
-// supported for all algorithms. Call mbedtls_ecdh_can_do()
-// or mbedtls_ecdsa_can_do() to check if a curve is
-// supported for ECDH or ECDSA.
-// 
-// \return          A statically allocated array,
-// terminated with MBEDTLS_ECP_DP_NONE.
-pub extern external/mbedtls-ecp-grp-id-list(): c-pointer<mbedtls-ecp-group-id>
-  c inline "(intptr_t)mbedtls_ecp_grp_id_list()"
-
-// \brief           This function retrieves curve information from an internal
-// group identifier.
-// 
-// \param grp_id    An \c MBEDTLS_ECP_DP_XXX value.
-// 
-// \return          The associated curve information on success.
-// \return          NULL on failure.
-pub extern external/mbedtls-ecp-curve-info-from-grp-id(^grp-id: int32): c-pointer<mbedtls-ecp-curve-info-c>
-  c inline "(intptr_t)mbedtls_ecp_curve_info_from_grp_id((int32_t)#1)"
-
-pub inline fun ffi/mbedtls-ecp-curve-info-from-grp-id(^grp-id: mbedtls-ecp-group-id): <exn> c-pointer<mbedtls-ecp-curve-info-c>
-  external/mbedtls-ecp-curve-info-from-grp-id(grp-id.mbedtls-ecp-group-id/int)
-
-// \brief           This function retrieves curve information from a TLS
-// NamedCurve value.
-// 
-// \param tls_id    An \c MBEDTLS_ECP_DP_XXX value.
-// 
-// \return          The associated curve information on success.
-// \return          NULL on failure.
-pub extern external/mbedtls-ecp-curve-info-from-tls-id(^tls-id: int16): c-pointer<mbedtls-ecp-curve-info-c>
-  c inline "(intptr_t)mbedtls_ecp_curve_info_from_tls_id((int16_t)#1)"
-
-pub inline fun ffi/mbedtls-ecp-curve-info-from-tls-id(^tls-id: int): <> c-pointer<mbedtls-ecp-curve-info-c>
-  external/mbedtls-ecp-curve-info-from-tls-id(tls-id.int16)
-
-// \brief           This function retrieves curve information from a
-// human-readable name.
-// 
-// \param name      The human-readable name.
-// 
-// \return          The associated curve information on success.
-// \return          NULL on failure.
-pub extern external/mbedtls-ecp-curve-info-from-name(^name: c-pointer<int>): c-pointer<mbedtls-ecp-curve-info-c>
-  c inline "(intptr_t)mbedtls_ecp_curve_info_from_name((char*)#1)"
-
-// \brief           This function initializes a point as zero.
-// 
-// \param pt        The point to initialize.
-pub extern external/mbedtls-ecp-point-init(^pt: c-pointer<mbedtls-ecp-point-c>): ()
-  c inline "(void)mbedtls_ecp_point_init((struct mbedtls_ecp_point*)#1)"
-
-// \brief           This function initializes an ECP group context
-// without loading any domain parameters.
-// 
-// \note            After this function is called, domain parameters
-// for various ECP groups can be loaded through the
-// mbedtls_ecp_group_load() or mbedtls_ecp_tls_read_group()
-// functions.
-pub extern external/mbedtls-ecp-group-init(^grp: c-pointer<mbedtls-ecp-group-c>): ()
-  c inline "(void)mbedtls_ecp_group_init((struct mbedtls_ecp_group*)#1)"
-
-// \brief           This function initializes a key pair as an invalid one.
-// 
-// \param key       The key pair to initialize.
-pub extern external/mbedtls-ecp-keypair-init(^key: c-pointer<mbedtls-ecp-keypair-c>): ()
-  c inline "(void)mbedtls_ecp_keypair_init((struct mbedtls_ecp_keypair*)#1)"
-
-// \brief           This function frees the components of a point.
-// 
-// \param pt        The point to free.
-pub extern external/mbedtls-ecp-point-free(^pt: c-pointer<mbedtls-ecp-point-c>): ()
-  c inline "(void)mbedtls_ecp_point_free((struct mbedtls_ecp_point*)#1)"
-
-// \brief           This function frees the components of an ECP group.
-// 
-// \param grp       The group to free. This may be \c NULL, in which
-// case this function returns immediately. If it is not
-// \c NULL, it must point to an initialized ECP group.
-pub extern external/mbedtls-ecp-group-free(^grp: c-pointer<mbedtls-ecp-group-c>): ()
-  c inline "(void)mbedtls_ecp_group_free((struct mbedtls_ecp_group*)#1)"
-
-// \brief           This function frees the components of a key pair.
-// 
-// \param key       The key pair to free. This may be \c NULL, in which
-// case this function returns immediately. If it is not
-// \c NULL, it must point to an initialized ECP key pair.
-pub extern external/mbedtls-ecp-keypair-free(^key: c-pointer<mbedtls-ecp-keypair-c>): ()
-  c inline "(void)mbedtls_ecp_keypair_free((struct mbedtls_ecp_keypair*)#1)"
-
-// \brief           This function copies the contents of point \p Q into
-// point \p P.
-// 
-// \param P         The destination point. This must be initialized.
-// \param Q         The source point. This must be initialized.
-// 
-// \return          \c 0 on success.
-// \return          #MBEDTLS_ERR_MPI_ALLOC_FAILED on memory-allocation failure.
-// \return          Another negative error code for other kinds of failure.
-pub extern external/mbedtls-ecp-copy(^p: c-pointer<mbedtls-ecp-point-c>, ^q: c-pointer<mbedtls-ecp-point-c>): int32
-  c inline "(int)mbedtls_ecp_copy((struct mbedtls_ecp_point*)#1, (struct mbedtls_ecp_point*)#2)"
-
-pub inline fun ffi/mbedtls-ecp-copy(^p: c-pointer<mbedtls-ecp-point-c>, ^q: c-pointer<mbedtls-ecp-point-c>): <> int
-  external/mbedtls-ecp-copy(p, q).int
-
-// \brief           This function copies the contents of group \p src into
-// group \p dst.
-// 
-// \param dst       The destination group. This must be initialized.
-// \param src       The source group. This must be initialized.
-// 
-// \return          \c 0 on success.
-// \return          #MBEDTLS_ERR_MPI_ALLOC_FAILED on memory-allocation failure.
-// \return          Another negative error code on other kinds of failure.
-pub extern external/mbedtls-ecp-group-copy(^dst: c-pointer<mbedtls-ecp-group-c>, ^src: c-pointer<mbedtls-ecp-group-c>): int32
-  c inline "(int)mbedtls_ecp_group_copy((struct mbedtls_ecp_group*)#1, (struct mbedtls_ecp_group*)#2)"
-
-pub inline fun ffi/mbedtls-ecp-group-copy(^dst: c-pointer<mbedtls-ecp-group-c>, ^src: c-pointer<mbedtls-ecp-group-c>): <> int
-  external/mbedtls-ecp-group-copy(dst, src).int
-
-// \brief           This function sets a point to the point at infinity.
-// 
-// \param pt        The point to set. This must be initialized.
-// 
-// \return          \c 0 on success.
-// \return          #MBEDTLS_ERR_MPI_ALLOC_FAILED on memory-allocation failure.
-// \return          Another negative error code on other kinds of failure.
-pub extern external/mbedtls-ecp-set-zero(^pt: c-pointer<mbedtls-ecp-point-c>): int32
-  c inline "(int)mbedtls_ecp_set_zero((struct mbedtls_ecp_point*)#1)"
-
-pub inline fun ffi/mbedtls-ecp-set-zero(^pt: c-pointer<mbedtls-ecp-point-c>): <> int
-  external/mbedtls-ecp-set-zero(pt).int
-
-// \brief           This function checks if a point is the point at infinity.
-// 
-// \param pt        The point to test. This must be initialized.
-// 
-// \return          \c 1 if the point is zero.
-// \return          \c 0 if the point is non-zero.
-// \return          A negative error code on failure.
-pub extern external/mbedtls-ecp-is-zero(^pt: c-pointer<mbedtls-ecp-point-c>): int32
-  c inline "(int)mbedtls_ecp_is_zero((struct mbedtls_ecp_point*)#1)"
-
-pub inline fun ffi/mbedtls-ecp-is-zero(^pt: c-pointer<mbedtls-ecp-point-c>): <> int
-  external/mbedtls-ecp-is-zero(pt).int
-
-// \brief           This function compares two points.
-// 
-// \note            This assumes that the points are normalized. Otherwise,
-// they may compare as "not equal" even if they are.
-// 
-// \param P         The first point to compare. This must be initialized.
-// \param Q         The second point to compare. This must be initialized.
-// 
-// \return          \c 0 if the points are equal.
-// \return          #MBEDTLS_ERR_ECP_BAD_INPUT_DATA if the points are not equal.
-pub extern external/mbedtls-ecp-point-cmp(^p: c-pointer<mbedtls-ecp-point-c>, ^q: c-pointer<mbedtls-ecp-point-c>): int32
-  c inline "(int)mbedtls_ecp_point_cmp((struct mbedtls_ecp_point*)#1, (struct mbedtls_ecp_point*)#2)"
-
-pub inline fun ffi/mbedtls-ecp-point-cmp(^p: c-pointer<mbedtls-ecp-point-c>, ^q: c-pointer<mbedtls-ecp-point-c>): <> int
-  external/mbedtls-ecp-point-cmp(p, q).int
-
-// \brief           This function imports a non-zero point from two ASCII
-// strings.
-// 
-// \param P         The destination point. This must be initialized.
-// \param radix     The numeric base of the input.
-// \param x         The first affine coordinate, as a null-terminated string.
-// \param y         The second affine coordinate, as a null-terminated string.
-// 
-// \return          \c 0 on success.
-// \return          An \c MBEDTLS_ERR_MPI_XXX error code on failure.
-pub extern external/mbedtls-ecp-point-read-string(^p: c-pointer<mbedtls-ecp-point-c>, ^radix: int32, ^x: c-pointer<int>, ^y: c-pointer<int>): int32
-  c inline "(int)mbedtls_ecp_point_read_string((struct mbedtls_ecp_point*)#1, (int)#2, (char*)#3, (char*)#4)"
-
-pub inline fun ffi/mbedtls-ecp-point-read-string(^p: c-pointer<mbedtls-ecp-point-c>, ^radix: int, ^x: c-pointer<int>, ^y: c-pointer<int>): <> int
-  external/mbedtls-ecp-point-read-string(p, radix.int32, x, y).int
-
-// \brief           This function exports a point into unsigned binary data.
-// 
-// \param grp       The group to which the point should belong.
-// This must be initialized and have group parameters
-// set, for example through mbedtls_ecp_group_load().
-// \param P         The point to export. This must be initialized.
-// \param format    The point format. This must be either
-// #MBEDTLS_ECP_PF_COMPRESSED or #MBEDTLS_ECP_PF_UNCOMPRESSED.
-// (For groups without these formats, this parameter is
-// ignored. But it still has to be either of the above
-// values.)
-// \param olen      The address at which to store the length of
-// the output in Bytes. This must not be \c NULL.
-// \param buf       The output buffer. This must be a writable buffer
-// of length \p buflen Bytes.
-// \param buflen    The length of the output buffer \p buf in Bytes.
-// 
-// \return          \c 0 on success.
-// \return          #MBEDTLS_ERR_ECP_BUFFER_TOO_SMALL if the output buffer
-// is too small to hold the point.
-// \return          #MBEDTLS_ERR_ECP_FEATURE_UNAVAILABLE if the point format
-// or the export for the given group is not implemented.
-// \return          Another negative error code on other kinds of failure.
-pub extern external/mbedtls-ecp-point-write-binary(^grp: c-pointer<mbedtls-ecp-group-c>, ^p: c-pointer<mbedtls-ecp-point-c>, ^format: int32, ^olen: c-pointer<int>, ^buf: c-pointer<int>, ^buflen: ssize_t): int32
-  c inline "(int)mbedtls_ecp_point_write_binary((struct mbedtls_ecp_group*)#1, (struct mbedtls_ecp_point*)#2, (int)#3, (size_t*)#4, (unsigned char*)#5, (size_t)#6)"
-
-pub inline fun ffi/mbedtls-ecp-point-write-binary(^grp: c-pointer<mbedtls-ecp-group-c>, ^p: c-pointer<mbedtls-ecp-point-c>, ^format: int, ^olen: c-pointer<int>, ^buf: c-pointer<int>, ^buflen: int): <> int
-  external/mbedtls-ecp-point-write-binary(grp, p, format.int32, olen, buf, buflen.ssize_t).int
-
-// \brief           This function imports a point from unsigned binary data.
-// 
-// \note            This function does not check that the point actually
-// belongs to the given group, see mbedtls_ecp_check_pubkey()
-// for that.
-// 
-// \note            For compressed points, see #MBEDTLS_ECP_PF_COMPRESSED for
-// limitations.
-// 
-// \param grp       The group to which the point should belong.
-// This must be initialized and have group parameters
-// set, for example through mbedtls_ecp_group_load().
-// \param P         The destination context to import the point to.
-// This must be initialized.
-// \param buf       The input buffer. This must be a readable buffer
-// of length \p ilen Bytes.
-// \param ilen      The length of the input buffer \p buf in Bytes.
-// 
-// \return          \c 0 on success.
-// \return          #MBEDTLS_ERR_ECP_BAD_INPUT_DATA if the input is invalid.
-// \return          #MBEDTLS_ERR_MPI_ALLOC_FAILED on memory-allocation failure.
-// \return          #MBEDTLS_ERR_ECP_FEATURE_UNAVAILABLE if the import for the
-// given group is not implemented.
-pub extern external/mbedtls-ecp-point-read-binary(^grp: c-pointer<mbedtls-ecp-group-c>, ^p: c-pointer<mbedtls-ecp-point-c>, ^buf: c-pointer<int>, ^ilen: ssize_t): int32
-  c inline "(int)mbedtls_ecp_point_read_binary((struct mbedtls_ecp_group*)#1, (struct mbedtls_ecp_point*)#2, (unsigned char*)#3, (size_t)#4)"
-
-pub inline fun ffi/mbedtls-ecp-point-read-binary(^grp: c-pointer<mbedtls-ecp-group-c>, ^p: c-pointer<mbedtls-ecp-point-c>, ^buf: c-pointer<int>, ^ilen: int): <> int
-  external/mbedtls-ecp-point-read-binary(grp, p, buf, ilen.ssize_t).int
-
-// \brief           This function imports a point from a TLS ECPoint record.
-// 
-// \note            On function return, \p *buf is updated to point immediately
-// after the ECPoint record.
-// 
-// \param grp       The ECP group to use.
-// This must be initialized and have group parameters
-// set, for example through mbedtls_ecp_group_load().
-// \param pt        The destination point.
-// \param buf       The address of the pointer to the start of the input buffer.
-// \param len       The length of the buffer.
-// 
-// \return          \c 0 on success.
-// \return          An \c MBEDTLS_ERR_MPI_XXX error code on initialization
-// failure.
-// \return          #MBEDTLS_ERR_ECP_BAD_INPUT_DATA if input is invalid.
-pub extern external/mbedtls-ecp-tls-read-point(^grp: c-pointer<mbedtls-ecp-group-c>, ^pt: c-pointer<mbedtls-ecp-point-c>, ^buf: c-pointer<c-pointer<int>>, ^len: ssize_t): int32
-  c inline "(int)mbedtls_ecp_tls_read_point((struct mbedtls_ecp_group*)#1, (struct mbedtls_ecp_point*)#2, (unsigned char**)#3, (size_t)#4)"
-
-pub inline fun ffi/mbedtls-ecp-tls-read-point(^grp: c-pointer<mbedtls-ecp-group-c>, ^pt: c-pointer<mbedtls-ecp-point-c>, ^buf: c-pointer<c-pointer<int>>, ^len: int): <> int
-  external/mbedtls-ecp-tls-read-point(grp, pt, buf, len.ssize_t).int
-
-// \brief           This function exports a point as a TLS ECPoint record
-// defined in RFC 4492, Section 5.4.
-// 
-// \param grp       The ECP group to use.
-// This must be initialized and have group parameters
-// set, for example through mbedtls_ecp_group_load().
-// \param pt        The point to be exported. This must be initialized.
-// \param format    The point format to use. This must be either
-// #MBEDTLS_ECP_PF_COMPRESSED or #MBEDTLS_ECP_PF_UNCOMPRESSED.
-// \param olen      The address at which to store the length in Bytes
-// of the data written.
-// \param buf       The target buffer. This must be a writable buffer of
-// length \p blen Bytes.
-// \param blen      The length of the target buffer \p buf in Bytes.
-// 
-// \return          \c 0 on success.
-// \return          #MBEDTLS_ERR_ECP_BAD_INPUT_DATA if the input is invalid.
-// \return          #MBEDTLS_ERR_ECP_BUFFER_TOO_SMALL if the target buffer
-// is too small to hold the exported point.
-// \return          Another negative error code on other kinds of failure.
-pub extern external/mbedtls-ecp-tls-write-point(^grp: c-pointer<mbedtls-ecp-group-c>, ^pt: c-pointer<mbedtls-ecp-point-c>, ^format: int32, ^olen: c-pointer<int>, ^buf: c-pointer<int>, ^blen: ssize_t): int32
-  c inline "(int)mbedtls_ecp_tls_write_point((struct mbedtls_ecp_group*)#1, (struct mbedtls_ecp_point*)#2, (int)#3, (size_t*)#4, (unsigned char*)#5, (size_t)#6)"
-
-pub inline fun ffi/mbedtls-ecp-tls-write-point(^grp: c-pointer<mbedtls-ecp-group-c>, ^pt: c-pointer<mbedtls-ecp-point-c>, ^format: int, ^olen: c-pointer<int>, ^buf: c-pointer<int>, ^blen: int): <> int
-  external/mbedtls-ecp-tls-write-point(grp, pt, format.int32, olen, buf, blen.ssize_t).int
-
-// \brief           This function sets up an ECP group context
-// from a standardized set of domain parameters.
-// 
-// \note            The index should be a value of the NamedCurve enum,
-// as defined in <em>RFC-4492: Elliptic Curve Cryptography
-// (ECC) Cipher Suites for Transport Layer Security (TLS)</em>,
-// usually in the form of an \c MBEDTLS_ECP_DP_XXX macro.
-// 
-// \param grp       The group context to setup. This must be initialized.
-// \param id        The identifier of the domain parameter set to load.
-// 
-// \return          \c 0 on success.
-// \return          #MBEDTLS_ERR_ECP_FEATURE_UNAVAILABLE if \p id doesn't
-// correspond to a known group.
-// \return          Another negative error code on other kinds of failure.
-pub extern external/mbedtls-ecp-group-load(^grp: c-pointer<mbedtls-ecp-group-c>, ^id: int32): int32
-  c inline "(int)mbedtls_ecp_group_load((struct mbedtls_ecp_group*)#1, (int32_t)#2)"
-
-pub inline fun ffi/mbedtls-ecp-group-load(^grp: c-pointer<mbedtls-ecp-group-c>, ^id: mbedtls-ecp-group-id): <exn> int
-  external/mbedtls-ecp-group-load(grp, id.mbedtls-ecp-group-id/int).int
-
-// \brief           This function sets up an ECP group context from a TLS
-// ECParameters record as defined in RFC 4492, Section 5.4.
-// 
-// \note            The read pointer \p buf is updated to point right after
-// the ECParameters record on exit.
-// 
-// \param grp       The group context to setup. This must be initialized.
-// \param buf       The address of the pointer to the start of the input buffer.
-// \param len       The length of the input buffer \c *buf in Bytes.
-// 
-// \return          \c 0 on success.
-// \return          #MBEDTLS_ERR_ECP_BAD_INPUT_DATA if input is invalid.
-// \return          #MBEDTLS_ERR_ECP_FEATURE_UNAVAILABLE if the group is not
-// recognized.
-// \return          Another negative error code on other kinds of failure.
-pub extern external/mbedtls-ecp-tls-read-group(^grp: c-pointer<mbedtls-ecp-group-c>, ^buf: c-pointer<c-pointer<int>>, ^len: ssize_t): int32
-  c inline "(int)mbedtls_ecp_tls_read_group((struct mbedtls_ecp_group*)#1, (unsigned char**)#2, (size_t)#3)"
-
-pub inline fun ffi/mbedtls-ecp-tls-read-group(^grp: c-pointer<mbedtls-ecp-group-c>, ^buf: c-pointer<c-pointer<int>>, ^len: int): <> int
-  external/mbedtls-ecp-tls-read-group(grp, buf, len.ssize_t).int
-
-// \brief           This function extracts an elliptic curve group ID from a
-// TLS ECParameters record as defined in RFC 4492, Section 5.4.
-// 
-// \note            The read pointer \p buf is updated to point right after
-// the ECParameters record on exit.
-// 
-// \param grp       The address at which to store the group id.
-// This must not be \c NULL.
-// \param buf       The address of the pointer to the start of the input buffer.
-// \param len       The length of the input buffer \c *buf in Bytes.
-// 
-// \return          \c 0 on success.
-// \return          #MBEDTLS_ERR_ECP_BAD_INPUT_DATA if input is invalid.
-// \return          #MBEDTLS_ERR_ECP_FEATURE_UNAVAILABLE if the group is not
-// recognized.
-// \return          Another negative error code on other kinds of failure.
-pub extern external/mbedtls-ecp-tls-read-group-id(^grp: c-pointer<mbedtls-ecp-group-id>, ^buf: c-pointer<c-pointer<int>>, ^len: ssize_t): int32
-  c inline "(int)mbedtls_ecp_tls_read_group_id((int32_t*)#1, (unsigned char**)#2, (size_t)#3)"
-
-pub inline fun ffi/mbedtls-ecp-tls-read-group-id(^grp: c-pointer<mbedtls-ecp-group-id>, ^buf: c-pointer<c-pointer<int>>, ^len: int): <> int
-  external/mbedtls-ecp-tls-read-group-id(grp, buf, len.ssize_t).int
-
-// \brief           This function exports an elliptic curve as a TLS
-// ECParameters record as defined in RFC 4492, Section 5.4.
-// 
-// \param grp       The ECP group to be exported.
-// This must be initialized and have group parameters
-// set, for example through mbedtls_ecp_group_load().
-// \param olen      The address at which to store the number of Bytes written.
-// This must not be \c NULL.
-// \param buf       The buffer to write to. This must be a writable buffer
-// of length \p blen Bytes.
-// \param blen      The length of the output buffer \p buf in Bytes.
-// 
-// \return          \c 0 on success.
-// \return          #MBEDTLS_ERR_ECP_BUFFER_TOO_SMALL if the output
-// buffer is too small to hold the exported group.
-// \return          Another negative error code on other kinds of failure.
-pub extern external/mbedtls-ecp-tls-write-group(^grp: c-pointer<mbedtls-ecp-group-c>, ^olen: c-pointer<int>, ^buf: c-pointer<int>, ^blen: ssize_t): int32
-  c inline "(int)mbedtls_ecp_tls_write_group((struct mbedtls_ecp_group*)#1, (size_t*)#2, (unsigned char*)#3, (size_t)#4)"
-
-pub inline fun ffi/mbedtls-ecp-tls-write-group(^grp: c-pointer<mbedtls-ecp-group-c>, ^olen: c-pointer<int>, ^buf: c-pointer<int>, ^blen: int): <> int
-  external/mbedtls-ecp-tls-write-group(grp, olen, buf, blen.ssize_t).int
-
-// \brief           This function performs a scalar multiplication of a point
-// by an integer: \p R = \p m * \p P.
-// 
-// It is not thread-safe to use same group in multiple threads.
-// 
-// \note            To prevent timing attacks, this function
-// executes the exact same sequence of base-field
-// operations for any valid \p m. It avoids any if-branch or
-// array index depending on the value of \p m. It also uses
-// \p f_rng to randomize some intermediate results.
-// 
-// \param grp       The ECP group to use.
-// This must be initialized and have group parameters
-// set, for example through mbedtls_ecp_group_load().
-// \param R         The point in which to store the result of the calculation.
-// This must be initialized.
-// \param m         The integer by which to multiply. This must be initialized.
-// \param P         The point to multiply. This must be initialized.
-// \param f_rng     The RNG function. This must not be \c NULL.
-// \param p_rng     The RNG context to be passed to \p f_rng. This may be \c
-// NULL if \p f_rng doesn't need a context.
-// 
-// \return          \c 0 on success.
-// \return          #MBEDTLS_ERR_ECP_INVALID_KEY if \p m is not a valid private
-// key, or \p P is not a valid public key.
-// \return          #MBEDTLS_ERR_MPI_ALLOC_FAILED on memory-allocation failure.
-// \return          Another negative error code on other kinds of failure.
-pub extern external/mbedtls-ecp-mul(^grp: c-pointer<mbedtls-ecp-group-c>, ^r: c-pointer<mbedtls-ecp-point-c>, ^m: c-pointer<mbedtls-mpi-c>, ^p: c-pointer<mbedtls-ecp-point-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): int32
-  c inline "(int)mbedtls_ecp_mul((struct mbedtls_ecp_group*)#1, (struct mbedtls_ecp_point*)#2, (struct mbedtls_mpi*)#3, (struct mbedtls_ecp_point*)#4, (int (*)(void*, unsigned char*, size_t))#5, (void*)#6)"
-
-pub inline fun ffi/mbedtls-ecp-mul(^grp: c-pointer<mbedtls-ecp-group-c>, ^r: c-pointer<mbedtls-ecp-point-c>, ^m: c-pointer<mbedtls-mpi-c>, ^p: c-pointer<mbedtls-ecp-point-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): <> int
-  external/mbedtls-ecp-mul(grp, r, m, p, f-rng, p-rng).int
-
-// \brief           This function performs multiplication of a point by
-// an integer: \p R = \p m * \p P in a restartable way.
-// 
-// \see             mbedtls_ecp_mul()
-// 
-// \note            This function does the same as \c mbedtls_ecp_mul(), but
-// it can return early and restart according to the limit set
-// with \c mbedtls_ecp_set_max_ops() to reduce blocking.
-// 
-// \param grp       The ECP group to use.
-// This must be initialized and have group parameters
-// set, for example through mbedtls_ecp_group_load().
-// \param R         The point in which to store the result of the calculation.
-// This must be initialized.
-// \param m         The integer by which to multiply. This must be initialized.
-// \param P         The point to multiply. This must be initialized.
-// \param f_rng     The RNG function. This must not be \c NULL.
-// \param p_rng     The RNG context to be passed to \p f_rng. This may be \c
-// NULL if \p f_rng doesn't need a context.
-// \param rs_ctx    The restart context (NULL disables restart).
-// 
-// \return          \c 0 on success.
-// \return          #MBEDTLS_ERR_ECP_INVALID_KEY if \p m is not a valid private
-// key, or \p P is not a valid public key.
-// \return          #MBEDTLS_ERR_MPI_ALLOC_FAILED on memory-allocation failure.
-// \return          #MBEDTLS_ERR_ECP_IN_PROGRESS if maximum number of
-// operations was reached: see \c mbedtls_ecp_set_max_ops().
-// \return          Another negative error code on other kinds of failure.
-pub extern external/mbedtls-ecp-mul-restartable(^grp: c-pointer<mbedtls-ecp-group-c>, ^r: c-pointer<mbedtls-ecp-point-c>, ^m: c-pointer<mbedtls-mpi-c>, ^p: c-pointer<mbedtls-ecp-point-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>, ^rs-ctx: c-pointer<mbedtls-ecp-restart-ctx>): int32
-  c inline "(int)mbedtls_ecp_mul_restartable((struct mbedtls_ecp_group*)#1, (struct mbedtls_ecp_point*)#2, (struct mbedtls_mpi*)#3, (struct mbedtls_ecp_point*)#4, (int (*)(void*, unsigned char*, size_t))#5, (void*)#6, (mbedtls_ecp_restart_ctx*)#7)"
-
-pub inline fun ffi/mbedtls-ecp-mul-restartable(^grp: c-pointer<mbedtls-ecp-group-c>, ^r: c-pointer<mbedtls-ecp-point-c>, ^m: c-pointer<mbedtls-mpi-c>, ^p: c-pointer<mbedtls-ecp-point-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>, ^rs-ctx: c-pointer<mbedtls-ecp-restart-ctx>): <> int
-  external/mbedtls-ecp-mul-restartable(grp, r, m, p, f-rng, p-rng, rs-ctx).int
-
-// \brief           This function performs multiplication and addition of two
-// points by integers: \p R = \p m * \p P + \p n * \p Q
-// 
-// It is not thread-safe to use same group in multiple threads.
-// 
-// \note            In contrast to mbedtls_ecp_mul(), this function does not
-// guarantee a constant execution flow and timing.
-// 
-// \note            This function is only defined for short Weierstrass curves.
-// It may not be included in builds without any short
-// Weierstrass curve.
-// 
-// \param grp       The ECP group to use.
-// This must be initialized and have group parameters
-// set, for example through mbedtls_ecp_group_load().
-// \param R         The point in which to store the result of the calculation.
-// This must be initialized.
-// \param m         The integer by which to multiply \p P.
-// This must be initialized.
-// \param P         The point to multiply by \p m. This must be initialized.
-// \param n         The integer by which to multiply \p Q.
-// This must be initialized.
-// \param Q         The point to be multiplied by \p n.
-// This must be initialized.
-// 
-// \return          \c 0 on success.
-// \return          #MBEDTLS_ERR_ECP_INVALID_KEY if \p m or \p n are not
-// valid private keys, or \p P or \p Q are not valid public
-// keys.
-// \return          #MBEDTLS_ERR_MPI_ALLOC_FAILED on memory-allocation failure.
-// \return          #MBEDTLS_ERR_ECP_FEATURE_UNAVAILABLE if \p grp does not
-// designate a short Weierstrass curve.
-// \return          Another negative error code on other kinds of failure.
-pub extern external/mbedtls-ecp-muladd(^grp: c-pointer<mbedtls-ecp-group-c>, ^r: c-pointer<mbedtls-ecp-point-c>, ^m: c-pointer<mbedtls-mpi-c>, ^p: c-pointer<mbedtls-ecp-point-c>, ^n: c-pointer<mbedtls-mpi-c>, ^q: c-pointer<mbedtls-ecp-point-c>): int32
-  c inline "(int)mbedtls_ecp_muladd((struct mbedtls_ecp_group*)#1, (struct mbedtls_ecp_point*)#2, (struct mbedtls_mpi*)#3, (struct mbedtls_ecp_point*)#4, (struct mbedtls_mpi*)#5, (struct mbedtls_ecp_point*)#6)"
-
-pub inline fun ffi/mbedtls-ecp-muladd(^grp: c-pointer<mbedtls-ecp-group-c>, ^r: c-pointer<mbedtls-ecp-point-c>, ^m: c-pointer<mbedtls-mpi-c>, ^p: c-pointer<mbedtls-ecp-point-c>, ^n: c-pointer<mbedtls-mpi-c>, ^q: c-pointer<mbedtls-ecp-point-c>): <> int
-  external/mbedtls-ecp-muladd(grp, r, m, p, n, q).int
-
-// \brief           This function performs multiplication and addition of two
-// points by integers: \p R = \p m * \p P + \p n * \p Q in a
-// restartable way.
-// 
-// \see             \c mbedtls_ecp_muladd()
-// 
-// \note            This function works the same as \c mbedtls_ecp_muladd(),
-// but it can return early and restart according to the limit
-// set with \c mbedtls_ecp_set_max_ops() to reduce blocking.
-// 
-// \note            This function is only defined for short Weierstrass curves.
-// It may not be included in builds without any short
-// Weierstrass curve.
-// 
-// \param grp       The ECP group to use.
-// This must be initialized and have group parameters
-// set, for example through mbedtls_ecp_group_load().
-// \param R         The point in which to store the result of the calculation.
-// This must be initialized.
-// \param m         The integer by which to multiply \p P.
-// This must be initialized.
-// \param P         The point to multiply by \p m. This must be initialized.
-// \param n         The integer by which to multiply \p Q.
-// This must be initialized.
-// \param Q         The point to be multiplied by \p n.
-// This must be initialized.
-// \param rs_ctx    The restart context (NULL disables restart).
-// 
-// \return          \c 0 on success.
-// \return          #MBEDTLS_ERR_ECP_INVALID_KEY if \p m or \p n are not
-// valid private keys, or \p P or \p Q are not valid public
-// keys.
-// \return          #MBEDTLS_ERR_MPI_ALLOC_FAILED on memory-allocation failure.
-// \return          #MBEDTLS_ERR_ECP_FEATURE_UNAVAILABLE if \p grp does not
-// designate a short Weierstrass curve.
-// \return          #MBEDTLS_ERR_ECP_IN_PROGRESS if maximum number of
-// operations was reached: see \c mbedtls_ecp_set_max_ops().
-// \return          Another negative error code on other kinds of failure.
-pub extern external/mbedtls-ecp-muladd-restartable(^grp: c-pointer<mbedtls-ecp-group-c>, ^r: c-pointer<mbedtls-ecp-point-c>, ^m: c-pointer<mbedtls-mpi-c>, ^p: c-pointer<mbedtls-ecp-point-c>, ^n: c-pointer<mbedtls-mpi-c>, ^q: c-pointer<mbedtls-ecp-point-c>, ^rs-ctx: c-pointer<mbedtls-ecp-restart-ctx>): int32
-  c inline "(int)mbedtls_ecp_muladd_restartable((struct mbedtls_ecp_group*)#1, (struct mbedtls_ecp_point*)#2, (struct mbedtls_mpi*)#3, (struct mbedtls_ecp_point*)#4, (struct mbedtls_mpi*)#5, (struct mbedtls_ecp_point*)#6, (mbedtls_ecp_restart_ctx*)#7)"
-
-pub inline fun ffi/mbedtls-ecp-muladd-restartable(^grp: c-pointer<mbedtls-ecp-group-c>, ^r: c-pointer<mbedtls-ecp-point-c>, ^m: c-pointer<mbedtls-mpi-c>, ^p: c-pointer<mbedtls-ecp-point-c>, ^n: c-pointer<mbedtls-mpi-c>, ^q: c-pointer<mbedtls-ecp-point-c>, ^rs-ctx: c-pointer<mbedtls-ecp-restart-ctx>): <> int
-  external/mbedtls-ecp-muladd-restartable(grp, r, m, p, n, q, rs-ctx).int
-
-// \brief           This function checks that a point is a valid public key
-// on this curve.
-// 
-// It only checks that the point is non-zero, has
-// valid coordinates and lies on the curve. It does not verify
-// that it is indeed a multiple of \c G. This additional
-// check is computationally more expensive, is not required
-// by standards, and should not be necessary if the group
-// used has a small cofactor. In particular, it is useless for
-// the NIST groups which all have a cofactor of 1.
-// 
-// \note            This function uses bare components rather than an
-// ::mbedtls_ecp_keypair structure, to ease use with other
-// structures, such as ::mbedtls_ecdh_context or
-// ::mbedtls_ecdsa_context.
-// 
-// \param grp       The ECP group the point should belong to.
-// This must be initialized and have group parameters
-// set, for example through mbedtls_ecp_group_load().
-// \param pt        The point to check. This must be initialized.
-// 
-// \return          \c 0 if the point is a valid public key.
-// \return          #MBEDTLS_ERR_ECP_INVALID_KEY if the point is not
-// a valid public key for the given curve.
-// \return          Another negative error code on other kinds of failure.
-pub extern external/mbedtls-ecp-check-pubkey(^grp: c-pointer<mbedtls-ecp-group-c>, ^pt: c-pointer<mbedtls-ecp-point-c>): int32
-  c inline "(int)mbedtls_ecp_check_pubkey((struct mbedtls_ecp_group*)#1, (struct mbedtls_ecp_point*)#2)"
-
-pub inline fun ffi/mbedtls-ecp-check-pubkey(^grp: c-pointer<mbedtls-ecp-group-c>, ^pt: c-pointer<mbedtls-ecp-point-c>): <> int
-  external/mbedtls-ecp-check-pubkey(grp, pt).int
-
-// \brief           This function checks that an \c mbedtls_mpi is a
-// valid private key for this curve.
-// 
-// \note            This function uses bare components rather than an
-// ::mbedtls_ecp_keypair structure to ease use with other
-// structures, such as ::mbedtls_ecdh_context or
-// ::mbedtls_ecdsa_context.
-// 
-// \param grp       The ECP group the private key should belong to.
-// This must be initialized and have group parameters
-// set, for example through mbedtls_ecp_group_load().
-// \param d         The integer to check. This must be initialized.
-// 
-// \return          \c 0 if the point is a valid private key.
-// \return          #MBEDTLS_ERR_ECP_INVALID_KEY if the point is not a valid
-// private key for the given curve.
-// \return          Another negative error code on other kinds of failure.
-pub extern external/mbedtls-ecp-check-privkey(^grp: c-pointer<mbedtls-ecp-group-c>, ^d: c-pointer<mbedtls-mpi-c>): int32
-  c inline "(int)mbedtls_ecp_check_privkey((struct mbedtls_ecp_group*)#1, (struct mbedtls_mpi*)#2)"
-
-pub inline fun ffi/mbedtls-ecp-check-privkey(^grp: c-pointer<mbedtls-ecp-group-c>, ^d: c-pointer<mbedtls-mpi-c>): <> int
-  external/mbedtls-ecp-check-privkey(grp, d).int
-
-// \brief           This function generates a private key.
-// 
-// \param grp       The ECP group to generate a private key for.
-// This must be initialized and have group parameters
-// set, for example through mbedtls_ecp_group_load().
-// \param d         The destination MPI (secret part). This must be initialized.
-// \param f_rng     The RNG function. This must not be \c NULL.
-// \param p_rng     The RNG parameter to be passed to \p f_rng. This may be
-// \c NULL if \p f_rng doesn't need a context argument.
-// 
-// \return          \c 0 on success.
-// \return          An \c MBEDTLS_ERR_ECP_XXX or \c MBEDTLS_MPI_XXX error code
-// on failure.
-pub extern external/mbedtls-ecp-gen-privkey(^grp: c-pointer<mbedtls-ecp-group-c>, ^d: c-pointer<mbedtls-mpi-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): int32
-  c inline "(int)mbedtls_ecp_gen_privkey((struct mbedtls_ecp_group*)#1, (struct mbedtls_mpi*)#2, (int (*)(void*, unsigned char*, size_t))#3, (void*)#4)"
-
-pub inline fun ffi/mbedtls-ecp-gen-privkey(^grp: c-pointer<mbedtls-ecp-group-c>, ^d: c-pointer<mbedtls-mpi-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): <> int
-  external/mbedtls-ecp-gen-privkey(grp, d, f-rng, p-rng).int
-
-// \brief           This function generates a keypair with a configurable base
-// point.
-// 
-// \note            This function uses bare components rather than an
-// ::mbedtls_ecp_keypair structure to ease use with other
-// structures, such as ::mbedtls_ecdh_context or
-// ::mbedtls_ecdsa_context.
-// 
-// \param grp       The ECP group to generate a key pair for.
-// This must be initialized and have group parameters
-// set, for example through mbedtls_ecp_group_load().
-// \param G         The base point to use. This must be initialized
-// and belong to \p grp. It replaces the default base
-// point \c grp->G used by mbedtls_ecp_gen_keypair().
-// \param d         The destination MPI (secret part).
-// This must be initialized.
-// \param Q         The destination point (public part).
-// This must be initialized.
-// \param f_rng     The RNG function. This must not be \c NULL.
-// \param p_rng     The RNG context to be passed to \p f_rng. This may
-// be \c NULL if \p f_rng doesn't need a context argument.
-// 
-// \return          \c 0 on success.
-// \return          An \c MBEDTLS_ERR_ECP_XXX or \c MBEDTLS_MPI_XXX error code
-// on failure.
-pub extern external/mbedtls-ecp-gen-keypair-base(^grp: c-pointer<mbedtls-ecp-group-c>, ^g: c-pointer<mbedtls-ecp-point-c>, ^d: c-pointer<mbedtls-mpi-c>, ^q: c-pointer<mbedtls-ecp-point-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): int32
-  c inline "(int)mbedtls_ecp_gen_keypair_base((struct mbedtls_ecp_group*)#1, (struct mbedtls_ecp_point*)#2, (struct mbedtls_mpi*)#3, (struct mbedtls_ecp_point*)#4, (int (*)(void*, unsigned char*, size_t))#5, (void*)#6)"
-
-pub inline fun ffi/mbedtls-ecp-gen-keypair-base(^grp: c-pointer<mbedtls-ecp-group-c>, ^g: c-pointer<mbedtls-ecp-point-c>, ^d: c-pointer<mbedtls-mpi-c>, ^q: c-pointer<mbedtls-ecp-point-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): <> int
-  external/mbedtls-ecp-gen-keypair-base(grp, g, d, q, f-rng, p-rng).int
-
-// \brief           This function generates an ECP keypair.
-// 
-// \note            This function uses bare components rather than an
-// ::mbedtls_ecp_keypair structure to ease use with other
-// structures, such as ::mbedtls_ecdh_context or
-// ::mbedtls_ecdsa_context.
-// 
-// \param grp       The ECP group to generate a key pair for.
-// This must be initialized and have group parameters
-// set, for example through mbedtls_ecp_group_load().
-// \param d         The destination MPI (secret part).
-// This must be initialized.
-// \param Q         The destination point (public part).
-// This must be initialized.
-// \param f_rng     The RNG function. This must not be \c NULL.
-// \param p_rng     The RNG context to be passed to \p f_rng. This may
-// be \c NULL if \p f_rng doesn't need a context argument.
-// 
-// \return          \c 0 on success.
-// \return          An \c MBEDTLS_ERR_ECP_XXX or \c MBEDTLS_MPI_XXX error code
-// on failure.
-pub extern external/mbedtls-ecp-gen-keypair(^grp: c-pointer<mbedtls-ecp-group-c>, ^d: c-pointer<mbedtls-mpi-c>, ^q: c-pointer<mbedtls-ecp-point-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): int32
-  c inline "(int)mbedtls_ecp_gen_keypair((struct mbedtls_ecp_group*)#1, (struct mbedtls_mpi*)#2, (struct mbedtls_ecp_point*)#3, (int (*)(void*, unsigned char*, size_t))#4, (void*)#5)"
-
-pub inline fun ffi/mbedtls-ecp-gen-keypair(^grp: c-pointer<mbedtls-ecp-group-c>, ^d: c-pointer<mbedtls-mpi-c>, ^q: c-pointer<mbedtls-ecp-point-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): <> int
-  external/mbedtls-ecp-gen-keypair(grp, d, q, f-rng, p-rng).int
-
-// \brief           This function generates an ECP key.
-// 
-// \param grp_id    The ECP group identifier.
-// \param key       The destination key. This must be initialized.
-// \param f_rng     The RNG function to use. This must not be \c NULL.
-// \param p_rng     The RNG context to be passed to \p f_rng. This may
-// be \c NULL if \p f_rng doesn't need a context argument.
-// 
-// \return          \c 0 on success.
-// \return          An \c MBEDTLS_ERR_ECP_XXX or \c MBEDTLS_MPI_XXX error code
-// on failure.
-pub extern external/mbedtls-ecp-gen-key(^grp-id: int32, ^key: c-pointer<mbedtls-ecp-keypair-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): int32
-  c inline "(int)mbedtls_ecp_gen_key((int32_t)#1, (struct mbedtls_ecp_keypair*)#2, (int (*)(void*, unsigned char*, size_t))#3, (void*)#4)"
-
-pub inline fun ffi/mbedtls-ecp-gen-key(^grp-id: mbedtls-ecp-group-id, ^key: c-pointer<mbedtls-ecp-keypair-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): <exn> int
-  external/mbedtls-ecp-gen-key(grp-id.mbedtls-ecp-group-id/int, key, f-rng, p-rng).int
-
-// \brief          Set the public key in a key pair object.
-// 
-// \note            This function does not check that the point actually
-// belongs to the given group. Call mbedtls_ecp_check_pubkey()
-// on \p Q before calling this function to check that.
-// 
-// \note            This function does not check that the public key matches
-// the private key that is already in \p key, if any.
-// To check the consistency of the resulting key pair object,
-// call mbedtls_ecp_check_pub_priv() after setting both
-// the public key and the private key.
-// 
-// \param grp_id    The ECP group identifier.
-// \param key       The key pair object. It must be initialized.
-// If its group has already been set, it must match \p grp_id.
-// If its group has not been set, it will be set to \p grp_id.
-// If the public key has already been set, it is overwritten.
-// \param Q         The public key to copy. This must be a point on the
-// curve indicated by \p grp_id.
-// 
-// \return          \c 0 on success.
-// \return          #MBEDTLS_ERR_ECP_BAD_INPUT_DATA if \p key does not
-// match \p grp_id.
-// \return          #MBEDTLS_ERR_ECP_FEATURE_UNAVAILABLE if the operation for
-// the group is not implemented.
-// \return          #MBEDTLS_ERR_MPI_ALLOC_FAILED on memory-allocation failure.
-// \return          Another negative error code on other kinds of failure.
-pub extern external/mbedtls-ecp-set-public-key(^grp-id: int32, ^key: c-pointer<mbedtls-ecp-keypair-c>, ^q: c-pointer<mbedtls-ecp-point-c>): int32
-  c inline "(int)mbedtls_ecp_set_public_key((int32_t)#1, (struct mbedtls_ecp_keypair*)#2, (struct mbedtls_ecp_point*)#3)"
-
-pub inline fun ffi/mbedtls-ecp-set-public-key(^grp-id: mbedtls-ecp-group-id, ^key: c-pointer<mbedtls-ecp-keypair-c>, ^q: c-pointer<mbedtls-ecp-point-c>): <exn> int
-  external/mbedtls-ecp-set-public-key(grp-id.mbedtls-ecp-group-id/int, key, q).int
-
-// \brief           This function reads an elliptic curve private key.
-// 
-// \note            This function does not set the public key in the
-// key pair object. Without a public key, the key pair object
-// cannot be used with operations that require the public key.
-// Call mbedtls_ecp_keypair_calc_public() to set the public
-// key from the private key. Alternatively, you can call
-// mbedtls_ecp_set_public_key() to set the public key part,
-// and then optionally mbedtls_ecp_check_pub_priv() to check
-// that the private and public parts are consistent.
-// 
-// \note            If a public key has already been set in the key pair
-// object, this function does not check that it is consistent
-// with the private key. Call mbedtls_ecp_check_pub_priv()
-// after setting both the public key and the private key
-// to make that check.
-// 
-// \param grp_id    The ECP group identifier.
-// \param key       The destination key.
-// \param buf       The buffer containing the binary representation of the
-// key. (Big endian integer for Weierstrass curves, byte
-// string for Montgomery curves.)
-// \param buflen    The length of the buffer in bytes.
-// 
-// \return          \c 0 on success.
-// \return          #MBEDTLS_ERR_ECP_INVALID_KEY error if the key is
-// invalid.
-// \return          #MBEDTLS_ERR_MPI_ALLOC_FAILED if memory allocation failed.
-// \return          #MBEDTLS_ERR_ECP_FEATURE_UNAVAILABLE if the operation for
-// the group is not implemented.
-// \return          Another negative error code on different kinds of failure.
-pub extern external/mbedtls-ecp-read-key(^grp-id: int32, ^key: c-pointer<mbedtls-ecp-keypair-c>, ^buf: c-pointer<int>, ^buflen: ssize_t): int32
-  c inline "(int)mbedtls_ecp_read_key((int32_t)#1, (struct mbedtls_ecp_keypair*)#2, (unsigned char*)#3, (size_t)#4)"
-
-pub inline fun ffi/mbedtls-ecp-read-key(^grp-id: mbedtls-ecp-group-id, ^key: c-pointer<mbedtls-ecp-keypair-c>, ^buf: c-pointer<int>, ^buflen: int): <exn> int
-  external/mbedtls-ecp-read-key(grp-id.mbedtls-ecp-group-id/int, key, buf, buflen.ssize_t).int
-
-// \brief           This function exports an elliptic curve private key.
-// 
-// \deprecated      Note that although this function accepts an output
-// buffer that is smaller or larger than the key, most key
-// import interfaces require the output to have exactly
-// key's nominal length. It is generally simplest to
-// pass the key's nominal length as \c buflen, after
-// checking that the output buffer is large enough.
-// See the description of the \p buflen parameter for
-// how to calculate the nominal length.
-// To avoid this difficulty, use mbedtls_ecp_write_key_ext()
-// instead.
-// mbedtls_ecp_write_key() is deprecated and will be
-// removed in a future version of the library.
-// 
-// \note            If the private key was not set in \p key,
-// the output is unspecified. Future versions
-// may return an error in that case.
-// 
-// \param key       The private key.
-// \param buf       The output buffer for containing the binary representation
-// of the key.
-// For Weierstrass curves, this is the big-endian
-// representation, padded with null bytes at the beginning
-// to reach \p buflen bytes.
-// For Montgomery curves, this is the standard byte string
-// representation (which is little-endian), padded with
-// null bytes at the end to reach \p buflen bytes.
-// \param buflen    The total length of the buffer in bytes.
-// The length of the output is
-// (`grp->nbits` + 7) / 8 bytes
-// where `grp->nbits` is the private key size in bits.
-// For Weierstrass keys, if the output buffer is smaller,
-// leading zeros are trimmed to fit if possible. For
-// Montgomery keys, the output buffer must always be large
-// enough for the nominal length.
-// 
-// \return          \c 0 on success.
-// \return          #MBEDTLS_ERR_ECP_BUFFER_TOO_SMALL or
-// #MBEDTLS_ERR_MPI_BUFFER_TOO_SMALL if the \p key
-// representation is larger than the available space in \p buf.
-// \return          Another negative error code on different kinds of failure.
-pub extern external/mbedtls-ecp-write-key(^key: c-pointer<mbedtls-ecp-keypair-c>, ^buf: c-pointer<int>, ^buflen: ssize_t): int32
-  c inline "(int)mbedtls_ecp_write_key((struct mbedtls_ecp_keypair*)#1, (unsigned char*)#2, (size_t)#3)"
-
-pub inline fun ffi/mbedtls-ecp-write-key(^key: c-pointer<mbedtls-ecp-keypair-c>, ^buf: c-pointer<int>, ^buflen: int): <> int
-  external/mbedtls-ecp-write-key(key, buf, buflen.ssize_t).int
-
-// \brief           This function exports an elliptic curve private key.
-// 
-// \param key       The private key.
-// \param olen      On success, the length of the private key.
-// This is always (`grp->nbits` + 7) / 8 bytes
-// where `grp->nbits` is the private key size in bits.
-// \param buf       The output buffer for containing the binary representation
-// of the key.
-// \param buflen    The total length of the buffer in bytes.
-// #MBEDTLS_ECP_MAX_BYTES is always sufficient.
-// 
-// \return          \c 0 on success.
-// \return          #MBEDTLS_ERR_ECP_BUFFER_TOO_SMALL if the \p key
-// representation is larger than the available space in \p buf.
-// \return          #MBEDTLS_ERR_ECP_BAD_INPUT_DATA if no private key is
-// set in \p key.
-// \return          Another negative error code on different kinds of failure.
-pub extern external/mbedtls-ecp-write-key-ext(^key: c-pointer<mbedtls-ecp-keypair-c>, ^olen: c-pointer<int>, ^buf: c-pointer<int>, ^buflen: ssize_t): int32
-  c inline "(int)mbedtls_ecp_write_key_ext((struct mbedtls_ecp_keypair*)#1, (size_t*)#2, (unsigned char*)#3, (size_t)#4)"
-
-pub inline fun ffi/mbedtls-ecp-write-key-ext(^key: c-pointer<mbedtls-ecp-keypair-c>, ^olen: c-pointer<int>, ^buf: c-pointer<int>, ^buflen: int): <> int
-  external/mbedtls-ecp-write-key-ext(key, olen, buf, buflen.ssize_t).int
-
-// \brief           This function exports an elliptic curve public key.
-// 
-// \note            If the public key was not set in \p key,
-// the output is unspecified. Future versions
-// may return an error in that case.
-// 
-// \param key       The public key.
-// \param format    The point format. This must be either
-// #MBEDTLS_ECP_PF_COMPRESSED or #MBEDTLS_ECP_PF_UNCOMPRESSED.
-// (For groups without these formats, this parameter is
-// ignored. But it still has to be either of the above
-// values.)
-// \param olen      The address at which to store the length of
-// the output in Bytes. This must not be \c NULL.
-// \param buf       The output buffer. This must be a writable buffer
-// of length \p buflen Bytes.
-// \param buflen    The length of the output buffer \p buf in Bytes.
-// 
-// \return          \c 0 on success.
-// \return          #MBEDTLS_ERR_ECP_BUFFER_TOO_SMALL if the output buffer
-// is too small to hold the point.
-// \return          #MBEDTLS_ERR_ECP_FEATURE_UNAVAILABLE if the point format
-// or the export for the given group is not implemented.
-// \return          Another negative error code on other kinds of failure.
-pub extern external/mbedtls-ecp-write-public-key(^key: c-pointer<mbedtls-ecp-keypair-c>, ^format: int32, ^olen: c-pointer<int>, ^buf: c-pointer<int>, ^buflen: ssize_t): int32
-  c inline "(int)mbedtls_ecp_write_public_key((struct mbedtls_ecp_keypair*)#1, (int)#2, (size_t*)#3, (unsigned char*)#4, (size_t)#5)"
-
-pub inline fun ffi/mbedtls-ecp-write-public-key(^key: c-pointer<mbedtls-ecp-keypair-c>, ^format: int, ^olen: c-pointer<int>, ^buf: c-pointer<int>, ^buflen: int): <> int
-  external/mbedtls-ecp-write-public-key(key, format.int32, olen, buf, buflen.ssize_t).int
-
-// \brief           This function checks that the keypair objects
-// \p pub and \p prv have the same group and the
-// same public point, and that the private key in
-// \p prv is consistent with the public key.
-// 
-// \param pub       The keypair structure holding the public key. This
-// must be initialized. If it contains a private key, that
-// part is ignored.
-// \param prv       The keypair structure holding the full keypair.
-// This must be initialized.
-// \param f_rng     The RNG function. This must not be \c NULL.
-// \param p_rng     The RNG context to be passed to \p f_rng. This may be \c
-// NULL if \p f_rng doesn't need a context.
-// 
-// \return          \c 0 on success, meaning that the keys are valid and match.
-// \return          #MBEDTLS_ERR_ECP_BAD_INPUT_DATA if the keys are invalid or do not match.
-// \return          An \c MBEDTLS_ERR_ECP_XXX or an \c MBEDTLS_ERR_MPI_XXX
-// error code on calculation failure.
-pub extern external/mbedtls-ecp-check-pub-priv(^pub: c-pointer<mbedtls-ecp-keypair-c>, ^prv: c-pointer<mbedtls-ecp-keypair-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): int32
-  c inline "(int)mbedtls_ecp_check_pub_priv((struct mbedtls_ecp_keypair*)#1, (struct mbedtls_ecp_keypair*)#2, (int (*)(void*, unsigned char*, size_t))#3, (void*)#4)"
-
-pub inline fun ffi/mbedtls-ecp-check-pub-priv(^pub: c-pointer<mbedtls-ecp-keypair-c>, ^prv: c-pointer<mbedtls-ecp-keypair-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): <> int
-  external/mbedtls-ecp-check-pub-priv(pub, prv, f-rng, p-rng).int
-
-// \brief          Calculate the public key from a private key in a key pair.
-// 
-// \param key       A keypair structure. It must have a private key set.
-// If the public key is set, it will be overwritten.
-// \param f_rng     The RNG function. This must not be \c NULL.
-// \param p_rng     The RNG context to be passed to \p f_rng. This may be \c
-// NULL if \p f_rng doesn't need a context.
-// 
-// \return          \c 0 on success. The key pair object can be used for
-// operations that require the public key.
-// \return          An \c MBEDTLS_ERR_ECP_XXX or an \c MBEDTLS_ERR_MPI_XXX
-// error code on calculation failure.
-pub extern external/mbedtls-ecp-keypair-calc-public(^key: c-pointer<mbedtls-ecp-keypair-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): int32
-  c inline "(int)mbedtls_ecp_keypair_calc_public((struct mbedtls_ecp_keypair*)#1, (int (*)(void*, unsigned char*, size_t))#2, (void*)#3)"
-
-pub inline fun ffi/mbedtls-ecp-keypair-calc-public(^key: c-pointer<mbedtls-ecp-keypair-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): <> int
-  external/mbedtls-ecp-keypair-calc-public(key, f-rng, p-rng).int
-
-// \brief          Query the group that a key pair belongs to.
-// 
-// \param key       The key pair to query.
-// 
-// \return          The group ID for the group registered in the key pair
-// object.
-// This is \c MBEDTLS_ECP_DP_NONE if no group has been set
-// in the key pair object.
-pub extern external/mbedtls-ecp-keypair-get-group-id(^key: c-pointer<mbedtls-ecp-keypair-c>): int32
-  c inline "(int32_t)mbedtls_ecp_keypair_get_group_id((struct mbedtls_ecp_keypair*)#1)"
-
-pub inline fun ffi/mbedtls-ecp-keypair-get-group-id(^key: c-pointer<mbedtls-ecp-keypair-c>): <exn> mbedtls-ecp-group-id
-  external/mbedtls-ecp-keypair-get-group-id(key).int/mbedtls-ecp-group-id
-
-// \brief           This function exports generic key-pair parameters.
-// 
-// Each of the output parameters can be a null pointer
-// if you do not need that parameter.
-// 
-// \note            If the private key or the public key was not set in \p key,
-// the corresponding output is unspecified. Future versions
-// may return an error in that case.
-// 
-// \param key       The key pair to export from.
-// \param grp       Slot for exported ECP group.
-// It must either be null or point to an initialized ECP group.
-// \param d         Slot for the exported secret value.
-// It must either be null or point to an initialized mpi.
-// \param Q         Slot for the exported public value.
-// It must either be null or point to an initialized ECP point.
-// 
-// \return          \c 0 on success,
-// \return          #MBEDTLS_ERR_MPI_ALLOC_FAILED on memory-allocation failure.
-// \return          #MBEDTLS_ERR_ECP_FEATURE_UNAVAILABLE if key id doesn't
-// correspond to a known group.
-// \return          Another negative error code on other kinds of failure.
-pub extern external/mbedtls-ecp-export(^key: c-pointer<mbedtls-ecp-keypair-c>, ^grp: c-pointer<mbedtls-ecp-group-c>, ^d: c-pointer<mbedtls-mpi-c>, ^q: c-pointer<mbedtls-ecp-point-c>): int32
-  c inline "(int)mbedtls_ecp_export((struct mbedtls_ecp_keypair*)#1, (struct mbedtls_ecp_group*)#2, (struct mbedtls_mpi*)#3, (struct mbedtls_ecp_point*)#4)"
-
-pub inline fun ffi/mbedtls-ecp-export(^key: c-pointer<mbedtls-ecp-keypair-c>, ^grp: c-pointer<mbedtls-ecp-group-c>, ^d: c-pointer<mbedtls-mpi-c>, ^q: c-pointer<mbedtls-ecp-point-c>): <> int
-  external/mbedtls-ecp-export(key, grp, d, q).int
-
-// \brief          The ECP checkup routine.
-// 
-// \return         \c 0 on success.
-// \return         \c 1 on failure.
-pub extern external/mbedtls-ecp-self-test(^verbose: int32): int32
-  c inline "(int)mbedtls_ecp_self_test((int)#1)"
-
-pub inline fun ffi/mbedtls-ecp-self-test(^verbose: int): <> int
-  external/mbedtls-ecp-self-test(verbose.int32).int
 
 // \brief          This function checks whether a given group can be used
 // for ECDSA.
@@ -13195,398 +12658,6 @@ pub extern external/mbedtls-pk-write-pubkey(^p: c-pointer<c-pointer<int>>, ^star
 pub inline fun ffi/mbedtls-pk-write-pubkey(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^key: c-pointer<mbedtls-pk-context-c>): <> int
   external/mbedtls-pk-write-pubkey(p, start, key).int
 
-// \brief           Translate an ASN.1 OID into its numeric representation
-// (e.g. "\x2A\x86\x48\x86\xF7\x0D" into "1.2.840.113549")
-// 
-// \param buf       buffer to put representation in
-// \param size      size of the buffer
-// \param oid       OID to translate
-// 
-// \return          Length of the string written (excluding final NULL) or
-// MBEDTLS_ERR_OID_BUF_TOO_SMALL in case of error
-pub extern external/mbedtls-oid-get-numeric-string(^buf: c-pointer<int>, ^size: ssize_t, ^oid: c-pointer<mbedtls-asn1-buf-c>): int32
-  c inline "(int)mbedtls_oid_get_numeric_string((char*)#1, (size_t)#2, (struct mbedtls_asn1_buf*)#3)"
-
-pub inline fun ffi/mbedtls-oid-get-numeric-string(^buf: c-pointer<int>, ^size: int, ^oid: c-pointer<mbedtls-asn1-buf-c>): <> int
-  external/mbedtls-oid-get-numeric-string(buf, size.ssize_t, oid).int
-
-// \brief           Translate a string containing a dotted-decimal
-// representation of an ASN.1 OID into its encoded form
-// (e.g. "1.2.840.113549" into "\x2A\x86\x48\x86\xF7\x0D").
-// On success, this function allocates oid->buf from the
-// heap. It must be freed by the caller using mbedtls_free().
-// 
-// \param oid       #mbedtls_asn1_buf to populate with the DER-encoded OID
-// \param oid_str   string representation of the OID to parse
-// \param size      length of the OID string, not including any null terminator
-// 
-// \return          0 if successful
-// \return          #MBEDTLS_ERR_ASN1_INVALID_DATA if \p oid_str does not
-// represent a valid OID
-// \return          #MBEDTLS_ERR_ASN1_ALLOC_FAILED if the function fails to
-// allocate oid->buf
-pub extern external/mbedtls-oid-from-numeric-string(^oid: c-pointer<mbedtls-asn1-buf-c>, ^oid-str: c-pointer<int>, ^size: ssize_t): int32
-  c inline "(int)mbedtls_oid_from_numeric_string((struct mbedtls_asn1_buf*)#1, (char*)#2, (size_t)#3)"
-
-pub inline fun ffi/mbedtls-oid-from-numeric-string(^oid: c-pointer<mbedtls-asn1-buf-c>, ^oid-str: c-pointer<int>, ^size: int): <> int
-  external/mbedtls-oid-from-numeric-string(oid, oid-str, size.ssize_t).int
-
-// \brief          Translate an X.509 extension OID into local values
-// 
-// \param oid      OID to use
-// \param ext_type place to store the extension type
-// 
-// \return         0 if successful, or MBEDTLS_ERR_OID_NOT_FOUND
-pub extern external/mbedtls-oid-get-x509-ext-type(^oid: c-pointer<mbedtls-asn1-buf-c>, ^ext-type: c-pointer<int>): int32
-  c inline "(int)mbedtls_oid_get_x509_ext_type((struct mbedtls_asn1_buf*)#1, (int*)#2)"
-
-pub inline fun ffi/mbedtls-oid-get-x509-ext-type(^oid: c-pointer<mbedtls-asn1-buf-c>, ^ext-type: c-pointer<int>): <> int
-  external/mbedtls-oid-get-x509-ext-type(oid, ext-type).int
-
-// \brief          Translate an X.509 attribute type OID into the short name
-// (e.g. the OID for an X520 Common Name into "CN")
-// 
-// \param oid      OID to use
-// \param short_name    place to store the string pointer
-// 
-// \return         0 if successful, or MBEDTLS_ERR_OID_NOT_FOUND
-pub extern external/mbedtls-oid-get-attr-short-name(^oid: c-pointer<mbedtls-asn1-buf-c>, ^short-name: c-pointer<c-pointer<int>>): int32
-  c inline "(int)mbedtls_oid_get_attr_short_name((struct mbedtls_asn1_buf*)#1, (char**)#2)"
-
-pub inline fun ffi/mbedtls-oid-get-attr-short-name(^oid: c-pointer<mbedtls-asn1-buf-c>, ^short-name: c-pointer<c-pointer<int>>): <> int
-  external/mbedtls-oid-get-attr-short-name(oid, short-name).int
-
-// \brief          Translate PublicKeyAlgorithm OID into pk_type
-// 
-// \param oid      OID to use
-// \param pk_alg   place to store public key algorithm
-// 
-// \return         0 if successful, or MBEDTLS_ERR_OID_NOT_FOUND
-pub extern external/mbedtls-oid-get-pk-alg(^oid: c-pointer<mbedtls-asn1-buf-c>, ^pk-alg: c-pointer<mbedtls-pk-type-t>): int32
-  c inline "(int)mbedtls_oid_get_pk_alg((struct mbedtls_asn1_buf*)#1, (int32_t*)#2)"
-
-pub inline fun ffi/mbedtls-oid-get-pk-alg(^oid: c-pointer<mbedtls-asn1-buf-c>, ^pk-alg: c-pointer<mbedtls-pk-type-t>): <> int
-  external/mbedtls-oid-get-pk-alg(oid, pk-alg).int
-
-// \brief          Translate pk_type into PublicKeyAlgorithm OID
-// 
-// \param pk_alg   Public key type to look for
-// \param oid      place to store ASN.1 OID string pointer
-// \param olen     length of the OID
-// 
-// \return         0 if successful, or MBEDTLS_ERR_OID_NOT_FOUND
-pub extern external/mbedtls-oid-get-oid-by-pk-alg(^pk-alg: int32, ^oid: c-pointer<c-pointer<int>>, ^olen: c-pointer<int>): int32
-  c inline "(int)mbedtls_oid_get_oid_by_pk_alg((int32_t)#1, (char**)#2, (size_t*)#3)"
-
-pub inline fun ffi/mbedtls-oid-get-oid-by-pk-alg(^pk-alg: mbedtls-pk-type-t, ^oid: c-pointer<c-pointer<int>>, ^olen: c-pointer<int>): <exn> int
-  external/mbedtls-oid-get-oid-by-pk-alg(pk-alg.mbedtls-pk-type-t/int, oid, olen).int
-
-// \brief          Translate NamedCurve OID into an EC group identifier
-// 
-// \param oid      OID to use
-// \param grp_id   place to store group id
-// 
-// \return         0 if successful, or MBEDTLS_ERR_OID_NOT_FOUND
-pub extern external/mbedtls-oid-get-ec-grp(^oid: c-pointer<mbedtls-asn1-buf-c>, ^grp-id: c-pointer<mbedtls-ecp-group-id>): int32
-  c inline "(int)mbedtls_oid_get_ec_grp((struct mbedtls_asn1_buf*)#1, (int32_t*)#2)"
-
-pub inline fun ffi/mbedtls-oid-get-ec-grp(^oid: c-pointer<mbedtls-asn1-buf-c>, ^grp-id: c-pointer<mbedtls-ecp-group-id>): <> int
-  external/mbedtls-oid-get-ec-grp(oid, grp-id).int
-
-// \brief          Translate EC group identifier into NamedCurve OID
-// 
-// \param grp_id   EC group identifier
-// \param oid      place to store ASN.1 OID string pointer
-// \param olen     length of the OID
-// 
-// \return         0 if successful, or MBEDTLS_ERR_OID_NOT_FOUND
-pub extern external/mbedtls-oid-get-oid-by-ec-grp(^grp-id: int32, ^oid: c-pointer<c-pointer<int>>, ^olen: c-pointer<int>): int32
-  c inline "(int)mbedtls_oid_get_oid_by_ec_grp((int32_t)#1, (char**)#2, (size_t*)#3)"
-
-pub inline fun ffi/mbedtls-oid-get-oid-by-ec-grp(^grp-id: mbedtls-ecp-group-id, ^oid: c-pointer<c-pointer<int>>, ^olen: c-pointer<int>): <exn> int
-  external/mbedtls-oid-get-oid-by-ec-grp(grp-id.mbedtls-ecp-group-id/int, oid, olen).int
-
-// \brief          Translate AlgorithmIdentifier OID into an EC group identifier,
-// for curves that are directly encoded at this level
-// 
-// \param oid      OID to use
-// \param grp_id   place to store group id
-// 
-// \return         0 if successful, or MBEDTLS_ERR_OID_NOT_FOUND
-pub extern external/mbedtls-oid-get-ec-grp-algid(^oid: c-pointer<mbedtls-asn1-buf-c>, ^grp-id: c-pointer<mbedtls-ecp-group-id>): int32
-  c inline "(int)mbedtls_oid_get_ec_grp_algid((struct mbedtls_asn1_buf*)#1, (int32_t*)#2)"
-
-pub inline fun ffi/mbedtls-oid-get-ec-grp-algid(^oid: c-pointer<mbedtls-asn1-buf-c>, ^grp-id: c-pointer<mbedtls-ecp-group-id>): <> int
-  external/mbedtls-oid-get-ec-grp-algid(oid, grp-id).int
-
-// \brief          Translate EC group identifier into AlgorithmIdentifier OID,
-// for curves that are directly encoded at this level
-// 
-// \param grp_id   EC group identifier
-// \param oid      place to store ASN.1 OID string pointer
-// \param olen     length of the OID
-// 
-// \return         0 if successful, or MBEDTLS_ERR_OID_NOT_FOUND
-pub extern external/mbedtls-oid-get-oid-by-ec-grp-algid(^grp-id: int32, ^oid: c-pointer<c-pointer<int>>, ^olen: c-pointer<int>): int32
-  c inline "(int)mbedtls_oid_get_oid_by_ec_grp_algid((int32_t)#1, (char**)#2, (size_t*)#3)"
-
-pub inline fun ffi/mbedtls-oid-get-oid-by-ec-grp-algid(^grp-id: mbedtls-ecp-group-id, ^oid: c-pointer<c-pointer<int>>, ^olen: c-pointer<int>): <exn> int
-  external/mbedtls-oid-get-oid-by-ec-grp-algid(grp-id.mbedtls-ecp-group-id/int, oid, olen).int
-
-// \brief          Translate SignatureAlgorithm OID into md_type and pk_type
-// 
-// \param oid      OID to use
-// \param md_alg   place to store message digest algorithm
-// \param pk_alg   place to store public key algorithm
-// 
-// \return         0 if successful, or MBEDTLS_ERR_OID_NOT_FOUND
-pub extern external/mbedtls-oid-get-sig-alg(^oid: c-pointer<mbedtls-asn1-buf-c>, ^md-alg: c-pointer<mbedtls-md-type-t>, ^pk-alg: c-pointer<mbedtls-pk-type-t>): int32
-  c inline "(int)mbedtls_oid_get_sig_alg((struct mbedtls_asn1_buf*)#1, (int32_t*)#2, (int32_t*)#3)"
-
-pub inline fun ffi/mbedtls-oid-get-sig-alg(^oid: c-pointer<mbedtls-asn1-buf-c>, ^md-alg: c-pointer<mbedtls-md-type-t>, ^pk-alg: c-pointer<mbedtls-pk-type-t>): <> int
-  external/mbedtls-oid-get-sig-alg(oid, md-alg, pk-alg).int
-
-// \brief          Translate SignatureAlgorithm OID into description
-// 
-// \param oid      OID to use
-// \param desc     place to store string pointer
-// 
-// \return         0 if successful, or MBEDTLS_ERR_OID_NOT_FOUND
-pub extern external/mbedtls-oid-get-sig-alg-desc(^oid: c-pointer<mbedtls-asn1-buf-c>, ^desc: c-pointer<c-pointer<int>>): int32
-  c inline "(int)mbedtls_oid_get_sig_alg_desc((struct mbedtls_asn1_buf*)#1, (char**)#2)"
-
-pub inline fun ffi/mbedtls-oid-get-sig-alg-desc(^oid: c-pointer<mbedtls-asn1-buf-c>, ^desc: c-pointer<c-pointer<int>>): <> int
-  external/mbedtls-oid-get-sig-alg-desc(oid, desc).int
-
-// \brief          Translate md_type and pk_type into SignatureAlgorithm OID
-// 
-// \param md_alg   message digest algorithm
-// \param pk_alg   public key algorithm
-// \param oid      place to store ASN.1 OID string pointer
-// \param olen     length of the OID
-// 
-// \return         0 if successful, or MBEDTLS_ERR_OID_NOT_FOUND
-pub extern external/mbedtls-oid-get-oid-by-sig-alg(^pk-alg: int32, ^md-alg: int32, ^oid: c-pointer<c-pointer<int>>, ^olen: c-pointer<int>): int32
-  c inline "(int)mbedtls_oid_get_oid_by_sig_alg((int32_t)#1, (int32_t)#2, (char**)#3, (size_t*)#4)"
-
-pub inline fun ffi/mbedtls-oid-get-oid-by-sig-alg(^pk-alg: mbedtls-pk-type-t, ^md-alg: mbedtls-md-type-t, ^oid: c-pointer<c-pointer<int>>, ^olen: c-pointer<int>): <exn> int
-  external/mbedtls-oid-get-oid-by-sig-alg(pk-alg.mbedtls-pk-type-t/int, md-alg.mbedtls-md-type-t/int, oid, olen).int
-
-// \brief          Translate hmac algorithm OID into md_type
-// 
-// \param oid      OID to use
-// \param md_hmac  place to store message hmac algorithm
-// 
-// \return         0 if successful, or MBEDTLS_ERR_OID_NOT_FOUND
-pub extern external/mbedtls-oid-get-md-hmac(^oid: c-pointer<mbedtls-asn1-buf-c>, ^md-hmac: c-pointer<mbedtls-md-type-t>): int32
-  c inline "(int)mbedtls_oid_get_md_hmac((struct mbedtls_asn1_buf*)#1, (int32_t*)#2)"
-
-pub inline fun ffi/mbedtls-oid-get-md-hmac(^oid: c-pointer<mbedtls-asn1-buf-c>, ^md-hmac: c-pointer<mbedtls-md-type-t>): <> int
-  external/mbedtls-oid-get-md-hmac(oid, md-hmac).int
-
-// \brief          Translate hash algorithm OID into md_type
-// 
-// \param oid      OID to use
-// \param md_alg   place to store message digest algorithm
-// 
-// \return         0 if successful, or MBEDTLS_ERR_OID_NOT_FOUND
-pub extern external/mbedtls-oid-get-md-alg(^oid: c-pointer<mbedtls-asn1-buf-c>, ^md-alg: c-pointer<mbedtls-md-type-t>): int32
-  c inline "(int)mbedtls_oid_get_md_alg((struct mbedtls_asn1_buf*)#1, (int32_t*)#2)"
-
-pub inline fun ffi/mbedtls-oid-get-md-alg(^oid: c-pointer<mbedtls-asn1-buf-c>, ^md-alg: c-pointer<mbedtls-md-type-t>): <> int
-  external/mbedtls-oid-get-md-alg(oid, md-alg).int
-
-// \brief          Translate Extended Key Usage OID into description
-// 
-// \param oid      OID to use
-// \param desc     place to store string pointer
-// 
-// \return         0 if successful, or MBEDTLS_ERR_OID_NOT_FOUND
-pub extern external/mbedtls-oid-get-extended-key-usage(^oid: c-pointer<mbedtls-asn1-buf-c>, ^desc: c-pointer<c-pointer<int>>): int32
-  c inline "(int)mbedtls_oid_get_extended_key_usage((struct mbedtls_asn1_buf*)#1, (char**)#2)"
-
-pub inline fun ffi/mbedtls-oid-get-extended-key-usage(^oid: c-pointer<mbedtls-asn1-buf-c>, ^desc: c-pointer<c-pointer<int>>): <> int
-  external/mbedtls-oid-get-extended-key-usage(oid, desc).int
-
-// \brief          Translate certificate policies OID into description
-// 
-// \param oid      OID to use
-// \param desc     place to store string pointer
-// 
-// \return         0 if successful, or MBEDTLS_ERR_OID_NOT_FOUND
-pub extern external/mbedtls-oid-get-certificate-policies(^oid: c-pointer<mbedtls-asn1-buf-c>, ^desc: c-pointer<c-pointer<int>>): int32
-  c inline "(int)mbedtls_oid_get_certificate_policies((struct mbedtls_asn1_buf*)#1, (char**)#2)"
-
-pub inline fun ffi/mbedtls-oid-get-certificate-policies(^oid: c-pointer<mbedtls-asn1-buf-c>, ^desc: c-pointer<c-pointer<int>>): <> int
-  external/mbedtls-oid-get-certificate-policies(oid, desc).int
-
-// \brief          Translate md_type into hash algorithm OID
-// 
-// \param md_alg   message digest algorithm
-// \param oid      place to store ASN.1 OID string pointer
-// \param olen     length of the OID
-// 
-// \return         0 if successful, or MBEDTLS_ERR_OID_NOT_FOUND
-pub extern external/mbedtls-oid-get-oid-by-md(^md-alg: int32, ^oid: c-pointer<c-pointer<int>>, ^olen: c-pointer<int>): int32
-  c inline "(int)mbedtls_oid_get_oid_by_md((int32_t)#1, (char**)#2, (size_t*)#3)"
-
-pub inline fun ffi/mbedtls-oid-get-oid-by-md(^md-alg: mbedtls-md-type-t, ^oid: c-pointer<c-pointer<int>>, ^olen: c-pointer<int>): <exn> int
-  external/mbedtls-oid-get-oid-by-md(md-alg.mbedtls-md-type-t/int, oid, olen).int
-
-// \brief          Translate encryption algorithm OID into cipher_type
-// 
-// \param oid           OID to use
-// \param cipher_alg    place to store cipher algorithm
-// 
-// \return         0 if successful, or MBEDTLS_ERR_OID_NOT_FOUND
-pub extern external/mbedtls-oid-get-cipher-alg(^oid: c-pointer<mbedtls-asn1-buf-c>, ^cipher-alg: c-pointer<mbedtls-cipher-type-t>): int32
-  c inline "(int)mbedtls_oid_get_cipher_alg((struct mbedtls_asn1_buf*)#1, (int32_t*)#2)"
-
-pub inline fun ffi/mbedtls-oid-get-cipher-alg(^oid: c-pointer<mbedtls-asn1-buf-c>, ^cipher-alg: c-pointer<mbedtls-cipher-type-t>): <> int
-  external/mbedtls-oid-get-cipher-alg(oid, cipher-alg).int
-
-// \brief          Translate PKCS#12 PBE algorithm OID into md_type and
-// cipher_type
-// 
-// \param oid           OID to use
-// \param md_alg        place to store message digest algorithm
-// \param cipher_alg    place to store cipher algorithm
-// 
-// \return         0 if successful, or MBEDTLS_ERR_OID_NOT_FOUND
-pub extern external/mbedtls-oid-get-pkcs12-pbe-alg(^oid: c-pointer<mbedtls-asn1-buf-c>, ^md-alg: c-pointer<mbedtls-md-type-t>, ^cipher-alg: c-pointer<mbedtls-cipher-type-t>): int32
-  c inline "(int)mbedtls_oid_get_pkcs12_pbe_alg((struct mbedtls_asn1_buf*)#1, (int32_t*)#2, (int32_t*)#3)"
-
-pub inline fun ffi/mbedtls-oid-get-pkcs12-pbe-alg(^oid: c-pointer<mbedtls-asn1-buf-c>, ^md-alg: c-pointer<mbedtls-md-type-t>, ^cipher-alg: c-pointer<mbedtls-cipher-type-t>): <> int
-  external/mbedtls-oid-get-pkcs12-pbe-alg(oid, md-alg, cipher-alg).int
-
-// \brief          PKCS#5 PBES2 function
-// 
-// \note           When encrypting, #MBEDTLS_CIPHER_PADDING_PKCS7 must
-// be enabled at compile time.
-// 
-// \deprecated     This function is deprecated and will be removed in a
-// future version of the library.
-// Please use mbedtls_pkcs5_pbes2_ext() instead.
-// 
-// \warning        When decrypting:
-// - if #MBEDTLS_CIPHER_PADDING_PKCS7 is enabled at compile
-// time, this function validates the CBC padding and returns
-// #MBEDTLS_ERR_PKCS5_PASSWORD_MISMATCH if the padding is
-// invalid. Note that this can help active adversaries
-// attempting to brute-forcing the password. Note also that
-// there is no guarantee that an invalid password will be
-// detected (the chances of a valid padding with a random
-// password are about 1/255).
-// - if #MBEDTLS_CIPHER_PADDING_PKCS7 is disabled at compile
-// time, this function does not validate the CBC padding.
-// 
-// \param pbe_params the ASN.1 algorithm parameters
-// \param mode       either #MBEDTLS_PKCS5_DECRYPT or #MBEDTLS_PKCS5_ENCRYPT
-// \param pwd        password to use when generating key
-// \param pwdlen     length of password
-// \param data       data to process
-// \param datalen    length of data
-// \param output     Output buffer.
-// On success, it contains the encrypted or decrypted data,
-// possibly followed by the CBC padding.
-// On failure, the content is indeterminate.
-// For decryption, there must be enough room for \p datalen
-// bytes.
-// For encryption, there must be enough room for
-// \p datalen + 1 bytes, rounded up to the block size of
-// the block cipher identified by \p pbe_params.
-// 
-// \returns        0 on success, or a MBEDTLS_ERR_XXX code if verification fails.
-pub extern external/mbedtls-pkcs5-pbes2(^pbe-params: c-pointer<mbedtls-asn1-buf-c>, ^mode: int32, ^pwd: c-pointer<int>, ^pwdlen: ssize_t, ^data: c-pointer<int>, ^datalen: ssize_t, ^output: c-pointer<int>): int32
-  c inline "(int)mbedtls_pkcs5_pbes2((struct mbedtls_asn1_buf*)#1, (int)#2, (unsigned char*)#3, (size_t)#4, (unsigned char*)#5, (size_t)#6, (unsigned char*)#7)"
-
-pub inline fun ffi/mbedtls-pkcs5-pbes2(^pbe-params: c-pointer<mbedtls-asn1-buf-c>, ^mode: int, ^pwd: c-pointer<int>, ^pwdlen: int, ^data: c-pointer<int>, ^datalen: int, ^output: c-pointer<int>): <> int
-  external/mbedtls-pkcs5-pbes2(pbe-params, mode.int32, pwd, pwdlen.ssize_t, data, datalen.ssize_t, output).int
-
-// \brief          PKCS#5 PBES2 function
-// 
-// \warning        When decrypting:
-// - This function validates the CBC padding and returns
-// #MBEDTLS_ERR_PKCS5_PASSWORD_MISMATCH if the padding is
-// invalid. Note that this can help active adversaries
-// attempting to brute-forcing the password. Note also that
-// there is no guarantee that an invalid password will be
-// detected (the chances of a valid padding with a random
-// password are about 1/255).
-// 
-// \param pbe_params the ASN.1 algorithm parameters
-// \param mode       either #MBEDTLS_PKCS5_DECRYPT or #MBEDTLS_PKCS5_ENCRYPT
-// \param pwd        password to use when generating key
-// \param pwdlen     length of password
-// \param data       data to process
-// \param datalen    length of data
-// \param output     Output buffer.
-// On success, it contains the decrypted data.
-// On failure, the content is indetermidate.
-// For decryption, there must be enough room for \p datalen
-// bytes.
-// For encryption, there must be enough room for
-// \p datalen + 1 bytes, rounded up to the block size of
-// the block cipher identified by \p pbe_params.
-// \param output_size size of output buffer.
-// This must be big enough to accommodate for output plus
-// padding data.
-// \param output_len On success, length of actual data written to the output buffer.
-// 
-// \returns        0 on success, or a MBEDTLS_ERR_XXX code if parsing or decryption fails.
-pub extern external/mbedtls-pkcs5-pbes2-ext(^pbe-params: c-pointer<mbedtls-asn1-buf-c>, ^mode: int32, ^pwd: c-pointer<int>, ^pwdlen: ssize_t, ^data: c-pointer<int>, ^datalen: ssize_t, ^output: c-pointer<int>, ^output-size: ssize_t, ^output-len: c-pointer<int>): int32
-  c inline "(int)mbedtls_pkcs5_pbes2_ext((struct mbedtls_asn1_buf*)#1, (int)#2, (unsigned char*)#3, (size_t)#4, (unsigned char*)#5, (size_t)#6, (unsigned char*)#7, (size_t)#8, (size_t*)#9)"
-
-pub inline fun ffi/mbedtls-pkcs5-pbes2-ext(^pbe-params: c-pointer<mbedtls-asn1-buf-c>, ^mode: int, ^pwd: c-pointer<int>, ^pwdlen: int, ^data: c-pointer<int>, ^datalen: int, ^output: c-pointer<int>, ^output-size: int, ^output-len: c-pointer<int>): <> int
-  external/mbedtls-pkcs5-pbes2-ext(pbe-params, mode.int32, pwd, pwdlen.ssize_t, data, datalen.ssize_t, output, output-size.ssize_t, output-len).int
-
-// \brief          PKCS#5 PBKDF2 using HMAC without using the HMAC context
-// 
-// \param md_type  Hash algorithm used
-// \param password Password to use when generating key
-// \param plen     Length of password
-// \param salt     Salt to use when generating key
-// \param slen     Length of salt
-// \param iteration_count       Iteration count
-// \param key_length            Length of generated key in bytes
-// \param output   Generated key. Must be at least as big as key_length
-// 
-// \returns        0 on success, or a MBEDTLS_ERR_XXX code if verification fails.
-pub extern external/mbedtls-pkcs5-pbkdf2-hmac-ext(^md-type: int32, ^password: c-pointer<int>, ^plen: ssize_t, ^salt: c-pointer<int>, ^slen: ssize_t, ^iteration-count: int32, ^key-length: int32, ^output: c-pointer<int>): int32
-  c inline "(int)mbedtls_pkcs5_pbkdf2_hmac_ext((int32_t)#1, (unsigned char*)#2, (size_t)#3, (unsigned char*)#4, (size_t)#5, (unsigned int)#6, (int32_t)#7, (unsigned char*)#8)"
-
-pub inline fun ffi/mbedtls-pkcs5-pbkdf2-hmac-ext(^md-type: mbedtls-md-type-t, ^password: c-pointer<int>, ^plen: int, ^salt: c-pointer<int>, ^slen: int, ^iteration-count: int, ^key-length: int, ^output: c-pointer<int>): <exn> int
-  external/mbedtls-pkcs5-pbkdf2-hmac-ext(md-type.mbedtls-md-type-t/int, password, plen.ssize_t, salt, slen.ssize_t, iteration-count.int32, key-length.int32, output).int
-
-// \brief          PKCS#5 PBKDF2 using HMAC
-// 
-// \deprecated     Superseded by mbedtls_pkcs5_pbkdf2_hmac_ext().
-// 
-// \param ctx      Generic HMAC context
-// \param password Password to use when generating key
-// \param plen     Length of password
-// \param salt     Salt to use when generating key
-// \param slen     Length of salt
-// \param iteration_count       Iteration count
-// \param key_length            Length of generated key in bytes
-// \param output   Generated key. Must be at least as big as key_length
-// 
-// \returns        0 on success, or a MBEDTLS_ERR_XXX code if verification fails.
-pub extern external/mbedtls-pkcs5-pbkdf2-hmac(^ctx1: c-pointer<mbedtls-md-context-t-c>, ^password: c-pointer<int>, ^plen: ssize_t, ^salt: c-pointer<int>, ^slen: ssize_t, ^iteration-count: int32, ^key-length: int32, ^output: c-pointer<int>): int32
-  c inline "(int)mbedtls_pkcs5_pbkdf2_hmac((struct mbedtls_md_context_t*)#1, (unsigned char*)#2, (size_t)#3, (unsigned char*)#4, (size_t)#5, (unsigned int)#6, (int32_t)#7, (unsigned char*)#8)"
-
-pub inline fun ffi/mbedtls-pkcs5-pbkdf2-hmac(^ctx1: c-pointer<mbedtls-md-context-t-c>, ^password: c-pointer<int>, ^plen: int, ^salt: c-pointer<int>, ^slen: int, ^iteration-count: int, ^key-length: int, ^output: c-pointer<int>): <> int
-  external/mbedtls-pkcs5-pbkdf2-hmac(ctx1, password, plen.ssize_t, salt, slen.ssize_t, iteration-count.int32, key-length.int32, output).int
-
-// \brief          Checkup routine
-// 
-// \return         0 if successful, or 1 if the test failed
-pub extern external/mbedtls-pkcs5-self-test(^verbose: int32): int32
-  c inline "(int)mbedtls_pkcs5_self_test((int)#1)"
-
-pub inline fun ffi/mbedtls-pkcs5-self-test(^verbose: int): <> int
-  external/mbedtls-pkcs5-self-test(verbose.int32).int
-
 pub extern external/mbedtls-ssl-list-ciphersuites(): c-pointer<int>
   c inline "(intptr_t)mbedtls_ssl_list_ciphersuites()"
 
@@ -13604,6 +12675,424 @@ pub extern external/mbedtls-ssl-ciphersuite-get-cipher-key-bitlen(^info: c-point
 
 pub inline fun ffi/mbedtls-ssl-ciphersuite-get-cipher-key-bitlen(^info: c-pointer<mbedtls-ssl-ciphersuite-t-c>): <> int
   external/mbedtls-ssl-ciphersuite-get-cipher-key-bitlen(info).int
+
+// \brief       Get the length of an ASN.1 element.
+// Updates the pointer to immediately behind the length.
+// 
+// \param p     On entry, \c *p points to the first byte of the length,
+// i.e. immediately after the tag.
+// On successful completion, \c *p points to the first byte
+// after the length, i.e. the first byte of the content.
+// On error, the value of \c *p is undefined.
+// \param end   End of data.
+// \param len   On successful completion, \c *len contains the length
+// read from the ASN.1 input.
+// 
+// \return      0 if successful.
+// \return      #MBEDTLS_ERR_ASN1_OUT_OF_DATA if the ASN.1 element
+// would end beyond \p end.
+// \return      #MBEDTLS_ERR_ASN1_INVALID_LENGTH if the length is unparsable.
+pub extern external/mbedtls-asn1-get-len(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^len: c-pointer<int>): int32
+  c inline "(int)mbedtls_asn1_get_len((unsigned char**)#1, (unsigned char*)#2, (size_t*)#3)"
+
+pub inline fun ffi/mbedtls-asn1-get-len(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^len: c-pointer<int>): <> int
+  external/mbedtls-asn1-get-len(p, end, len).int
+
+// \brief       Get the tag and length of the element.
+// Check for the requested tag.
+// Updates the pointer to immediately behind the tag and length.
+// 
+// \param p     On entry, \c *p points to the start of the ASN.1 element.
+// On successful completion, \c *p points to the first byte
+// after the length, i.e. the first byte of the content.
+// On error, the value of \c *p is undefined.
+// \param end   End of data.
+// \param len   On successful completion, \c *len contains the length
+// read from the ASN.1 input.
+// \param tag   The expected tag.
+// 
+// \return      0 if successful.
+// \return      #MBEDTLS_ERR_ASN1_UNEXPECTED_TAG if the data does not start
+// with the requested tag.
+// \return      #MBEDTLS_ERR_ASN1_OUT_OF_DATA if the ASN.1 element
+// would end beyond \p end.
+// \return      #MBEDTLS_ERR_ASN1_INVALID_LENGTH if the length is unparsable.
+pub extern external/mbedtls-asn1-get-tag(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^len: c-pointer<int>, ^tag: int32): int32
+  c inline "(int)mbedtls_asn1_get_tag((unsigned char**)#1, (unsigned char*)#2, (size_t*)#3, (int)#4)"
+
+pub inline fun ffi/mbedtls-asn1-get-tag(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^len: c-pointer<int>, ^tag: int): <> int
+  external/mbedtls-asn1-get-tag(p, end, len, tag.int32).int
+
+// \brief       Retrieve a boolean ASN.1 tag and its value.
+// Updates the pointer to immediately behind the full tag.
+// 
+// \param p     On entry, \c *p points to the start of the ASN.1 element.
+// On successful completion, \c *p points to the first byte
+// beyond the ASN.1 element.
+// On error, the value of \c *p is undefined.
+// \param end   End of data.
+// \param val   On success, the parsed value (\c 0 or \c 1).
+// 
+// \return      0 if successful.
+// \return      An ASN.1 error code if the input does not start with
+// a valid ASN.1 BOOLEAN.
+pub extern external/mbedtls-asn1-get-bool(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^val: c-pointer<int>): int32
+  c inline "(int)mbedtls_asn1_get_bool((unsigned char**)#1, (unsigned char*)#2, (int*)#3)"
+
+pub inline fun ffi/mbedtls-asn1-get-bool(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^val: c-pointer<int>): <> int
+  external/mbedtls-asn1-get-bool(p, end, val).int
+
+// \brief       Retrieve an integer ASN.1 tag and its value.
+// Updates the pointer to immediately behind the full tag.
+// 
+// \param p     On entry, \c *p points to the start of the ASN.1 element.
+// On successful completion, \c *p points to the first byte
+// beyond the ASN.1 element.
+// On error, the value of \c *p is undefined.
+// \param end   End of data.
+// \param val   On success, the parsed value.
+// 
+// \return      0 if successful.
+// \return      An ASN.1 error code if the input does not start with
+// a valid ASN.1 INTEGER.
+// \return      #MBEDTLS_ERR_ASN1_INVALID_LENGTH if the parsed value does
+// not fit in an \c int.
+pub extern external/mbedtls-asn1-get-int(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^val: c-pointer<int>): int32
+  c inline "(int)mbedtls_asn1_get_int((unsigned char**)#1, (unsigned char*)#2, (int*)#3)"
+
+pub inline fun ffi/mbedtls-asn1-get-int(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^val: c-pointer<int>): <> int
+  external/mbedtls-asn1-get-int(p, end, val).int
+
+// \brief       Retrieve an enumerated ASN.1 tag and its value.
+// Updates the pointer to immediately behind the full tag.
+// 
+// \param p     On entry, \c *p points to the start of the ASN.1 element.
+// On successful completion, \c *p points to the first byte
+// beyond the ASN.1 element.
+// On error, the value of \c *p is undefined.
+// \param end   End of data.
+// \param val   On success, the parsed value.
+// 
+// \return      0 if successful.
+// \return      An ASN.1 error code if the input does not start with
+// a valid ASN.1 ENUMERATED.
+// \return      #MBEDTLS_ERR_ASN1_INVALID_LENGTH if the parsed value does
+// not fit in an \c int.
+pub extern external/mbedtls-asn1-get-enum(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^val: c-pointer<int>): int32
+  c inline "(int)mbedtls_asn1_get_enum((unsigned char**)#1, (unsigned char*)#2, (int*)#3)"
+
+pub inline fun ffi/mbedtls-asn1-get-enum(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^val: c-pointer<int>): <> int
+  external/mbedtls-asn1-get-enum(p, end, val).int
+
+// \brief       Retrieve a bitstring ASN.1 tag and its value.
+// Updates the pointer to immediately behind the full tag.
+// 
+// \param p     On entry, \c *p points to the start of the ASN.1 element.
+// On successful completion, \c *p is equal to \p end.
+// On error, the value of \c *p is undefined.
+// \param end   End of data.
+// \param bs    On success, ::mbedtls_asn1_bitstring information about
+// the parsed value.
+// 
+// \return      0 if successful.
+// \return      #MBEDTLS_ERR_ASN1_LENGTH_MISMATCH if the input contains
+// extra data after a valid BIT STRING.
+// \return      An ASN.1 error code if the input does not start with
+// a valid ASN.1 BIT STRING.
+pub extern external/mbedtls-asn1-get-bitstring(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^bs: c-pointer<mbedtls-asn1-bitstring-c>): int32
+  c inline "(int)mbedtls_asn1_get_bitstring((unsigned char**)#1, (unsigned char*)#2, (struct mbedtls_asn1_bitstring*)#3)"
+
+pub inline fun ffi/mbedtls-asn1-get-bitstring(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^bs: c-pointer<mbedtls-asn1-bitstring-c>): <> int
+  external/mbedtls-asn1-get-bitstring(p, end, bs).int
+
+// \brief       Retrieve a bitstring ASN.1 tag without unused bits and its
+// value.
+// Updates the pointer to the beginning of the bit/octet string.
+// 
+// \param p     On entry, \c *p points to the start of the ASN.1 element.
+// On successful completion, \c *p points to the first byte
+// of the content of the BIT STRING.
+// On error, the value of \c *p is undefined.
+// \param end   End of data.
+// \param len   On success, \c *len is the length of the content in bytes.
+// 
+// \return      0 if successful.
+// \return      #MBEDTLS_ERR_ASN1_INVALID_DATA if the input starts with
+// a valid BIT STRING with a nonzero number of unused bits.
+// \return      An ASN.1 error code if the input does not start with
+// a valid ASN.1 BIT STRING.
+pub extern external/mbedtls-asn1-get-bitstring-null(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^len: c-pointer<int>): int32
+  c inline "(int)mbedtls_asn1_get_bitstring_null((unsigned char**)#1, (unsigned char*)#2, (size_t*)#3)"
+
+pub inline fun ffi/mbedtls-asn1-get-bitstring-null(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^len: c-pointer<int>): <> int
+  external/mbedtls-asn1-get-bitstring-null(p, end, len).int
+
+// \brief       Parses and splits an ASN.1 "SEQUENCE OF <tag>".
+// Updates the pointer to immediately behind the full sequence tag.
+// 
+// This function allocates memory for the sequence elements. You can free
+// the allocated memory with mbedtls_asn1_sequence_free().
+// 
+// \note        On error, this function may return a partial list in \p cur.
+// You must set `cur->next = NULL` before calling this function!
+// Otherwise it is impossible to distinguish a previously non-null
+// pointer from a pointer to an object allocated by this function.
+// 
+// \note        If the sequence is empty, this function does not modify
+// \c *cur. If the sequence is valid and non-empty, this
+// function sets `cur->buf.tag` to \p tag. This allows
+// callers to distinguish between an empty sequence and
+// a one-element sequence.
+// 
+// \param p     On entry, \c *p points to the start of the ASN.1 element.
+// On successful completion, \c *p is equal to \p end.
+// On error, the value of \c *p is undefined.
+// \param end   End of data.
+// \param cur   A ::mbedtls_asn1_sequence which this function fills.
+// When this function returns, \c *cur is the head of a linked
+// list. Each node in this list is allocated with
+// mbedtls_calloc() apart from \p cur itself, and should
+// therefore be freed with mbedtls_free().
+// The list describes the content of the sequence.
+// The head of the list (i.e. \c *cur itself) describes the
+// first element, `*cur->next` describes the second element, etc.
+// For each element, `buf.tag == tag`, `buf.len` is the length
+// of the content of the content of the element, and `buf.p`
+// points to the first byte of the content (i.e. immediately
+// past the length of the element).
+// Note that list elements may be allocated even on error.
+// \param tag   Each element of the sequence must have this tag.
+// 
+// \return      0 if successful.
+// \return      #MBEDTLS_ERR_ASN1_LENGTH_MISMATCH if the input contains
+// extra data after a valid SEQUENCE OF \p tag.
+// \return      #MBEDTLS_ERR_ASN1_UNEXPECTED_TAG if the input starts with
+// an ASN.1 SEQUENCE in which an element has a tag that
+// is different from \p tag.
+// \return      #MBEDTLS_ERR_ASN1_ALLOC_FAILED if a memory allocation failed.
+// \return      An ASN.1 error code if the input does not start with
+// a valid ASN.1 SEQUENCE.
+pub extern external/mbedtls-asn1-get-sequence-of(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^cur: c-pointer<mbedtls-asn1-sequence-c>, ^tag: int32): int32
+  c inline "(int)mbedtls_asn1_get_sequence_of((unsigned char**)#1, (unsigned char*)#2, (struct mbedtls_asn1_sequence*)#3, (int)#4)"
+
+pub inline fun ffi/mbedtls-asn1-get-sequence-of(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^cur: c-pointer<mbedtls-asn1-sequence-c>, ^tag: int): <> int
+  external/mbedtls-asn1-get-sequence-of(p, end, cur, tag.int32).int
+
+// \brief          Free a heap-allocated linked list presentation of
+// an ASN.1 sequence, including the first element.
+// 
+// There are two common ways to manage the memory used for the representation
+// of a parsed ASN.1 sequence:
+// - Allocate a head node `mbedtls_asn1_sequence *head` with mbedtls_calloc().
+// Pass this node as the `cur` argument to mbedtls_asn1_get_sequence_of().
+// When you have finished processing the sequence,
+// call mbedtls_asn1_sequence_free() on `head`.
+// - Allocate a head node `mbedtls_asn1_sequence *head` in any manner,
+// for example on the stack. Make sure that `head->next == NULL`.
+// Pass `head` as the `cur` argument to mbedtls_asn1_get_sequence_of().
+// When you have finished processing the sequence,
+// call mbedtls_asn1_sequence_free() on `head->cur`,
+// then free `head` itself in the appropriate manner.
+// 
+// \param seq      The address of the first sequence component. This may
+// be \c NULL, in which case this functions returns
+// immediately.
+pub extern external/mbedtls-asn1-sequence-free(^seq: c-pointer<mbedtls-asn1-sequence-c>): ()
+  c inline "(void)mbedtls_asn1_sequence_free((struct mbedtls_asn1_sequence*)#1)"
+
+// \brief                Traverse an ASN.1 SEQUENCE container and
+// call a callback for each entry.
+// 
+// This function checks that the input is a SEQUENCE of elements that
+// each have a "must" tag, and calls a callback function on the elements
+// that have a "may" tag.
+// 
+// For example, to validate that the input is a SEQUENCE of `tag1` and call
+// `cb` on each element, use
+// ```
+// mbedtls_asn1_traverse_sequence_of(&p, end, 0xff, tag1, 0, 0, cb, ctx);
+// ```
+// 
+// To validate that the input is a SEQUENCE of ANY and call `cb` on
+// each element, use
+// ```
+// mbedtls_asn1_traverse_sequence_of(&p, end, 0, 0, 0, 0, cb, ctx);
+// ```
+// 
+// To validate that the input is a SEQUENCE of CHOICE {NULL, OCTET STRING}
+// and call `cb` on each element that is an OCTET STRING, use
+// ```
+// mbedtls_asn1_traverse_sequence_of(&p, end, 0xfe, 0x04, 0xff, 0x04, cb, ctx);
+// ```
+// 
+// The callback is called on the elements with a "may" tag from left to
+// right. If the input is not a valid SEQUENCE of elements with a "must" tag,
+// the callback is called on the elements up to the leftmost point where
+// the input is invalid.
+// 
+// \warning              This function is still experimental and may change
+// at any time.
+// 
+// \param p              The address of the pointer to the beginning of
+// the ASN.1 SEQUENCE header. This is updated to
+// point to the end of the ASN.1 SEQUENCE container
+// on a successful invocation.
+// \param end            The end of the ASN.1 SEQUENCE container.
+// \param tag_must_mask  A mask to be applied to the ASN.1 tags found within
+// the SEQUENCE before comparing to \p tag_must_val.
+// \param tag_must_val   The required value of each ASN.1 tag found in the
+// SEQUENCE, after masking with \p tag_must_mask.
+// Mismatching tags lead to an error.
+// For example, a value of \c 0 for both \p tag_must_mask
+// and \p tag_must_val means that every tag is allowed,
+// while a value of \c 0xFF for \p tag_must_mask means
+// that \p tag_must_val is the only allowed tag.
+// \param tag_may_mask   A mask to be applied to the ASN.1 tags found within
+// the SEQUENCE before comparing to \p tag_may_val.
+// \param tag_may_val    The desired value of each ASN.1 tag found in the
+// SEQUENCE, after masking with \p tag_may_mask.
+// Mismatching tags will be silently ignored.
+// For example, a value of \c 0 for \p tag_may_mask and
+// \p tag_may_val means that any tag will be considered,
+// while a value of \c 0xFF for \p tag_may_mask means
+// that all tags with value different from \p tag_may_val
+// will be ignored.
+// \param cb             The callback to trigger for each component
+// in the ASN.1 SEQUENCE that matches \p tag_may_val.
+// The callback function is called with the following
+// parameters:
+// - \p ctx.
+// - The tag of the current element.
+// - A pointer to the start of the current element's
+// content inside the input.
+// - The length of the content of the current element.
+// If the callback returns a non-zero value,
+// the function stops immediately,
+// forwarding the callback's return value.
+// \param ctx            The context to be passed to the callback \p cb.
+// 
+// \return               \c 0 if successful the entire ASN.1 SEQUENCE
+// was traversed without parsing or callback errors.
+// \return               #MBEDTLS_ERR_ASN1_LENGTH_MISMATCH if the input
+// contains extra data after a valid SEQUENCE
+// of elements with an accepted tag.
+// \return               #MBEDTLS_ERR_ASN1_UNEXPECTED_TAG if the input starts
+// with an ASN.1 SEQUENCE in which an element has a tag
+// that is not accepted.
+// \return               An ASN.1 error code if the input does not start with
+// a valid ASN.1 SEQUENCE.
+// \return               A non-zero error code forwarded from the callback
+// \p cb in case the latter returns a non-zero value.
+pub extern external/mbedtls-asn1-traverse-sequence-of(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^tag-must-mask: int8, ^tag-must-val: int8, ^tag-may-mask: int8, ^tag-may-val: int8, ^cb: c-pointer<intptr_t>, ^ctx1: c-pointer<()>): int32
+  c inline "(int)mbedtls_asn1_traverse_sequence_of((unsigned char**)#1, (unsigned char*)#2, (unsigned char)#3, (unsigned char)#4, (unsigned char)#5, (unsigned char)#6, (int (*)(void*, int, unsigned char*, size_t))#7, (void*)#8)"
+
+pub inline fun ffi/mbedtls-asn1-traverse-sequence-of(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^tag-must-mask: int, ^tag-must-val: int, ^tag-may-mask: int, ^tag-may-val: int, ^cb: c-pointer<intptr_t>, ^ctx1: c-pointer<()>): <> int
+  external/mbedtls-asn1-traverse-sequence-of(p, end, tag-must-mask.int8, tag-must-val.int8, tag-may-mask.int8, tag-may-val.int8, cb, ctx1).int
+
+// \brief       Retrieve an integer ASN.1 tag and its value.
+// Updates the pointer to immediately behind the full tag.
+// 
+// \param p     On entry, \c *p points to the start of the ASN.1 element.
+// On successful completion, \c *p points to the first byte
+// beyond the ASN.1 element.
+// On error, the value of \c *p is undefined.
+// \param end   End of data.
+// \param X     On success, the parsed value.
+// 
+// \return      0 if successful.
+// \return      An ASN.1 error code if the input does not start with
+// a valid ASN.1 INTEGER.
+// \return      #MBEDTLS_ERR_ASN1_INVALID_LENGTH if the parsed value does
+// not fit in an \c int.
+// \return      An MPI error code if the parsed value is too large.
+pub extern external/mbedtls-asn1-get-mpi(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^x: c-pointer<mbedtls-mpi-c>): int32
+  c inline "(int)mbedtls_asn1_get_mpi((unsigned char**)#1, (unsigned char*)#2, (struct mbedtls_mpi*)#3)"
+
+pub inline fun ffi/mbedtls-asn1-get-mpi(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^x: c-pointer<mbedtls-mpi-c>): <> int
+  external/mbedtls-asn1-get-mpi(p, end, x).int
+
+// \brief       Retrieve an AlgorithmIdentifier ASN.1 sequence.
+// Updates the pointer to immediately behind the full
+// AlgorithmIdentifier.
+// 
+// \param p     On entry, \c *p points to the start of the ASN.1 element.
+// On successful completion, \c *p points to the first byte
+// beyond the AlgorithmIdentifier element.
+// On error, the value of \c *p is undefined.
+// \param end   End of data.
+// \param alg   The buffer to receive the OID.
+// \param params The buffer to receive the parameters.
+// This is zeroized if there are no parameters.
+// 
+// \return      0 if successful or a specific ASN.1 or MPI error code.
+pub extern external/mbedtls-asn1-get-alg(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^alg: c-pointer<mbedtls-asn1-buf-c>, ^params: c-pointer<mbedtls-asn1-buf-c>): int32
+  c inline "(int)mbedtls_asn1_get_alg((unsigned char**)#1, (unsigned char*)#2, (struct mbedtls_asn1_buf*)#3, (struct mbedtls_asn1_buf*)#4)"
+
+pub inline fun ffi/mbedtls-asn1-get-alg(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^alg: c-pointer<mbedtls-asn1-buf-c>, ^params: c-pointer<mbedtls-asn1-buf-c>): <> int
+  external/mbedtls-asn1-get-alg(p, end, alg, params).int
+
+// \brief       Retrieve an AlgorithmIdentifier ASN.1 sequence with NULL or no
+// params.
+// Updates the pointer to immediately behind the full
+// AlgorithmIdentifier.
+// 
+// \param p     On entry, \c *p points to the start of the ASN.1 element.
+// On successful completion, \c *p points to the first byte
+// beyond the AlgorithmIdentifier element.
+// On error, the value of \c *p is undefined.
+// \param end   End of data.
+// \param alg   The buffer to receive the OID.
+// 
+// \return      0 if successful or a specific ASN.1 or MPI error code.
+pub extern external/mbedtls-asn1-get-alg-null(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^alg: c-pointer<mbedtls-asn1-buf-c>): int32
+  c inline "(int)mbedtls_asn1_get_alg_null((unsigned char**)#1, (unsigned char*)#2, (struct mbedtls_asn1_buf*)#3)"
+
+pub inline fun ffi/mbedtls-asn1-get-alg-null(^p: c-pointer<c-pointer<int>>, ^end: c-pointer<int>, ^alg: c-pointer<mbedtls-asn1-buf-c>): <> int
+  external/mbedtls-asn1-get-alg-null(p, end, alg).int
+
+// \brief       Find a specific named_data entry in a sequence or list based on
+// the OID.
+// 
+// \param list  The list to seek through
+// \param oid   The OID to look for
+// \param len   Size of the OID
+// 
+// \return      NULL if not found, or a pointer to the existing entry.
+pub extern external/mbedtls-asn1-find-named-data(^list: c-pointer<mbedtls-asn1-named-data-c>, ^oid: c-pointer<int>, ^len: ssize_t): c-pointer<mbedtls-asn1-named-data-c>
+  c inline "(intptr_t)mbedtls_asn1_find_named_data((struct mbedtls_asn1_named_data*)#1, (char*)#2, (size_t)#3)"
+
+pub inline fun ffi/mbedtls-asn1-find-named-data(^list: c-pointer<mbedtls-asn1-named-data-c>, ^oid: c-pointer<int>, ^len: int): <> c-pointer<mbedtls-asn1-named-data-c>
+  external/mbedtls-asn1-find-named-data(list, oid, len.ssize_t)
+
+// \brief       Free a mbedtls_asn1_named_data entry
+// 
+// \deprecated  This function is deprecated and will be removed in a
+// future version of the library.
+// Please use mbedtls_asn1_free_named_data_list()
+// or mbedtls_asn1_free_named_data_list_shallow().
+// 
+// \param entry The named data entry to free.
+// This function calls mbedtls_free() on
+// `entry->oid.p` and `entry->val.p`.
+pub extern external/mbedtls-asn1-free-named-data(^entry: c-pointer<mbedtls-asn1-named-data-c>): ()
+  c inline "(void)mbedtls_asn1_free_named_data((struct mbedtls_asn1_named_data*)#1)"
+
+// \brief       Free all entries in a mbedtls_asn1_named_data list.
+// 
+// \param head  Pointer to the head of the list of named data entries to free.
+// This function calls mbedtls_free() on
+// `entry->oid.p` and `entry->val.p` and then on `entry`
+// for each list entry, and sets \c *head to \c NULL.
+pub extern external/mbedtls-asn1-free-named-data-list(^head: c-pointer<c-pointer<mbedtls-asn1-named-data-c>>): ()
+  c inline "(void)mbedtls_asn1_free_named_data_list((struct mbedtls_asn1_named_data**)#1)"
+
+// \brief       Free all shallow entries in a mbedtls_asn1_named_data list,
+// but do not free internal pointer targets.
+// 
+// \param name  Head of the list of named data entries to free.
+// This function calls mbedtls_free() on each list element.
+pub extern external/mbedtls-asn1-free-named-data-list-shallow(^name: c-pointer<mbedtls-asn1-named-data-c>): ()
+  c inline "(void)mbedtls_asn1_free_named_data_list_shallow((struct mbedtls_asn1_named_data*)#1)"
 
 // \brief          Store the certificate DN in printable form into buf;
 // no more than size characters will be written.
@@ -17665,895 +17154,52 @@ pub extern external/mbedtls-ssl-tls-prf(^prf: int32, ^secret: c-pointer<int>, ^s
 pub inline fun ffi/mbedtls-ssl-tls-prf(^prf: mbedtls-tls-prf-types, ^secret: c-pointer<int>, ^slen: int, ^label: c-pointer<int>, ^random: c-pointer<int>, ^rlen: int, ^dstbuf: c-pointer<int>, ^dlen: int): <exn> int
   external/mbedtls-ssl-tls-prf(prf.mbedtls-tls-prf-types/int, secret, slen.ssize_t, label, random, rlen.ssize_t, dstbuf, dlen.ssize_t).int
 
-// \brief   Set the threshold error level to handle globally all debug output.
-// Debug messages that have a level over the threshold value are
-// discarded.
-// (Default value: 0 = No debug )
+// \brief Translate an Mbed TLS error code into a string representation.
+// The result is truncated if necessary and always includes a
+// terminating null byte.
 // 
-// \param threshold     threshold level of messages to filter on. Messages at a
-// higher level will be discarded.
-// - Debug levels
-// - 0 No debug
-// - 1 Error
-// - 2 State change
-// - 3 Informational
-// - 4 Verbose
-pub extern external/mbedtls-debug-set-threshold(^threshold: int32): ()
-  c inline "(void)mbedtls_debug_set_threshold((int)#1)"
+// \param errnum    error code
+// \param buffer    buffer to place representation in
+// \param buflen    length of the buffer
+pub extern external/mbedtls-strerror(^errnum: int32, ^buffer: c-pointer<int>, ^buflen: ssize_t): ()
+  c inline "(void)mbedtls_strerror((int)#1, (char*)#2, (size_t)#3)"
 
-pub inline fun ffi/mbedtls-debug-set-threshold(^threshold: int): <> ()
-  external/mbedtls-debug-set-threshold(threshold.int32)
+pub inline fun ffi/mbedtls-strerror(^errnum: int, ^buffer: c-pointer<int>, ^buflen: int): <> ()
+  external/mbedtls-strerror(errnum.int32, buffer, buflen.ssize_t)
 
-// Get the version number.
+// \brief Translate the high-level part of an Mbed TLS error code into a string
+// representation.
 // 
-// \return          The constructed version number in the format
-// MMNNPP00 (Major, Minor, Patch).
-pub extern external/mbedtls-version-get-number(): int32
-  c inline "(unsigned int)mbedtls_version_get_number()"
-
-pub inline fun ffi/mbedtls-version-get-number(): <> int
-  external/mbedtls-version-get-number().int
-
-// Get the version string ("x.y.z").
-// 
-// \param string    The string that will receive the value.
-// (Should be at least 9 bytes in size)
-pub extern external/mbedtls-version-get-string(^string: c-pointer<int>): ()
-  c inline "(void)mbedtls_version_get_string((char*)#1)"
-
-// Get the full version string ("Mbed TLS x.y.z").
-// 
-// \param string    The string that will receive the value. The Mbed TLS version
-// string will use 18 bytes AT MOST including a terminating
-// null byte.
-// (So the buffer should be at least 18 bytes to receive this
-// version string).
-pub extern external/mbedtls-version-get-string-full(^string: c-pointer<int>): ()
-  c inline "(void)mbedtls_version_get_string_full((char*)#1)"
-
-// \brief           Check if support for a feature was compiled into this
-// Mbed TLS binary. This allows you to see at runtime if the
-// library was for instance compiled with or without
-// Multi-threading support.
-// 
-// \note            only checks against defines in the sections "System
-// support", "Mbed TLS modules" and "Mbed TLS feature
-// support" in mbedtls_config.h
-// 
-// \param feature   The string for the define to check (e.g. "MBEDTLS_AES_C")
-// 
-// \return          0 if the feature is present,
-// -1 if the feature is not present and
-// -2 if support for feature checking as a whole was not
-// compiled in.
-pub extern external/mbedtls-version-check-feature(^feature: c-pointer<int>): int32
-  c inline "(int)mbedtls_version_check_feature((char*)#1)"
-
-pub inline fun ffi/mbedtls-version-check-feature(^feature: c-pointer<int>): <> int
-  external/mbedtls-version-check-feature(feature).int
-
-// \brief          Encode a buffer into base64 format
-// 
-// \param dst      destination buffer
-// \param dlen     size of the destination buffer
-// \param olen     number of bytes written
-// \param src      source buffer
-// \param slen     amount of data to be encoded
-// 
-// \return         0 if successful, or MBEDTLS_ERR_BASE64_BUFFER_TOO_SMALL.
-// *olen is always updated to reflect the amount
-// of data that has (or would have) been written.
-// If that length cannot be represented, then no data is
-// written to the buffer and *olen is set to the maximum
-// length representable as a size_t.
-// 
-// \note           Call this function with dlen = 0 to obtain the
-// required buffer size in *olen
-pub extern external/mbedtls-base64-encode(^dst: c-pointer<int>, ^dlen: ssize_t, ^olen: c-pointer<int>, ^src: c-pointer<int>, ^slen: ssize_t): int32
-  c inline "(int)mbedtls_base64_encode((unsigned char*)#1, (size_t)#2, (size_t*)#3, (unsigned char*)#4, (size_t)#5)"
-
-pub inline fun ffi/mbedtls-base64-encode(^dst: c-pointer<int>, ^dlen: int, ^olen: c-pointer<int>, ^src: c-pointer<int>, ^slen: int): <> int
-  external/mbedtls-base64-encode(dst, dlen.ssize_t, olen, src, slen.ssize_t).int
-
-// \brief          Decode a base64-formatted buffer
-// 
-// \param dst      destination buffer (can be NULL for checking size)
-// \param dlen     size of the destination buffer
-// \param olen     number of bytes written
-// \param src      source buffer
-// \param slen     amount of data to be decoded
-// 
-// \return         0 if successful, MBEDTLS_ERR_BASE64_BUFFER_TOO_SMALL, or
-// MBEDTLS_ERR_BASE64_INVALID_CHARACTER if the input data is
-// not correct. *olen is always updated to reflect the amount
-// of data that has (or would have) been written.
-// 
-// \note           Call this function with *dst = NULL or dlen = 0 to obtain
-// the required buffer size in *olen
-pub extern external/mbedtls-base64-decode(^dst: c-pointer<int>, ^dlen: ssize_t, ^olen: c-pointer<int>, ^src: c-pointer<int>, ^slen: ssize_t): int32
-  c inline "(int)mbedtls_base64_decode((unsigned char*)#1, (size_t)#2, (size_t*)#3, (unsigned char*)#4, (size_t)#5)"
-
-pub inline fun ffi/mbedtls-base64-decode(^dst: c-pointer<int>, ^dlen: int, ^olen: c-pointer<int>, ^src: c-pointer<int>, ^slen: int): <> int
-  external/mbedtls-base64-decode(dst, dlen.ssize_t, olen, src, slen.ssize_t).int
-
-// \brief          Checkup routine
-// 
-// \return         0 if successful, or 1 if the test failed
-pub extern external/mbedtls-base64-self-test(^verbose: int32): int32
-  c inline "(int)mbedtls_base64_self_test((int)#1)"
-
-pub inline fun ffi/mbedtls-base64-self-test(^verbose: int): <> int
-  external/mbedtls-base64-self-test(verbose.int32).int
-
-// \brief   Initialize use of stack-based memory allocator.
-// The stack-based allocator does memory management inside the
-// presented buffer and does not call calloc() and free().
-// It sets the global mbedtls_calloc() and mbedtls_free() pointers
-// to its own functions.
-// (Provided mbedtls_calloc() and mbedtls_free() are thread-safe if
-// MBEDTLS_THREADING_C is defined)
-// 
-// \note    This code is not optimized and provides a straight-forward
-// implementation of a stack-based memory allocator.
-// 
-// \param buf   buffer to use as heap
-// \param len   size of the buffer
-pub extern external/mbedtls-memory-buffer-alloc-init(^buf: c-pointer<int>, ^len: ssize_t): ()
-  c inline "(void)mbedtls_memory_buffer_alloc_init((unsigned char*)#1, (size_t)#2)"
-
-pub inline fun ffi/mbedtls-memory-buffer-alloc-init(^buf: c-pointer<int>, ^len: int): <> ()
-  external/mbedtls-memory-buffer-alloc-init(buf, len.ssize_t)
-
-// \brief   Free the mutex for thread-safety and clear remaining memory
-pub extern external/mbedtls-memory-buffer-alloc-free(): ()
-  c inline "(void)mbedtls_memory_buffer_alloc_free()"
-
-// \brief   Determine when the allocator should automatically verify the state
-// of the entire chain of headers / meta-data.
-// (Default: MBEDTLS_MEMORY_VERIFY_NONE)
-// 
-// \param verify    One of MBEDTLS_MEMORY_VERIFY_NONE, MBEDTLS_MEMORY_VERIFY_ALLOC,
-// MBEDTLS_MEMORY_VERIFY_FREE or MBEDTLS_MEMORY_VERIFY_ALWAYS
-pub extern external/mbedtls-memory-buffer-set-verify(^verify: int32): ()
-  c inline "(void)mbedtls_memory_buffer_set_verify((int)#1)"
-
-pub inline fun ffi/mbedtls-memory-buffer-set-verify(^verify: int): <> ()
-  external/mbedtls-memory-buffer-set-verify(verify.int32)
-
-// \brief   Verifies that all headers in the memory buffer are correct
-// and contain sane values. Helps debug buffer-overflow errors.
-// 
-// Prints out first failure if MBEDTLS_MEMORY_DEBUG is defined.
-// Prints out full header information if MBEDTLS_MEMORY_DEBUG
-// is defined. (Includes stack trace information for each block if
-// MBEDTLS_MEMORY_BACKTRACE is defined as well).
-// 
-// \return             0 if verified, 1 otherwise
-pub extern external/mbedtls-memory-buffer-alloc-verify(): int32
-  c inline "(int)mbedtls_memory_buffer_alloc_verify()"
-
-pub inline fun ffi/mbedtls-memory-buffer-alloc-verify(): <> int
-  external/mbedtls-memory-buffer-alloc-verify().int
-
-// \brief          Checkup routine
-// 
-// \return         0 if successful, or 1 if a test failed
-pub extern external/mbedtls-memory-buffer-alloc-self-test(^verbose: int32): int32
-  c inline "(int)mbedtls_memory_buffer_alloc_self_test((int)#1)"
-
-pub inline fun ffi/mbedtls-memory-buffer-alloc-self-test(^verbose: int): <> int
-  external/mbedtls-memory-buffer-alloc-self-test(verbose.int32).int
-
-// \brief          Load a Certificate Signing Request (CSR) in DER format
-// 
-// \note           Any unsupported requested extensions are silently
-// ignored, unless the critical flag is set, in which case
-// the CSR is rejected.
-// 
-// \note           If #MBEDTLS_USE_PSA_CRYPTO is enabled, the PSA crypto
-// subsystem must have been initialized by calling
-// psa_crypto_init() before calling this function.
-// 
-// \param csr      CSR context to fill
-// \param buf      buffer holding the CRL data
-// \param buflen   size of the buffer
-// 
-// \return         0 if successful, or a specific X509 error code
-pub extern external/mbedtls-x509-csr-parse-der(^csr: c-pointer<mbedtls-x509-csr-c>, ^buf: c-pointer<int>, ^buflen: ssize_t): int32
-  c inline "(int)mbedtls_x509_csr_parse_der((struct mbedtls_x509_csr*)#1, (unsigned char*)#2, (size_t)#3)"
-
-pub inline fun ffi/mbedtls-x509-csr-parse-der(^csr: c-pointer<mbedtls-x509-csr-c>, ^buf: c-pointer<int>, ^buflen: int): <> int
-  external/mbedtls-x509-csr-parse-der(csr, buf, buflen.ssize_t).int
-
-// \brief          Load a Certificate Signing Request (CSR) in DER format
-// 
-// \note           Any unsupported requested extensions are silently
-// ignored, unless the critical flag is set, in which case
-// the result of the callback function decides whether
-// CSR is rejected.
-// 
-// \note           If #MBEDTLS_USE_PSA_CRYPTO is enabled, the PSA crypto
-// subsystem must have been initialized by calling
-// psa_crypto_init() before calling this function.
-// 
-// \param csr      CSR context to fill
-// \param buf      buffer holding the CRL data
-// \param buflen   size of the buffer
-// \param cb       A callback invoked for every unsupported certificate
-// extension.
-// \param p_ctx    An opaque context passed to the callback.
-// 
-// \return         0 if successful, or a specific X509 error code
-pub extern external/mbedtls-x509-csr-parse-der-with-ext-cb(^csr: c-pointer<mbedtls-x509-csr-c>, ^buf: c-pointer<int>, ^buflen: ssize_t, ^cb: c-pointer<intptr_t>, ^p-ctx: c-pointer<()>): int32
-  c inline "(int)mbedtls_x509_csr_parse_der_with_ext_cb((struct mbedtls_x509_csr*)#1, (unsigned char*)#2, (size_t)#3, (mbedtls_x509_csr_ext_cb_t)#4, (void*)#5)"
-
-pub inline fun ffi/mbedtls-x509-csr-parse-der-with-ext-cb(^csr: c-pointer<mbedtls-x509-csr-c>, ^buf: c-pointer<int>, ^buflen: int, ^cb: mbedtls-x509-csr-ext-cb-t, ^p-ctx: c-pointer<()>): <> int
-  external/mbedtls-x509-csr-parse-der-with-ext-cb(csr, buf, buflen.ssize_t, cb, p-ctx).int
-
-// \brief          Load a Certificate Signing Request (CSR), DER or PEM format
-// 
-// \note           See notes for \c mbedtls_x509_csr_parse_der()
-// 
-// \note           If #MBEDTLS_USE_PSA_CRYPTO is enabled, the PSA crypto
-// subsystem must have been initialized by calling
-// psa_crypto_init() before calling this function.
-// 
-// \param csr      CSR context to fill
-// \param buf      buffer holding the CRL data
-// \param buflen   size of the buffer
-// (including the terminating null byte for PEM data)
-// 
-// \return         0 if successful, or a specific X509 or PEM error code
-pub extern external/mbedtls-x509-csr-parse(^csr: c-pointer<mbedtls-x509-csr-c>, ^buf: c-pointer<int>, ^buflen: ssize_t): int32
-  c inline "(int)mbedtls_x509_csr_parse((struct mbedtls_x509_csr*)#1, (unsigned char*)#2, (size_t)#3)"
-
-pub inline fun ffi/mbedtls-x509-csr-parse(^csr: c-pointer<mbedtls-x509-csr-c>, ^buf: c-pointer<int>, ^buflen: int): <> int
-  external/mbedtls-x509-csr-parse(csr, buf, buflen.ssize_t).int
-
-// \brief          Load a Certificate Signing Request (CSR)
-// 
-// \note           See notes for \c mbedtls_x509_csr_parse()
-// 
-// \param csr      CSR context to fill
-// \param path     filename to read the CSR from
-// 
-// \return         0 if successful, or a specific X509 or PEM error code
-pub extern external/mbedtls-x509-csr-parse-file(^csr: c-pointer<mbedtls-x509-csr-c>, ^path: c-pointer<int>): int32
-  c inline "(int)mbedtls_x509_csr_parse_file((struct mbedtls_x509_csr*)#1, (char*)#2)"
-
-pub inline fun ffi/mbedtls-x509-csr-parse-file(^csr: c-pointer<mbedtls-x509-csr-c>, ^path: c-pointer<int>): <> int
-  external/mbedtls-x509-csr-parse-file(csr, path).int
-
-// \brief          Returns an informational string about the
-// CSR.
-// 
-// \param buf      Buffer to write to
-// \param size     Maximum size of buffer
-// \param prefix   A line prefix
-// \param csr      The X509 CSR to represent
-// 
-// \return         The length of the string written (not including the
-// terminated nul byte), or a negative error code.
-pub extern external/mbedtls-x509-csr-info(^buf: c-pointer<int>, ^size: ssize_t, ^prefix: c-pointer<int>, ^csr: c-pointer<mbedtls-x509-csr-c>): int32
-  c inline "(int)mbedtls_x509_csr_info((char*)#1, (size_t)#2, (char*)#3, (struct mbedtls_x509_csr*)#4)"
-
-pub inline fun ffi/mbedtls-x509-csr-info(^buf: c-pointer<int>, ^size: int, ^prefix: c-pointer<int>, ^csr: c-pointer<mbedtls-x509-csr-c>): <> int
-  external/mbedtls-x509-csr-info(buf, size.ssize_t, prefix, csr).int
-
-// \brief          Initialize a CSR
-// 
-// \param csr      CSR to initialize
-pub extern external/mbedtls-x509-csr-init(^csr: c-pointer<mbedtls-x509-csr-c>): ()
-  c inline "(void)mbedtls_x509_csr_init((struct mbedtls_x509_csr*)#1)"
-
-// \brief          Unallocate all CSR data
-// 
-// \param csr      CSR to free
-pub extern external/mbedtls-x509-csr-free(^csr: c-pointer<mbedtls-x509-csr-c>): ()
-  c inline "(void)mbedtls_x509_csr_free((struct mbedtls_x509_csr*)#1)"
-
-// \brief           Initialize a CSR context
-// 
-// \param ctx       CSR context to initialize
-pub extern external/mbedtls-x509write-csr-init(^ctx1: c-pointer<mbedtls-x509write-csr-c>): ()
-  c inline "(void)mbedtls_x509write_csr_init((struct mbedtls_x509write_csr*)#1)"
-
-// \brief           Set the subject name for a CSR
-// Subject names should contain a comma-separated list
-// of OID types and values:
-// e.g. "C=UK,O=ARM,CN=Mbed TLS Server 1"
-// 
-// \param ctx           CSR context to use
-// \param subject_name  subject name to set
-// 
-// \return          0 if subject name was parsed successfully, or
-// a specific error code
-pub extern external/mbedtls-x509write-csr-set-subject-name(^ctx1: c-pointer<mbedtls-x509write-csr-c>, ^subject-name: c-pointer<int>): int32
-  c inline "(int)mbedtls_x509write_csr_set_subject_name((struct mbedtls_x509write_csr*)#1, (char*)#2)"
-
-pub inline fun ffi/mbedtls-x509write-csr-set-subject-name(^ctx1: c-pointer<mbedtls-x509write-csr-c>, ^subject-name: c-pointer<int>): <> int
-  external/mbedtls-x509write-csr-set-subject-name(ctx1, subject-name).int
-
-// \brief           Set the key for a CSR (public key will be included,
-// private key used to sign the CSR when writing it)
-// 
-// \param ctx       CSR context to use
-// \param key       Asymmetric key to include
-pub extern external/mbedtls-x509write-csr-set-key(^ctx1: c-pointer<mbedtls-x509write-csr-c>, ^key: c-pointer<mbedtls-pk-context-c>): ()
-  c inline "(void)mbedtls_x509write_csr_set_key((struct mbedtls_x509write_csr*)#1, (struct mbedtls_pk_context*)#2)"
-
-// \brief           Set the MD algorithm to use for the signature
-// (e.g. MBEDTLS_MD_SHA1)
-// 
-// \param ctx       CSR context to use
-// \param md_alg    MD algorithm to use
-pub extern external/mbedtls-x509write-csr-set-md-alg(^ctx1: c-pointer<mbedtls-x509write-csr-c>, ^md-alg: int32): ()
-  c inline "(void)mbedtls_x509write_csr_set_md_alg((struct mbedtls_x509write_csr*)#1, (int32_t)#2)"
-
-pub inline fun ffi/mbedtls-x509write-csr-set-md-alg(^ctx1: c-pointer<mbedtls-x509write-csr-c>, ^md-alg: mbedtls-md-type-t): <exn> ()
-  external/mbedtls-x509write-csr-set-md-alg(ctx1, md-alg.mbedtls-md-type-t/int)
-
-// \brief           Set the Key Usage Extension flags
-// (e.g. MBEDTLS_X509_KU_DIGITAL_SIGNATURE | MBEDTLS_X509_KU_KEY_CERT_SIGN)
-// 
-// \param ctx       CSR context to use
-// \param key_usage key usage flags to set
-// 
-// \return          0 if successful, or MBEDTLS_ERR_X509_ALLOC_FAILED
-// 
-// \note            The <code>decipherOnly</code> flag from the Key Usage
-// extension is represented by bit 8 (i.e.
-// <code>0x8000</code>), which cannot typically be represented
-// in an unsigned char. Therefore, the flag
-// <code>decipherOnly</code> (i.e.
-// #MBEDTLS_X509_KU_DECIPHER_ONLY) cannot be set using this
-// function.
-pub extern external/mbedtls-x509write-csr-set-key-usage(^ctx1: c-pointer<mbedtls-x509write-csr-c>, ^key-usage: int8): int32
-  c inline "(int)mbedtls_x509write_csr_set_key_usage((struct mbedtls_x509write_csr*)#1, (unsigned char)#2)"
-
-pub inline fun ffi/mbedtls-x509write-csr-set-key-usage(^ctx1: c-pointer<mbedtls-x509write-csr-c>, ^key-usage: int): <> int
-  external/mbedtls-x509write-csr-set-key-usage(ctx1, key-usage.int8).int
-
-// \brief           Set Subject Alternative Name
-// 
-// \param ctx       CSR context to use
-// \param san_list  List of SAN values
-// 
-// \return          0 if successful, or MBEDTLS_ERR_X509_ALLOC_FAILED
-// 
-// \note            Only "dnsName", "uniformResourceIdentifier" and "otherName",
-// as defined in RFC 5280, are supported.
-pub extern external/mbedtls-x509write-csr-set-subject-alternative-name(^ctx1: c-pointer<mbedtls-x509write-csr-c>, ^san-list: c-pointer<mbedtls-x509-san-list-c>): int32
-  c inline "(int)mbedtls_x509write_csr_set_subject_alternative_name((struct mbedtls_x509write_csr*)#1, (struct mbedtls_x509_san_list*)#2)"
-
-pub inline fun ffi/mbedtls-x509write-csr-set-subject-alternative-name(^ctx1: c-pointer<mbedtls-x509write-csr-c>, ^san-list: c-pointer<mbedtls-x509-san-list-c>): <> int
-  external/mbedtls-x509write-csr-set-subject-alternative-name(ctx1, san-list).int
-
-// \brief           Set the Netscape Cert Type flags
-// (e.g. MBEDTLS_X509_NS_CERT_TYPE_SSL_CLIENT | MBEDTLS_X509_NS_CERT_TYPE_EMAIL)
-// 
-// \param ctx           CSR context to use
-// \param ns_cert_type  Netscape Cert Type flags to set
-// 
-// \return          0 if successful, or MBEDTLS_ERR_X509_ALLOC_FAILED
-pub extern external/mbedtls-x509write-csr-set-ns-cert-type(^ctx1: c-pointer<mbedtls-x509write-csr-c>, ^ns-cert-type: int8): int32
-  c inline "(int)mbedtls_x509write_csr_set_ns_cert_type((struct mbedtls_x509write_csr*)#1, (unsigned char)#2)"
-
-pub inline fun ffi/mbedtls-x509write-csr-set-ns-cert-type(^ctx1: c-pointer<mbedtls-x509write-csr-c>, ^ns-cert-type: int): <> int
-  external/mbedtls-x509write-csr-set-ns-cert-type(ctx1, ns-cert-type.int8).int
-
-// \brief           Generic function to add to or replace an extension in the
-// CSR
-// 
-// \param ctx       CSR context to use
-// \param oid       OID of the extension
-// \param oid_len   length of the OID
-// \param critical  Set to 1 to mark the extension as critical, 0 otherwise.
-// \param val       value of the extension OCTET STRING
-// \param val_len   length of the value data
-// 
-// \return          0 if successful, or a MBEDTLS_ERR_X509_ALLOC_FAILED
-pub extern external/mbedtls-x509write-csr-set-extension(^ctx1: c-pointer<mbedtls-x509write-csr-c>, ^oid: c-pointer<int>, ^oid-len: ssize_t, ^critical: int32, ^val: c-pointer<int>, ^val-len: ssize_t): int32
-  c inline "(int)mbedtls_x509write_csr_set_extension((struct mbedtls_x509write_csr*)#1, (char*)#2, (size_t)#3, (int)#4, (unsigned char*)#5, (size_t)#6)"
-
-pub inline fun ffi/mbedtls-x509write-csr-set-extension(^ctx1: c-pointer<mbedtls-x509write-csr-c>, ^oid: c-pointer<int>, ^oid-len: int, ^critical: int, ^val: c-pointer<int>, ^val-len: int): <> int
-  external/mbedtls-x509write-csr-set-extension(ctx1, oid, oid-len.ssize_t, critical.int32, val, val-len.ssize_t).int
-
-// \brief           Free the contents of a CSR context
-// 
-// \param ctx       CSR context to free
-pub extern external/mbedtls-x509write-csr-free(^ctx1: c-pointer<mbedtls-x509write-csr-c>): ()
-  c inline "(void)mbedtls_x509write_csr_free((struct mbedtls_x509write_csr*)#1)"
-
-// \brief           Write a CSR (Certificate Signing Request) to a
-// DER structure
-// Note: data is written at the end of the buffer! Use the
-// return value to determine where you should start
-// using the buffer
+// This function returns a const pointer to an un-modifiable string. The caller
+// must not try to modify the string. It is intended to be used mostly for
+// logging purposes.
 // 
-// \param ctx       CSR to write away
-// \param buf       buffer to write to
-// \param size      size of the buffer
-// \param f_rng     RNG function. This must not be \c NULL.
-// \param p_rng     RNG parameter
+// \param error_code    error code
 // 
-// \return          length of data written if successful, or a specific
-// error code
-// 
-// \note            \p f_rng is used for the signature operation.
-pub extern external/mbedtls-x509write-csr-der(^ctx1: c-pointer<mbedtls-x509write-csr-c>, ^buf: c-pointer<int>, ^size: ssize_t, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): int32
-  c inline "(int)mbedtls_x509write_csr_der((struct mbedtls_x509write_csr*)#1, (unsigned char*)#2, (size_t)#3, (int (*)(void*, unsigned char*, size_t))#4, (void*)#5)"
-
-pub inline fun ffi/mbedtls-x509write-csr-der(^ctx1: c-pointer<mbedtls-x509write-csr-c>, ^buf: c-pointer<int>, ^size: int, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): <> int
-  external/mbedtls-x509write-csr-der(ctx1, buf, size.ssize_t, f-rng, p-rng).int
-
-// \brief           Write a CSR (Certificate Signing Request) to a
-// PEM string
-// 
-// \param ctx       CSR to write away
-// \param buf       buffer to write to
-// \param size      size of the buffer
-// \param f_rng     RNG function. This must not be \c NULL.
-// \param p_rng     RNG parameter
-// 
-// \return          0 if successful, or a specific error code
-// 
-// \note            \p f_rng is used for the signature operation.
-pub extern external/mbedtls-x509write-csr-pem(^ctx1: c-pointer<mbedtls-x509write-csr-c>, ^buf: c-pointer<int>, ^size: ssize_t, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): int32
-  c inline "(int)mbedtls_x509write_csr_pem((struct mbedtls_x509write_csr*)#1, (unsigned char*)#2, (size_t)#3, (int (*)(void*, unsigned char*, size_t))#4, (void*)#5)"
-
-pub inline fun ffi/mbedtls-x509write-csr-pem(^ctx1: c-pointer<mbedtls-x509write-csr-c>, ^buf: c-pointer<int>, ^size: int, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): <> int
-  external/mbedtls-x509write-csr-pem(ctx1, buf, size.ssize_t, f-rng, p-rng).int
-
-// \brief  This is the HMAC-based Extract-and-Expand Key Derivation Function
-// (HKDF).
-// 
-// \param  md        A hash function; md.size denotes the length of the hash
-// function output in bytes.
-// \param  salt      An optional salt value (a non-secret random value);
-// if the salt is not provided, a string of all zeros of
-// md.size length is used as the salt.
-// \param  salt_len  The length in bytes of the optional \p salt.
-// \param  ikm       The input keying material.
-// \param  ikm_len   The length in bytes of \p ikm.
-// \param  info      An optional context and application specific information
-// string. This can be a zero-length string.
-// \param  info_len  The length of \p info in bytes.
-// \param  okm       The output keying material of \p okm_len bytes.
-// \param  okm_len   The length of the output keying material in bytes. This
-// must be less than or equal to 255 * md.size bytes.
-// 
-// \return 0 on success.
-// \return #MBEDTLS_ERR_HKDF_BAD_INPUT_DATA when the parameters are invalid.
-// \return An MBEDTLS_ERR_MD_* error for errors returned from the underlying
-// MD layer.
-pub extern external/mbedtls-hkdf(^md: c-pointer<mbedtls-md-info-t-c>, ^salt: c-pointer<int>, ^salt-len: ssize_t, ^ikm: c-pointer<int>, ^ikm-len: ssize_t, ^info: c-pointer<int>, ^info-len: ssize_t, ^okm: c-pointer<int>, ^okm-len: ssize_t): int32
-  c inline "(int)mbedtls_hkdf((struct mbedtls_md_info_t*)#1, (unsigned char*)#2, (size_t)#3, (unsigned char*)#4, (size_t)#5, (unsigned char*)#6, (size_t)#7, (unsigned char*)#8, (size_t)#9)"
-
-pub inline fun ffi/mbedtls-hkdf(^md: c-pointer<mbedtls-md-info-t-c>, ^salt: c-pointer<int>, ^salt-len: int, ^ikm: c-pointer<int>, ^ikm-len: int, ^info: c-pointer<int>, ^info-len: int, ^okm: c-pointer<int>, ^okm-len: int): <> int
-  external/mbedtls-hkdf(md, salt, salt-len.ssize_t, ikm, ikm-len.ssize_t, info, info-len.ssize_t, okm, okm-len.ssize_t).int
-
-// \brief  Take the input keying material \p ikm and extract from it a
-// fixed-length pseudorandom key \p prk.
-// 
-// \warning    This function should only be used if the security of it has been
-// studied and established in that particular context (eg. TLS 1.3
-// key schedule). For standard HKDF security guarantees use
-// \c mbedtls_hkdf instead.
-// 
-// \param       md        A hash function; md.size denotes the length of the
-// hash function output in bytes.
-// \param       salt      An optional salt value (a non-secret random value);
-// if the salt is not provided, a string of all zeros
-// of md.size length is used as the salt.
-// \param       salt_len  The length in bytes of the optional \p salt.
-// \param       ikm       The input keying material.
-// \param       ikm_len   The length in bytes of \p ikm.
-// \param[out]  prk       A pseudorandom key of at least md.size bytes.
-// 
-// \return 0 on success.
-// \return #MBEDTLS_ERR_HKDF_BAD_INPUT_DATA when the parameters are invalid.
-// \return An MBEDTLS_ERR_MD_* error for errors returned from the underlying
-// MD layer.
-pub extern external/mbedtls-hkdf-extract(^md: c-pointer<mbedtls-md-info-t-c>, ^salt: c-pointer<int>, ^salt-len: ssize_t, ^ikm: c-pointer<int>, ^ikm-len: ssize_t, ^prk: c-pointer<int>): int32
-  c inline "(int)mbedtls_hkdf_extract((struct mbedtls_md_info_t*)#1, (unsigned char*)#2, (size_t)#3, (unsigned char*)#4, (size_t)#5, (unsigned char*)#6)"
-
-pub inline fun ffi/mbedtls-hkdf-extract(^md: c-pointer<mbedtls-md-info-t-c>, ^salt: c-pointer<int>, ^salt-len: int, ^ikm: c-pointer<int>, ^ikm-len: int, ^prk: c-pointer<int>): <> int
-  external/mbedtls-hkdf-extract(md, salt, salt-len.ssize_t, ikm, ikm-len.ssize_t, prk).int
-
-// \brief  Expand the supplied \p prk into several additional pseudorandom
-// keys, which is the output of the HKDF.
-// 
-// \warning    This function should only be used if the security of it has been
-// studied and established in that particular context (eg. TLS 1.3
-// key schedule). For standard HKDF security guarantees use
-// \c mbedtls_hkdf instead.
-// 
-// \param  md        A hash function; md.size denotes the length of the hash
-// function output in bytes.
-// \param  prk       A pseudorandom key of at least md.size bytes. \p prk is
-// usually the output from the HKDF extract step.
-// \param  prk_len   The length in bytes of \p prk.
-// \param  info      An optional context and application specific information
-// string. This can be a zero-length string.
-// \param  info_len  The length of \p info in bytes.
-// \param  okm       The output keying material of \p okm_len bytes.
-// \param  okm_len   The length of the output keying material in bytes. This
-// must be less than or equal to 255 * md.size bytes.
-// 
-// \return 0 on success.
-// \return #MBEDTLS_ERR_HKDF_BAD_INPUT_DATA when the parameters are invalid.
-// \return An MBEDTLS_ERR_MD_* error for errors returned from the underlying
-// MD layer.
-pub extern external/mbedtls-hkdf-expand(^md: c-pointer<mbedtls-md-info-t-c>, ^prk: c-pointer<int>, ^prk-len: ssize_t, ^info: c-pointer<int>, ^info-len: ssize_t, ^okm: c-pointer<int>, ^okm-len: ssize_t): int32
-  c inline "(int)mbedtls_hkdf_expand((struct mbedtls_md_info_t*)#1, (unsigned char*)#2, (size_t)#3, (unsigned char*)#4, (size_t)#5, (unsigned char*)#6, (size_t)#7)"
-
-pub inline fun ffi/mbedtls-hkdf-expand(^md: c-pointer<mbedtls-md-info-t-c>, ^prk: c-pointer<int>, ^prk-len: int, ^info: c-pointer<int>, ^info-len: int, ^okm: c-pointer<int>, ^okm-len: int): <> int
-  external/mbedtls-hkdf-expand(md, prk, prk-len.ssize_t, info, info-len.ssize_t, okm, okm-len.ssize_t).int
-
-pub extern external/mbedtls-timing-get-timer(^val: c-pointer<mbedtls-timing-hr-time-c>, ^reset: int32): int64
-  c inline "(unsigned long)mbedtls_timing_get_timer((struct mbedtls_timing_hr_time*)#1, (int)#2)"
-
-pub inline fun ffi/mbedtls-timing-get-timer(^val: c-pointer<mbedtls-timing-hr-time-c>, ^reset: int): <> int
-  external/mbedtls-timing-get-timer(val, reset.int32).int
-
-// \brief          Set a pair of delays to watch
-// (See \c mbedtls_timing_get_delay().)
-// 
-// \param data     Pointer to timing data.
-// Must point to a valid \c mbedtls_timing_delay_context struct.
-// \param int_ms   First (intermediate) delay in milliseconds.
-// The effect if int_ms > fin_ms is unspecified.
-// \param fin_ms   Second (final) delay in milliseconds.
-// Pass 0 to cancel the current delay.
-// 
-// \note           To set a single delay, either use \c mbedtls_timing_set_timer
-// directly or use this function with int_ms == fin_ms.
-pub extern external/mbedtls-timing-set-delay(^data: c-pointer<()>, ^int-ms: int32, ^fin-ms: int32): ()
-  c inline "(void)mbedtls_timing_set_delay((void*)#1, (int32_t)#2, (int32_t)#3)"
-
-pub inline fun ffi/mbedtls-timing-set-delay(^data: c-pointer<()>, ^int-ms: int, ^fin-ms: int): <> ()
-  external/mbedtls-timing-set-delay(data, int-ms.int32, fin-ms.int32)
-
-// \brief          Get the status of delays
-// (Memory helper: number of delays passed.)
-// 
-// \param data     Pointer to timing data
-// Must point to a valid \c mbedtls_timing_delay_context struct.
-// 
-// \return         -1 if cancelled (fin_ms = 0),
-// 0 if none of the delays are passed,
-// 1 if only the intermediate delay is passed,
-// 2 if the final delay is passed.
-pub extern external/mbedtls-timing-get-delay(^data: c-pointer<()>): int32
-  c inline "(int)mbedtls_timing_get_delay((void*)#1)"
-
-pub inline fun ffi/mbedtls-timing-get-delay(^data: c-pointer<()>): <> int
-  external/mbedtls-timing-get-delay(data).int
-
-// \brief          Get the final timing delay
-// 
-// \param data     Pointer to timing data
-// Must point to a valid \c mbedtls_timing_delay_context struct.
-// 
-// \return         Final timing delay in milliseconds.
-pub extern external/mbedtls-timing-get-final-delay(^data: c-pointer<mbedtls-timing-delay-context-c>): int32
-  c inline "(int32_t)mbedtls_timing_get_final_delay((struct mbedtls_timing_delay_context*)#1)"
-
-pub inline fun ffi/mbedtls-timing-get-final-delay(^data: c-pointer<mbedtls-timing-delay-context-c>): <> int
-  external/mbedtls-timing-get-final-delay(data).int
-
-// \brief           This function initializes the specified key wrapping context
-// to make references valid and prepare the context
-// for mbedtls_nist_kw_setkey() or mbedtls_nist_kw_free().
-// 
-// \param ctx       The key wrapping context to initialize.
-pub extern external/mbedtls-nist-kw-init(^ctx1: c-pointer<mbedtls-nist-kw-context-c>): ()
-  c inline "(void)mbedtls_nist_kw_init((mbedtls_nist_kw_context*)#1)"
-
-// \brief           This function initializes the key wrapping context set in the
-// \p ctx parameter and sets the encryption key.
-// 
-// \param ctx       The key wrapping context.
-// \param cipher    The 128-bit block cipher to use. Only AES is supported.
-// \param key       The Key Encryption Key (KEK).
-// \param keybits   The KEK size in bits. This must be acceptable by the cipher.
-// \param is_wrap   Specify whether the operation within the context is wrapping or unwrapping
-// 
-// \return          \c 0 on success.
-// \return          \c MBEDTLS_ERR_CIPHER_BAD_INPUT_DATA for any invalid input.
-// \return          \c MBEDTLS_ERR_CIPHER_FEATURE_UNAVAILABLE for 128-bit block ciphers
-// which are not supported.
-// \return          cipher-specific error code on failure of the underlying cipher.
-pub extern external/mbedtls-nist-kw-setkey(^ctx1: c-pointer<mbedtls-nist-kw-context-c>, ^cipher: int32, ^key: c-pointer<int>, ^keybits: int32, ^is-wrap: int32): int32
-  c inline "(int)mbedtls_nist_kw_setkey((mbedtls_nist_kw_context*)#1, (int32_t)#2, (unsigned char*)#3, (unsigned int)#4, (int)#5)"
-
-pub inline fun ffi/mbedtls-nist-kw-setkey(^ctx1: c-pointer<mbedtls-nist-kw-context-c>, ^cipher: mbedtls-cipher-id-t, ^key: c-pointer<int>, ^keybits: int, ^is-wrap: int): <exn> int
-  external/mbedtls-nist-kw-setkey(ctx1, cipher.mbedtls-cipher-id-t/int, key, keybits.int32, is-wrap.int32).int
-
-// \brief   This function releases and clears the specified key wrapping context
-// and underlying cipher sub-context.
-// 
-// \param ctx       The key wrapping context to clear.
-pub extern external/mbedtls-nist-kw-free(^ctx1: c-pointer<mbedtls-nist-kw-context-c>): ()
-  c inline "(void)mbedtls_nist_kw_free((mbedtls_nist_kw_context*)#1)"
-
-// \brief           This function encrypts a buffer using key wrapping.
-// 
-// \param ctx       The key wrapping context to use for encryption.
-// \param mode      The key wrapping mode to use (MBEDTLS_KW_MODE_KW or MBEDTLS_KW_MODE_KWP)
-// \param input     The buffer holding the input data.
-// \param in_len    The length of the input data in Bytes.
-// The input uses units of 8 Bytes called semiblocks.
-// <ul><li>For KW mode: a multiple of 8 bytes between 16 and 2^57-8 inclusive. </li>
-// <li>For KWP mode: any length between 1 and 2^32-1 inclusive.</li></ul>
-// \param[out] output    The buffer holding the output data.
-// <ul><li>For KW mode: Must be at least 8 bytes larger than \p in_len.</li>
-// <li>For KWP mode: Must be at least 8 bytes larger rounded up to a multiple of
-// 8 bytes for KWP (15 bytes at most).</li></ul>
-// \param[out] out_len The number of bytes written to the output buffer. \c 0 on failure.
-// \param[in] out_size The capacity of the output buffer.
-// 
-// \return          \c 0 on success.
-// \return          \c MBEDTLS_ERR_CIPHER_BAD_INPUT_DATA for invalid input length.
-// \return          cipher-specific error code on failure of the underlying cipher.
-pub extern external/mbedtls-nist-kw-wrap(^ctx1: c-pointer<mbedtls-nist-kw-context-c>, ^mode: int32, ^input: c-pointer<int>, ^in-len: ssize_t, ^output: c-pointer<int>, ^out-len: c-pointer<int>, ^out-size: ssize_t): int32
-  c inline "(int)mbedtls_nist_kw_wrap((mbedtls_nist_kw_context*)#1, (int32_t)#2, (unsigned char*)#3, (size_t)#4, (unsigned char*)#5, (size_t*)#6, (size_t)#7)"
-
-pub inline fun ffi/mbedtls-nist-kw-wrap(^ctx1: c-pointer<mbedtls-nist-kw-context-c>, ^mode: mbedtls-nist-kw-mode-t, ^input: c-pointer<int>, ^in-len: int, ^output: c-pointer<int>, ^out-len: c-pointer<int>, ^out-size: int): <exn> int
-  external/mbedtls-nist-kw-wrap(ctx1, mode.mbedtls-nist-kw-mode-t/int, input, in-len.ssize_t, output, out-len, out-size.ssize_t).int
-
-// \brief           This function decrypts a buffer using key wrapping.
-// 
-// \param ctx       The key wrapping context to use for decryption.
-// \param mode      The key wrapping mode to use (MBEDTLS_KW_MODE_KW or MBEDTLS_KW_MODE_KWP)
-// \param input     The buffer holding the input data.
-// \param in_len    The length of the input data in Bytes.
-// The input uses units of 8 Bytes called semiblocks.
-// The input must be a multiple of semiblocks.
-// <ul><li>For KW mode: a multiple of 8 bytes between 24 and 2^57 inclusive. </li>
-// <li>For KWP mode: a multiple of 8 bytes between 16 and 2^32 inclusive.</li></ul>
-// \param[out] output    The buffer holding the output data.
-// The output buffer's minimal length is 8 bytes shorter than \p in_len.
-// \param[out] out_len The number of bytes written to the output buffer. \c 0 on failure.
-// For KWP mode, the length could be up to 15 bytes shorter than \p in_len,
-// depending on how much padding was added to the data.
-// \param[in] out_size The capacity of the output buffer.
-// 
-// \return          \c 0 on success.
-// \return          \c MBEDTLS_ERR_CIPHER_BAD_INPUT_DATA for invalid input length.
-// \return          \c MBEDTLS_ERR_CIPHER_AUTH_FAILED for verification failure of the ciphertext.
-// \return          cipher-specific error code on failure of the underlying cipher.
-pub extern external/mbedtls-nist-kw-unwrap(^ctx1: c-pointer<mbedtls-nist-kw-context-c>, ^mode: int32, ^input: c-pointer<int>, ^in-len: ssize_t, ^output: c-pointer<int>, ^out-len: c-pointer<int>, ^out-size: ssize_t): int32
-  c inline "(int)mbedtls_nist_kw_unwrap((mbedtls_nist_kw_context*)#1, (int32_t)#2, (unsigned char*)#3, (size_t)#4, (unsigned char*)#5, (size_t*)#6, (size_t)#7)"
+// \return The string representation of the error code, or \c NULL if the error
+// code is unknown.
+pub extern external/mbedtls-high-level-strerr(^error-code: int32): c-pointer<int>
+  c inline "(intptr_t)mbedtls_high_level_strerr((int)#1)"
 
-pub inline fun ffi/mbedtls-nist-kw-unwrap(^ctx1: c-pointer<mbedtls-nist-kw-context-c>, ^mode: mbedtls-nist-kw-mode-t, ^input: c-pointer<int>, ^in-len: int, ^output: c-pointer<int>, ^out-len: c-pointer<int>, ^out-size: int): <exn> int
-  external/mbedtls-nist-kw-unwrap(ctx1, mode.mbedtls-nist-kw-mode-t/int, input, in-len.ssize_t, output, out-len, out-size.ssize_t).int
+pub inline fun ffi/mbedtls-high-level-strerr(^error-code: int): <> c-pointer<int>
+  external/mbedtls-high-level-strerr(error-code.int32)
 
-// \brief          The key wrapping checkup routine.
+// \brief Translate the low-level part of an Mbed TLS error code into a string
+// representation.
 // 
-// \return         \c 0 on success.
-// \return         \c 1 on failure.
-pub extern external/mbedtls-nist-kw-self-test(^verbose: int32): int32
-  c inline "(int)mbedtls_nist_kw_self_test((int)#1)"
-
-pub inline fun ffi/mbedtls-nist-kw-self-test(^verbose: int): <> int
-  external/mbedtls-nist-kw-self-test(verbose.int32).int
-
-// \brief          Initialize a context
-// Just makes the context ready to be used or freed safely.
-// 
-// \param ctx      Context to initialize
-pub extern external/mbedtls-net-init(^ctx1: c-pointer<mbedtls-net-context-c>): ()
-  c inline "(void)mbedtls_net_init((struct mbedtls_net_context*)#1)"
-
-// \brief          Initiate a connection with host:port in the given protocol
-// 
-// \param ctx      Socket to use
-// \param host     Host to connect to
-// \param port     Port to connect to
-// \param proto    Protocol: MBEDTLS_NET_PROTO_TCP or MBEDTLS_NET_PROTO_UDP
-// 
-// \return         0 if successful, or one of:
-// MBEDTLS_ERR_NET_SOCKET_FAILED,
-// MBEDTLS_ERR_NET_UNKNOWN_HOST,
-// MBEDTLS_ERR_NET_CONNECT_FAILED
-// 
-// \note           Sets the socket in connected mode even with UDP.
-pub extern external/mbedtls-net-connect(^ctx1: c-pointer<mbedtls-net-context-c>, ^host: c-pointer<int>, ^port: c-pointer<int>, ^proto: int32): int32
-  c inline "(int)mbedtls_net_connect((struct mbedtls_net_context*)#1, (char*)#2, (char*)#3, (int)#4)"
-
-pub inline fun ffi/mbedtls-net-connect(^ctx1: c-pointer<mbedtls-net-context-c>, ^host: c-pointer<int>, ^port: c-pointer<int>, ^proto: int): <> int
-  external/mbedtls-net-connect(ctx1, host, port, proto.int32).int
-
-// \brief          Create a receiving socket on bind_ip:port in the chosen
-// protocol. If bind_ip == NULL, all interfaces are bound.
-// 
-// \param ctx      Socket to use
-// \param bind_ip  IP to bind to, can be NULL
-// \param port     Port number to use
-// \param proto    Protocol: MBEDTLS_NET_PROTO_TCP or MBEDTLS_NET_PROTO_UDP
-// 
-// \return         0 if successful, or one of:
-// MBEDTLS_ERR_NET_SOCKET_FAILED,
-// MBEDTLS_ERR_NET_UNKNOWN_HOST,
-// MBEDTLS_ERR_NET_BIND_FAILED,
-// MBEDTLS_ERR_NET_LISTEN_FAILED
-// 
-// \note           Regardless of the protocol, opens the sockets and binds it.
-// In addition, make the socket listening if protocol is TCP.
-pub extern external/mbedtls-net-bind(^ctx1: c-pointer<mbedtls-net-context-c>, ^bind-ip: c-pointer<int>, ^port: c-pointer<int>, ^proto: int32): int32
-  c inline "(int)mbedtls_net_bind((struct mbedtls_net_context*)#1, (char*)#2, (char*)#3, (int)#4)"
-
-pub inline fun ffi/mbedtls-net-bind(^ctx1: c-pointer<mbedtls-net-context-c>, ^bind-ip: c-pointer<int>, ^port: c-pointer<int>, ^proto: int): <> int
-  external/mbedtls-net-bind(ctx1, bind-ip, port, proto.int32).int
-
-// \brief           Accept a connection from a remote client
-// 
-// \param bind_ctx  Relevant socket
-// \param client_ctx Will contain the connected client socket
-// \param client_ip Will contain the client IP address, can be NULL
-// \param buf_size  Size of the client_ip buffer
-// \param cip_len   Will receive the size of the client IP written,
-// can be NULL if client_ip is null
-// 
-// \return          0 if successful, or
-// MBEDTLS_ERR_NET_SOCKET_FAILED,
-// MBEDTLS_ERR_NET_BIND_FAILED,
-// MBEDTLS_ERR_NET_ACCEPT_FAILED, or
-// MBEDTLS_ERR_NET_BUFFER_TOO_SMALL if buf_size is too small,
-// MBEDTLS_ERR_SSL_WANT_READ if bind_fd was set to
-// non-blocking and accept() would block.
-pub extern external/mbedtls-net-accept(^bind-ctx: c-pointer<mbedtls-net-context-c>, ^client-ctx: c-pointer<mbedtls-net-context-c>, ^client-ip: c-pointer<()>, ^buf-size: ssize_t, ^cip-len: c-pointer<int>): int32
-  c inline "(int)mbedtls_net_accept((struct mbedtls_net_context*)#1, (struct mbedtls_net_context*)#2, (void*)#3, (size_t)#4, (size_t*)#5)"
-
-pub inline fun ffi/mbedtls-net-accept(^bind-ctx: c-pointer<mbedtls-net-context-c>, ^client-ctx: c-pointer<mbedtls-net-context-c>, ^client-ip: c-pointer<()>, ^buf-size: int, ^cip-len: c-pointer<int>): <> int
-  external/mbedtls-net-accept(bind-ctx, client-ctx, client-ip, buf-size.ssize_t, cip-len).int
-
-// \brief          Check and wait for the context to be ready for read/write
-// 
-// \note           The current implementation of this function uses
-// select() and returns an error if the file descriptor
-// is \c FD_SETSIZE or greater.
-// 
-// \param ctx      Socket to check
-// \param rw       Bitflag composed of MBEDTLS_NET_POLL_READ and
-// MBEDTLS_NET_POLL_WRITE specifying the events
-// to wait for:
-// - If MBEDTLS_NET_POLL_READ is set, the function
-// will return as soon as the net context is available
-// for reading.
-// - If MBEDTLS_NET_POLL_WRITE is set, the function
-// will return as soon as the net context is available
-// for writing.
-// \param timeout  Maximal amount of time to wait before returning,
-// in milliseconds. If \c timeout is zero, the
-// function returns immediately. If \c timeout is
-// -1u, the function blocks potentially indefinitely.
-// 
-// \return         Bitmask composed of MBEDTLS_NET_POLL_READ/WRITE
-// on success or timeout, or a negative return code otherwise.
-pub extern external/mbedtls-net-poll(^ctx1: c-pointer<mbedtls-net-context-c>, ^rw: int32, ^timeout: int32): int32
-  c inline "(int)mbedtls_net_poll((struct mbedtls_net_context*)#1, (int32_t)#2, (int32_t)#3)"
-
-pub inline fun ffi/mbedtls-net-poll(^ctx1: c-pointer<mbedtls-net-context-c>, ^rw: int, ^timeout: int): <> int
-  external/mbedtls-net-poll(ctx1, rw.int32, timeout.int32).int
-
-// \brief          Set the socket blocking
-// 
-// \param ctx      Socket to set
-// 
-// \return         0 if successful, or a non-zero error code
-pub extern external/mbedtls-net-set-block(^ctx1: c-pointer<mbedtls-net-context-c>): int32
-  c inline "(int)mbedtls_net_set_block((struct mbedtls_net_context*)#1)"
-
-pub inline fun ffi/mbedtls-net-set-block(^ctx1: c-pointer<mbedtls-net-context-c>): <> int
-  external/mbedtls-net-set-block(ctx1).int
-
-// \brief          Set the socket non-blocking
-// 
-// \param ctx      Socket to set
-// 
-// \return         0 if successful, or a non-zero error code
-pub extern external/mbedtls-net-set-nonblock(^ctx1: c-pointer<mbedtls-net-context-c>): int32
-  c inline "(int)mbedtls_net_set_nonblock((struct mbedtls_net_context*)#1)"
-
-pub inline fun ffi/mbedtls-net-set-nonblock(^ctx1: c-pointer<mbedtls-net-context-c>): <> int
-  external/mbedtls-net-set-nonblock(ctx1).int
-
-// \brief          Portable usleep helper
-// 
-// \param usec     Amount of microseconds to sleep
-// 
-// \note           Real amount of time slept will not be less than
-// select()'s timeout granularity (typically, 10ms).
-pub extern external/mbedtls-net-usleep(^usec: int64): ()
-  c inline "(void)mbedtls_net_usleep((unsigned long)#1)"
-
-pub inline fun ffi/mbedtls-net-usleep(^usec: int): <> ()
-  external/mbedtls-net-usleep(usec.int64)
-
-// \brief          Read at most 'len' characters. If no error occurs,
-// the actual amount read is returned.
-// 
-// \param ctx      Socket
-// \param buf      The buffer to write to
-// \param len      Maximum length of the buffer
-// 
-// \return         the number of bytes received,
-// or a non-zero error code; with a non-blocking socket,
-// MBEDTLS_ERR_SSL_WANT_READ indicates read() would block.
-pub extern external/mbedtls-net-recv(^ctx1: c-pointer<()>, ^buf: c-pointer<int>, ^len: ssize_t): int32
-  c inline "(int)mbedtls_net_recv((void*)#1, (unsigned char*)#2, (size_t)#3)"
-
-pub inline fun ffi/mbedtls-net-recv(^ctx1: c-pointer<()>, ^buf: c-pointer<int>, ^len: int): <> int
-  external/mbedtls-net-recv(ctx1, buf, len.ssize_t).int
-
-// \brief          Write at most 'len' characters. If no error occurs,
-// the actual amount read is returned.
-// 
-// \param ctx      Socket
-// \param buf      The buffer to read from
-// \param len      The length of the buffer
-// 
-// \return         the number of bytes sent,
-// or a non-zero error code; with a non-blocking socket,
-// MBEDTLS_ERR_SSL_WANT_WRITE indicates write() would block.
-pub extern external/mbedtls-net-send(^ctx1: c-pointer<()>, ^buf: c-pointer<int>, ^len: ssize_t): int32
-  c inline "(int)mbedtls_net_send((void*)#1, (unsigned char*)#2, (size_t)#3)"
-
-pub inline fun ffi/mbedtls-net-send(^ctx1: c-pointer<()>, ^buf: c-pointer<int>, ^len: int): <> int
-  external/mbedtls-net-send(ctx1, buf, len.ssize_t).int
-
-// \brief          Read at most 'len' characters, blocking for at most
-// 'timeout' seconds. If no error occurs, the actual amount
-// read is returned.
-// 
-// \note           The current implementation of this function uses
-// select() and returns an error if the file descriptor
-// is \c FD_SETSIZE or greater.
+// This function returns a const pointer to an un-modifiable string. The caller
+// must not try to modify the string. It is intended to be used mostly for
+// logging purposes.
 // 
-// \param ctx      Socket
-// \param buf      The buffer to write to
-// \param len      Maximum length of the buffer
-// \param timeout  Maximum number of milliseconds to wait for data
-// 0 means no timeout (wait forever)
+// \param error_code    error code
 // 
-// \return         The number of bytes received if successful.
-// MBEDTLS_ERR_SSL_TIMEOUT if the operation timed out.
-// MBEDTLS_ERR_SSL_WANT_READ if interrupted by a signal.
-// Another negative error code (MBEDTLS_ERR_NET_xxx)
-// for other failures.
-// 
-// \note           This function will block (until data becomes available or
-// timeout is reached) even if the socket is set to
-// non-blocking. Handling timeouts with non-blocking reads
-// requires a different strategy.
-pub extern external/mbedtls-net-recv-timeout(^ctx1: c-pointer<()>, ^buf: c-pointer<int>, ^len: ssize_t, ^timeout: int32): int32
-  c inline "(int)mbedtls_net_recv_timeout((void*)#1, (unsigned char*)#2, (size_t)#3, (int32_t)#4)"
-
-pub inline fun ffi/mbedtls-net-recv-timeout(^ctx1: c-pointer<()>, ^buf: c-pointer<int>, ^len: int, ^timeout: int): <> int
-  external/mbedtls-net-recv-timeout(ctx1, buf, len.ssize_t, timeout.int32).int
-
-// \brief          Closes down the connection and free associated data
-// 
-// \param ctx      The context to close
-// 
-// \note           This function frees and clears data associated with the
-// context but does not free the memory pointed to by \p ctx.
-// This memory is the responsibility of the caller.
-pub extern external/mbedtls-net-close(^ctx1: c-pointer<mbedtls-net-context-c>): ()
-  c inline "(void)mbedtls_net_close((struct mbedtls_net_context*)#1)"
+// \return The string representation of the error code, or \c NULL if the error
+// code is unknown.
+pub extern external/mbedtls-low-level-strerr(^error-code: int32): c-pointer<int>
+  c inline "(intptr_t)mbedtls_low_level_strerr((int)#1)"
 
-// \brief          Gracefully shutdown the connection and free associated data
-// 
-// \param ctx      The context to free
-// 
-// \note           This function frees and clears data associated with the
-// context but does not free the memory pointed to by \p ctx.
-// This memory is the responsibility of the caller.
-pub extern external/mbedtls-net-free(^ctx1: c-pointer<mbedtls-net-context-c>): ()
-  c inline "(void)mbedtls_net_free((struct mbedtls_net_context*)#1)"
+pub inline fun ffi/mbedtls-low-level-strerr(^error-code: int): <> c-pointer<int>
+  external/mbedtls-low-level-strerr(error-code.int32)
 
 // \brief           Platform-specific entropy poll callback
 pub extern external/mbedtls-platform-entropy-poll(^data: c-pointer<()>, ^output: c-pointer<int>, ^len: ssize_t, ^olen: c-pointer<int>): int32
@@ -18677,220 +17323,6 @@ pub extern external/mbedtls-entropy-self-test(^verbose: int32): int32
 
 pub inline fun ffi/mbedtls-entropy-self-test(^verbose: int): <> int
   external/mbedtls-entropy-self-test(verbose.int32).int
-
-// \brief            PKCS12 Password Based function (encryption / decryption)
-// for cipher-based and mbedtls_md-based PBE's
-// 
-// \note             When encrypting, #MBEDTLS_CIPHER_PADDING_PKCS7 must
-// be enabled at compile time.
-// 
-// \deprecated       This function is deprecated and will be removed in a
-// future version of the library.
-// Please use mbedtls_pkcs12_pbe_ext() instead.
-// 
-// \warning          When decrypting:
-// - if #MBEDTLS_CIPHER_PADDING_PKCS7 is enabled at compile
-// time, this function validates the CBC padding and returns
-// #MBEDTLS_ERR_PKCS12_PASSWORD_MISMATCH if the padding is
-// invalid. Note that this can help active adversaries
-// attempting to brute-forcing the password. Note also that
-// there is no guarantee that an invalid password will be
-// detected (the chances of a valid padding with a random
-// password are about 1/255).
-// - if #MBEDTLS_CIPHER_PADDING_PKCS7 is disabled at compile
-// time, this function does not validate the CBC padding.
-// 
-// \param pbe_params an ASN1 buffer containing the pkcs-12 PbeParams structure
-// \param mode       either #MBEDTLS_PKCS12_PBE_ENCRYPT or
-// #MBEDTLS_PKCS12_PBE_DECRYPT
-// \param cipher_type the cipher used
-// \param md_type    the mbedtls_md used
-// \param pwd        Latin1-encoded password used. This may only be \c NULL when
-// \p pwdlen is 0. No null terminator should be used.
-// \param pwdlen     length of the password (may be 0)
-// \param data       the input data
-// \param len        data length
-// \param output     Output buffer.
-// On success, it contains the encrypted or decrypted data,
-// possibly followed by the CBC padding.
-// On failure, the content is indeterminate.
-// For decryption, there must be enough room for \p len
-// bytes.
-// For encryption, there must be enough room for
-// \p len + 1 bytes, rounded up to the block size of
-// the block cipher identified by \p pbe_params.
-// 
-// \return           0 if successful, or a MBEDTLS_ERR_XXX code
-pub extern external/mbedtls-pkcs12-pbe(^pbe-params: c-pointer<mbedtls-asn1-buf-c>, ^mode: int32, ^cipher-type: int32, ^md-type: int32, ^pwd: c-pointer<int>, ^pwdlen: ssize_t, ^data: c-pointer<int>, ^len: ssize_t, ^output: c-pointer<int>): int32
-  c inline "(int)mbedtls_pkcs12_pbe((struct mbedtls_asn1_buf*)#1, (int)#2, (int32_t)#3, (int32_t)#4, (unsigned char*)#5, (size_t)#6, (unsigned char*)#7, (size_t)#8, (unsigned char*)#9)"
-
-pub inline fun ffi/mbedtls-pkcs12-pbe(^pbe-params: c-pointer<mbedtls-asn1-buf-c>, ^mode: int, ^cipher-type: mbedtls-cipher-type-t, ^md-type: mbedtls-md-type-t, ^pwd: c-pointer<int>, ^pwdlen: int, ^data: c-pointer<int>, ^len: int, ^output: c-pointer<int>): <exn> int
-  external/mbedtls-pkcs12-pbe(pbe-params, mode.int32, cipher-type.mbedtls-cipher-type-t/int, md-type.mbedtls-md-type-t/int, pwd, pwdlen.ssize_t, data, len.ssize_t, output).int
-
-// \brief            PKCS12 Password Based function (encryption / decryption)
-// for cipher-based and mbedtls_md-based PBE's
-// 
-// 
-// \warning          When decrypting:
-// - This function validates the CBC padding and returns
-// #MBEDTLS_ERR_PKCS12_PASSWORD_MISMATCH if the padding is
-// invalid. Note that this can help active adversaries
-// attempting to brute-forcing the password. Note also that
-// there is no guarantee that an invalid password will be
-// detected (the chances of a valid padding with a random
-// password are about 1/255).
-// 
-// \param pbe_params an ASN1 buffer containing the pkcs-12 PbeParams structure
-// \param mode       either #MBEDTLS_PKCS12_PBE_ENCRYPT or
-// #MBEDTLS_PKCS12_PBE_DECRYPT
-// \param cipher_type the cipher used
-// \param md_type    the mbedtls_md used
-// \param pwd        Latin1-encoded password used. This may only be \c NULL when
-// \p pwdlen is 0. No null terminator should be used.
-// \param pwdlen     length of the password (may be 0)
-// \param data       the input data
-// \param len        data length
-// \param output     Output buffer.
-// On success, it contains the encrypted or decrypted data,
-// possibly followed by the CBC padding.
-// On failure, the content is indeterminate.
-// For decryption, there must be enough room for \p len
-// bytes.
-// For encryption, there must be enough room for
-// \p len + 1 bytes, rounded up to the block size of
-// the block cipher identified by \p pbe_params.
-// \param output_size size of output buffer.
-// This must be big enough to accommodate for output plus
-// padding data.
-// \param output_len On success, length of actual data written to the output buffer.
-// 
-// \return           0 if successful, or a MBEDTLS_ERR_XXX code
-pub extern external/mbedtls-pkcs12-pbe-ext(^pbe-params: c-pointer<mbedtls-asn1-buf-c>, ^mode: int32, ^cipher-type: int32, ^md-type: int32, ^pwd: c-pointer<int>, ^pwdlen: ssize_t, ^data: c-pointer<int>, ^len: ssize_t, ^output: c-pointer<int>, ^output-size: ssize_t, ^output-len: c-pointer<int>): int32
-  c inline "(int)mbedtls_pkcs12_pbe_ext((struct mbedtls_asn1_buf*)#1, (int)#2, (int32_t)#3, (int32_t)#4, (unsigned char*)#5, (size_t)#6, (unsigned char*)#7, (size_t)#8, (unsigned char*)#9, (size_t)#10, (size_t*)#11)"
-
-pub inline fun ffi/mbedtls-pkcs12-pbe-ext(^pbe-params: c-pointer<mbedtls-asn1-buf-c>, ^mode: int, ^cipher-type: mbedtls-cipher-type-t, ^md-type: mbedtls-md-type-t, ^pwd: c-pointer<int>, ^pwdlen: int, ^data: c-pointer<int>, ^len: int, ^output: c-pointer<int>, ^output-size: int, ^output-len: c-pointer<int>): <exn> int
-  external/mbedtls-pkcs12-pbe-ext(pbe-params, mode.int32, cipher-type.mbedtls-cipher-type-t/int, md-type.mbedtls-md-type-t/int, pwd, pwdlen.ssize_t, data, len.ssize_t, output, output-size.ssize_t, output-len).int
-
-// \brief            The PKCS#12 derivation function uses a password and a salt
-// to produce pseudo-random bits for a particular "purpose".
-// 
-// Depending on the given id, this function can produce an
-// encryption/decryption key, an initialization vector or an
-// integrity key.
-// 
-// \param data       buffer to store the derived data in
-// \param datalen    length of buffer to fill
-// \param pwd        The password to use. For compliance with PKCS#12 §B.1, this
-// should be a BMPString, i.e. a Unicode string where each
-// character is encoded as 2 bytes in big-endian order, with
-// no byte order mark and with a null terminator (i.e. the
-// last two bytes should be 0x00 0x00).
-// \param pwdlen     length of the password (may be 0).
-// \param salt       Salt buffer to use. This may only be \c NULL when
-// \p saltlen is 0.
-// \param saltlen    length of the salt (may be zero)
-// \param mbedtls_md mbedtls_md type to use during the derivation
-// \param id         id that describes the purpose (can be
-// #MBEDTLS_PKCS12_DERIVE_KEY, #MBEDTLS_PKCS12_DERIVE_IV or
-// #MBEDTLS_PKCS12_DERIVE_MAC_KEY)
-// \param iterations number of iterations
-// 
-// \return          0 if successful, or a MD, BIGNUM type error.
-pub extern external/mbedtls-pkcs12-derivation(^data: c-pointer<int>, ^datalen: ssize_t, ^pwd: c-pointer<int>, ^pwdlen: ssize_t, ^salt: c-pointer<int>, ^saltlen: ssize_t, ^mbedtls-md: int32, ^id: int32, ^iterations: int32): int32
-  c inline "(int)mbedtls_pkcs12_derivation((unsigned char*)#1, (size_t)#2, (unsigned char*)#3, (size_t)#4, (unsigned char*)#5, (size_t)#6, (int32_t)#7, (int)#8, (int)#9)"
-
-pub inline fun ffi/mbedtls-pkcs12-derivation(^data: c-pointer<int>, ^datalen: int, ^pwd: c-pointer<int>, ^pwdlen: int, ^salt: c-pointer<int>, ^saltlen: int, ^mbedtls-md: mbedtls-md-type-t, ^id: int, ^iterations: int): <exn> int
-  external/mbedtls-pkcs12-derivation(data, datalen.ssize_t, pwd, pwdlen.ssize_t, salt, saltlen.ssize_t, mbedtls-md.mbedtls-md-type-t/int, id.int32, iterations.int32).int
-
-// \brief          Initialize mbedtls_pkcs7 structure.
-// 
-// \param pkcs7    mbedtls_pkcs7 structure.
-pub extern external/mbedtls-pkcs7-init(^pkcs7: c-pointer<mbedtls-pkcs7-c>): ()
-  c inline "(void)mbedtls_pkcs7_init((struct mbedtls_pkcs7*)#1)"
-
-// \brief          Parse a single DER formatted PKCS #7 detached signature.
-// 
-// \param pkcs7    The mbedtls_pkcs7 structure to be filled by the parser.
-// \param buf      The buffer holding only the DER encoded PKCS #7 content.
-// \param buflen   The size in bytes of \p buf. The size must be exactly the
-// length of the DER encoded PKCS #7 content.
-// 
-// \note           This function makes an internal copy of the PKCS #7 buffer
-// \p buf. In particular, \p buf may be destroyed or reused
-// after this call returns.
-// \note           Signatures with internal data are not supported.
-// 
-// \return         The \c mbedtls_pkcs7_type of \p buf, if successful.
-// \return         A negative error code on failure.
-pub extern external/mbedtls-pkcs7-parse-der(^pkcs7: c-pointer<mbedtls-pkcs7-c>, ^buf: c-pointer<int>, ^buflen: ssize_t): int32
-  c inline "(int)mbedtls_pkcs7_parse_der((struct mbedtls_pkcs7*)#1, (unsigned char*)#2, (size_t)#3)"
-
-pub inline fun ffi/mbedtls-pkcs7-parse-der(^pkcs7: c-pointer<mbedtls-pkcs7-c>, ^buf: c-pointer<int>, ^buflen: int): <> int
-  external/mbedtls-pkcs7-parse-der(pkcs7, buf, buflen.ssize_t).int
-
-// \brief          Verification of PKCS #7 signature against a caller-supplied
-// certificate.
-// 
-// For each signer in the PKCS structure, this function computes
-// a signature over the supplied data, using the supplied
-// certificate and the same digest algorithm as specified by the
-// signer. It then compares this signature against the
-// signer's signature; verification succeeds if any comparison
-// matches.
-// 
-// This function does not use the certificates held within the
-// PKCS #7 structure itself, and does not check that the
-// certificate is signed by a trusted certification authority.
-// 
-// \param pkcs7    mbedtls_pkcs7 structure containing signature.
-// \param cert     Certificate containing key to verify signature.
-// \param data     Plain data on which signature has to be verified.
-// \param datalen  Length of the data.
-// 
-// \note           This function internally calculates the hash on the supplied
-// plain data for signature verification.
-// 
-// \return         0 if the signature verifies, or a negative error code on failure.
-pub extern external/mbedtls-pkcs7-signed-data-verify(^pkcs7: c-pointer<mbedtls-pkcs7-c>, ^cert: c-pointer<mbedtls-x509-crt-c>, ^data: c-pointer<int>, ^datalen: ssize_t): int32
-  c inline "(int)mbedtls_pkcs7_signed_data_verify((struct mbedtls_pkcs7*)#1, (struct mbedtls_x509_crt*)#2, (unsigned char*)#3, (size_t)#4)"
-
-pub inline fun ffi/mbedtls-pkcs7-signed-data-verify(^pkcs7: c-pointer<mbedtls-pkcs7-c>, ^cert: c-pointer<mbedtls-x509-crt-c>, ^data: c-pointer<int>, ^datalen: int): <> int
-  external/mbedtls-pkcs7-signed-data-verify(pkcs7, cert, data, datalen.ssize_t).int
-
-// \brief          Verification of PKCS #7 signature against a caller-supplied
-// certificate.
-// 
-// For each signer in the PKCS structure, this function
-// validates a signature over the supplied hash, using the
-// supplied certificate and the same digest algorithm as
-// specified by the signer. Verification succeeds if any
-// signature is good.
-// 
-// This function does not use the certificates held within the
-// PKCS #7 structure itself, and does not check that the
-// certificate is signed by a trusted certification authority.
-// 
-// \param pkcs7    PKCS #7 structure containing signature.
-// \param cert     Certificate containing key to verify signature.
-// \param hash     Hash of the plain data on which signature has to be verified.
-// \param hashlen  Length of the hash.
-// 
-// \note           This function is different from mbedtls_pkcs7_signed_data_verify()
-// in that it is directly passed the hash of the data.
-// 
-// \return         0 if the signature verifies, or a negative error code on failure.
-pub extern external/mbedtls-pkcs7-signed-hash-verify(^pkcs7: c-pointer<mbedtls-pkcs7-c>, ^cert: c-pointer<mbedtls-x509-crt-c>, ^hash: c-pointer<int>, ^hashlen: ssize_t): int32
-  c inline "(int)mbedtls_pkcs7_signed_hash_verify((struct mbedtls_pkcs7*)#1, (struct mbedtls_x509_crt*)#2, (unsigned char*)#3, (size_t)#4)"
-
-pub inline fun ffi/mbedtls-pkcs7-signed-hash-verify(^pkcs7: c-pointer<mbedtls-pkcs7-c>, ^cert: c-pointer<mbedtls-x509-crt-c>, ^hash: c-pointer<int>, ^hashlen: int): <> int
-  external/mbedtls-pkcs7-signed-hash-verify(pkcs7, cert, hash, hashlen.ssize_t).int
-
-// \brief          Unallocate all PKCS #7 data and zeroize the memory.
-// It doesn't free \p pkcs7 itself. This should be done by the caller.
-// 
-// \param pkcs7    mbedtls_pkcs7 structure to free.
-pub extern external/mbedtls-pkcs7-free(^pkcs7: c-pointer<mbedtls-pkcs7-c>): ()
-  c inline "(void)mbedtls_pkcs7_free((struct mbedtls_pkcs7*)#1)"
 
 // \brief          This function initializes the specified AES context.
 // 
@@ -19363,552 +17795,6 @@ pub extern external/mbedtls-aes-self-test(^verbose: int32): int32
 pub inline fun ffi/mbedtls-aes-self-test(^verbose: int): <> int
   external/mbedtls-aes-self-test(verbose.int32).int
 
-// \brief          This function initializes the specified ARIA context.
-// 
-// It must be the first API called before using
-// the context.
-// 
-// \param ctx      The ARIA context to initialize. This must not be \c NULL.
-pub extern external/mbedtls-aria-init(^ctx1: c-pointer<mbedtls-aria-context-c>): ()
-  c inline "(void)mbedtls_aria_init((struct mbedtls_aria_context*)#1)"
-
-// \brief          This function releases and clears the specified ARIA context.
-// 
-// \param ctx      The ARIA context to clear. This may be \c NULL, in which
-// case this function returns immediately. If it is not \c NULL,
-// it must point to an initialized ARIA context.
-pub extern external/mbedtls-aria-free(^ctx1: c-pointer<mbedtls-aria-context-c>): ()
-  c inline "(void)mbedtls_aria_free((struct mbedtls_aria_context*)#1)"
-
-// \brief          This function sets the encryption key.
-// 
-// \param ctx      The ARIA context to which the key should be bound.
-// This must be initialized.
-// \param key      The encryption key. This must be a readable buffer
-// of size \p keybits Bits.
-// \param keybits  The size of \p key in Bits. Valid options are:
-// <ul><li>128 bits</li>
-// <li>192 bits</li>
-// <li>256 bits</li></ul>
-// 
-// \return         \c 0 on success.
-// \return         A negative error code on failure.
-pub extern external/mbedtls-aria-setkey-enc(^ctx1: c-pointer<mbedtls-aria-context-c>, ^key: c-pointer<int>, ^keybits: int32): int32
-  c inline "(int)mbedtls_aria_setkey_enc((struct mbedtls_aria_context*)#1, (unsigned char*)#2, (unsigned int)#3)"
-
-pub inline fun ffi/mbedtls-aria-setkey-enc(^ctx1: c-pointer<mbedtls-aria-context-c>, ^key: c-pointer<int>, ^keybits: int): <> int
-  external/mbedtls-aria-setkey-enc(ctx1, key, keybits.int32).int
-
-// \brief          This function sets the decryption key.
-// 
-// \param ctx      The ARIA context to which the key should be bound.
-// This must be initialized.
-// \param key      The decryption key. This must be a readable buffer
-// of size \p keybits Bits.
-// \param keybits  The size of data passed. Valid options are:
-// <ul><li>128 bits</li>
-// <li>192 bits</li>
-// <li>256 bits</li></ul>
-// 
-// \return         \c 0 on success.
-// \return         A negative error code on failure.
-pub extern external/mbedtls-aria-setkey-dec(^ctx1: c-pointer<mbedtls-aria-context-c>, ^key: c-pointer<int>, ^keybits: int32): int32
-  c inline "(int)mbedtls_aria_setkey_dec((struct mbedtls_aria_context*)#1, (unsigned char*)#2, (unsigned int)#3)"
-
-pub inline fun ffi/mbedtls-aria-setkey-dec(^ctx1: c-pointer<mbedtls-aria-context-c>, ^key: c-pointer<int>, ^keybits: int): <> int
-  external/mbedtls-aria-setkey-dec(ctx1, key, keybits.int32).int
-
-// \brief          This function performs an ARIA single-block encryption or
-// decryption operation.
-// 
-// It performs encryption or decryption (depending on whether
-// the key was set for encryption on decryption) on the input
-// data buffer defined in the \p input parameter.
-// 
-// mbedtls_aria_init(), and either mbedtls_aria_setkey_enc() or
-// mbedtls_aria_setkey_dec() must be called before the first
-// call to this API with the same context.
-// 
-// \param ctx      The ARIA context to use for encryption or decryption.
-// This must be initialized and bound to a key.
-// \param input    The 16-Byte buffer holding the input data.
-// \param output   The 16-Byte buffer holding the output data.
-// 
-// \return         \c 0 on success.
-// \return         A negative error code on failure.
-pub extern external/mbedtls-aria-crypt-ecb(^ctx1: c-pointer<mbedtls-aria-context-c>, ^input: c-pointer<int>, ^output: c-pointer<int>): int32
-  c inline "(int)mbedtls_aria_crypt_ecb((struct mbedtls_aria_context*)#1, (unsigned char*)#2, (unsigned char*)#3)"
-
-pub inline fun ffi/mbedtls-aria-crypt-ecb(^ctx1: c-pointer<mbedtls-aria-context-c>, ^input: c-array<int>, ^output: c-array<int>): <> int
-  external/mbedtls-aria-crypt-ecb(ctx1, input.cextern/carray/ptr, output.cextern/carray/ptr).int
-
-// \brief  This function performs an ARIA-CBC encryption or decryption operation
-// on full blocks.
-// 
-// It performs the operation defined in the \p mode
-// parameter (encrypt/decrypt), on the input data buffer defined in
-// the \p input parameter.
-// 
-// It can be called as many times as needed, until all the input
-// data is processed. mbedtls_aria_init(), and either
-// mbedtls_aria_setkey_enc() or mbedtls_aria_setkey_dec() must be called
-// before the first call to this API with the same context.
-// 
-// \note   This function operates on aligned blocks, that is, the input size
-// must be a multiple of the ARIA block size of 16 Bytes.
-// 
-// \note   Upon exit, the content of the IV is updated so that you can
-// call the same function again on the next
-// block(s) of data and get the same result as if it was
-// encrypted in one call. This allows a "streaming" usage.
-// If you need to retain the contents of the IV, you should
-// either save it manually or use the cipher module instead.
-// 
-// 
-// \param ctx      The ARIA context to use for encryption or decryption.
-// This must be initialized and bound to a key.
-// \param mode     The mode of operation. This must be either
-// #MBEDTLS_ARIA_ENCRYPT for encryption, or
-// #MBEDTLS_ARIA_DECRYPT for decryption.
-// \param length   The length of the input data in Bytes. This must be a
-// multiple of the block size (16 Bytes).
-// \param iv       Initialization vector (updated after use).
-// This must be a readable buffer of size 16 Bytes.
-// \param input    The buffer holding the input data. This must
-// be a readable buffer of length \p length Bytes.
-// \param output   The buffer holding the output data. This must
-// be a writable buffer of length \p length Bytes.
-// 
-// \return         \c 0 on success.
-// \return         A negative error code on failure.
-pub extern external/mbedtls-aria-crypt-cbc(^ctx1: c-pointer<mbedtls-aria-context-c>, ^mode: int32, ^length: ssize_t, ^iv: c-pointer<int>, ^input: c-pointer<int>, ^output: c-pointer<int>): int32
-  c inline "(int)mbedtls_aria_crypt_cbc((struct mbedtls_aria_context*)#1, (int)#2, (size_t)#3, (unsigned char*)#4, (unsigned char*)#5, (unsigned char*)#6)"
-
-pub inline fun ffi/mbedtls-aria-crypt-cbc(^ctx1: c-pointer<mbedtls-aria-context-c>, ^mode: int, ^length: int, ^iv: c-array<int>, ^input: c-pointer<int>, ^output: c-pointer<int>): <> int
-  external/mbedtls-aria-crypt-cbc(ctx1, mode.int32, length.ssize_t, iv.cextern/carray/ptr, input, output).int
-
-// \brief This function performs an ARIA-CFB128 encryption or decryption
-// operation.
-// 
-// It performs the operation defined in the \p mode
-// parameter (encrypt or decrypt), on the input data buffer
-// defined in the \p input parameter.
-// 
-// For CFB, you must set up the context with mbedtls_aria_setkey_enc(),
-// regardless of whether you are performing an encryption or decryption
-// operation, that is, regardless of the \p mode parameter. This is
-// because CFB mode uses the same key schedule for encryption and
-// decryption.
-// 
-// \note  Upon exit, the content of the IV is updated so that you can
-// call the same function again on the next
-// block(s) of data and get the same result as if it was
-// encrypted in one call. This allows a "streaming" usage.
-// If you need to retain the contents of the
-// IV, you must either save it manually or use the cipher
-// module instead.
-// 
-// 
-// \param ctx      The ARIA context to use for encryption or decryption.
-// This must be initialized and bound to a key.
-// \param mode     The mode of operation. This must be either
-// #MBEDTLS_ARIA_ENCRYPT for encryption, or
-// #MBEDTLS_ARIA_DECRYPT for decryption.
-// \param length   The length of the input data \p input in Bytes.
-// \param iv_off   The offset in IV (updated after use).
-// This must not be larger than 15.
-// \param iv       The initialization vector (updated after use).
-// This must be a readable buffer of size 16 Bytes.
-// \param input    The buffer holding the input data. This must
-// be a readable buffer of length \p length Bytes.
-// \param output   The buffer holding the output data. This must
-// be a writable buffer of length \p length Bytes.
-// 
-// \return         \c 0 on success.
-// \return         A negative error code on failure.
-pub extern external/mbedtls-aria-crypt-cfb128(^ctx1: c-pointer<mbedtls-aria-context-c>, ^mode: int32, ^length: ssize_t, ^iv-off: c-pointer<int>, ^iv: c-pointer<int>, ^input: c-pointer<int>, ^output: c-pointer<int>): int32
-  c inline "(int)mbedtls_aria_crypt_cfb128((struct mbedtls_aria_context*)#1, (int)#2, (size_t)#3, (size_t*)#4, (unsigned char*)#5, (unsigned char*)#6, (unsigned char*)#7)"
-
-pub inline fun ffi/mbedtls-aria-crypt-cfb128(^ctx1: c-pointer<mbedtls-aria-context-c>, ^mode: int, ^length: int, ^iv-off: c-pointer<int>, ^iv: c-array<int>, ^input: c-pointer<int>, ^output: c-pointer<int>): <> int
-  external/mbedtls-aria-crypt-cfb128(ctx1, mode.int32, length.ssize_t, iv-off, iv.cextern/carray/ptr, input, output).int
-
-// \brief      This function performs an ARIA-CTR encryption or decryption
-// operation.
-// 
-// Due to the nature of CTR, you must use the same key schedule
-// for both encryption and decryption operations. Therefore, you
-// must use the context initialized with mbedtls_aria_setkey_enc()
-// for both #MBEDTLS_ARIA_ENCRYPT and #MBEDTLS_ARIA_DECRYPT.
-// 
-// \warning    You must never reuse a nonce value with the same key. Doing so
-// would void the encryption for the two messages encrypted with
-// the same nonce and key.
-// 
-// There are two common strategies for managing nonces with CTR:
-// 
-// 1. You can handle everything as a single message processed over
-// successive calls to this function. In that case, you want to
-// set \p nonce_counter and \p nc_off to 0 for the first call, and
-// then preserve the values of \p nonce_counter, \p nc_off and \p
-// stream_block across calls to this function as they will be
-// updated by this function.
-// 
-// With this strategy, you must not encrypt more than 2**128
-// blocks of data with the same key.
-// 
-// 2. You can encrypt separate messages by dividing the \p
-// nonce_counter buffer in two areas: the first one used for a
-// per-message nonce, handled by yourself, and the second one
-// updated by this function internally.
-// 
-// For example, you might reserve the first 12 bytes for the
-// per-message nonce, and the last 4 bytes for internal use. In that
-// case, before calling this function on a new message you need to
-// set the first 12 bytes of \p nonce_counter to your chosen nonce
-// value, the last 4 to 0, and \p nc_off to 0 (which will cause \p
-// stream_block to be ignored). That way, you can encrypt at most
-// 2**96 messages of up to 2**32 blocks each with the same key.
-// 
-// The per-message nonce (or information sufficient to reconstruct
-// it) needs to be communicated with the ciphertext and must be unique.
-// The recommended way to ensure uniqueness is to use a message
-// counter. An alternative is to generate random nonces, but this
-// limits the number of messages that can be securely encrypted:
-// for example, with 96-bit random nonces, you should not encrypt
-// more than 2**32 messages with the same key.
-// 
-// Note that for both strategies, sizes are measured in blocks and
-// that an ARIA block is 16 bytes.
-// 
-// \warning    Upon return, \p stream_block contains sensitive data. Its
-// content must not be written to insecure storage and should be
-// securely discarded as soon as it's no longer needed.
-// 
-// \param ctx              The ARIA context to use for encryption or decryption.
-// This must be initialized and bound to a key.
-// \param length           The length of the input data \p input in Bytes.
-// \param nc_off           The offset in Bytes in the current \p stream_block,
-// for resuming within the current cipher stream. The
-// offset pointer should be \c 0 at the start of a
-// stream. This must not be larger than \c 15 Bytes.
-// \param nonce_counter    The 128-bit nonce and counter. This must point to
-// a read/write buffer of length \c 16 bytes.
-// \param stream_block     The saved stream block for resuming. This must
-// point to a read/write buffer of length \c 16 bytes.
-// This is overwritten by the function.
-// \param input            The buffer holding the input data. This must
-// be a readable buffer of length \p length Bytes.
-// \param output           The buffer holding the output data. This must
-// be a writable buffer of length \p length Bytes.
-// 
-// \return                 \c 0 on success.
-// \return                 A negative error code on failure.
-pub extern external/mbedtls-aria-crypt-ctr(^ctx1: c-pointer<mbedtls-aria-context-c>, ^length: ssize_t, ^nc-off: c-pointer<int>, ^nonce-counter: c-pointer<int>, ^stream-block: c-pointer<int>, ^input: c-pointer<int>, ^output: c-pointer<int>): int32
-  c inline "(int)mbedtls_aria_crypt_ctr((struct mbedtls_aria_context*)#1, (size_t)#2, (size_t*)#3, (unsigned char*)#4, (unsigned char*)#5, (unsigned char*)#6, (unsigned char*)#7)"
-
-pub inline fun ffi/mbedtls-aria-crypt-ctr(^ctx1: c-pointer<mbedtls-aria-context-c>, ^length: int, ^nc-off: c-pointer<int>, ^nonce-counter: c-array<int>, ^stream-block: c-array<int>, ^input: c-pointer<int>, ^output: c-pointer<int>): <> int
-  external/mbedtls-aria-crypt-ctr(ctx1, length.ssize_t, nc-off, nonce-counter.cextern/carray/ptr, stream-block.cextern/carray/ptr, input, output).int
-
-// \brief          Checkup routine.
-// 
-// \return         \c 0 on success, or \c 1 on failure.
-pub extern external/mbedtls-aria-self-test(^verbose: int32): int32
-  c inline "(int)mbedtls_aria_self_test((int)#1)"
-
-pub inline fun ffi/mbedtls-aria-self-test(^verbose: int): <> int
-  external/mbedtls-aria-self-test(verbose.int32).int
-
-// \brief          Initialize a CAMELLIA context.
-// 
-// \param ctx      The CAMELLIA context to be initialized.
-// This must not be \c NULL.
-pub extern external/mbedtls-camellia-init(^ctx1: c-pointer<mbedtls-camellia-context-c>): ()
-  c inline "(void)mbedtls_camellia_init((struct mbedtls_camellia_context*)#1)"
-
-// \brief          Clear a CAMELLIA context.
-// 
-// \param ctx      The CAMELLIA context to be cleared. This may be \c NULL,
-// in which case this function returns immediately. If it is not
-// \c NULL, it must be initialized.
-pub extern external/mbedtls-camellia-free(^ctx1: c-pointer<mbedtls-camellia-context-c>): ()
-  c inline "(void)mbedtls_camellia_free((struct mbedtls_camellia_context*)#1)"
-
-// \brief          Perform a CAMELLIA key schedule operation for encryption.
-// 
-// \param ctx      The CAMELLIA context to use. This must be initialized.
-// \param key      The encryption key to use. This must be a readable buffer
-// of size \p keybits Bits.
-// \param keybits  The length of \p key in Bits. This must be either \c 128,
-// \c 192 or \c 256.
-// 
-// \return         \c 0 if successful.
-// \return         A negative error code on failure.
-pub extern external/mbedtls-camellia-setkey-enc(^ctx1: c-pointer<mbedtls-camellia-context-c>, ^key: c-pointer<int>, ^keybits: int32): int32
-  c inline "(int)mbedtls_camellia_setkey_enc((struct mbedtls_camellia_context*)#1, (unsigned char*)#2, (unsigned int)#3)"
-
-pub inline fun ffi/mbedtls-camellia-setkey-enc(^ctx1: c-pointer<mbedtls-camellia-context-c>, ^key: c-pointer<int>, ^keybits: int): <> int
-  external/mbedtls-camellia-setkey-enc(ctx1, key, keybits.int32).int
-
-// \brief          Perform a CAMELLIA key schedule operation for decryption.
-// 
-// \param ctx      The CAMELLIA context to use. This must be initialized.
-// \param key      The decryption key. This must be a readable buffer
-// of size \p keybits Bits.
-// \param keybits  The length of \p key in Bits. This must be either \c 128,
-// \c 192 or \c 256.
-// 
-// \return         \c 0 if successful.
-// \return         A negative error code on failure.
-pub extern external/mbedtls-camellia-setkey-dec(^ctx1: c-pointer<mbedtls-camellia-context-c>, ^key: c-pointer<int>, ^keybits: int32): int32
-  c inline "(int)mbedtls_camellia_setkey_dec((struct mbedtls_camellia_context*)#1, (unsigned char*)#2, (unsigned int)#3)"
-
-pub inline fun ffi/mbedtls-camellia-setkey-dec(^ctx1: c-pointer<mbedtls-camellia-context-c>, ^key: c-pointer<int>, ^keybits: int): <> int
-  external/mbedtls-camellia-setkey-dec(ctx1, key, keybits.int32).int
-
-// \brief          Perform a CAMELLIA-ECB block encryption/decryption operation.
-// 
-// \param ctx      The CAMELLIA context to use. This must be initialized
-// and bound to a key.
-// \param mode     The mode of operation. This must be either
-// #MBEDTLS_CAMELLIA_ENCRYPT or #MBEDTLS_CAMELLIA_DECRYPT.
-// \param input    The input block. This must be a readable buffer
-// of size \c 16 Bytes.
-// \param output   The output block. This must be a writable buffer
-// of size \c 16 Bytes.
-// 
-// \return         \c 0 if successful.
-// \return         A negative error code on failure.
-pub extern external/mbedtls-camellia-crypt-ecb(^ctx1: c-pointer<mbedtls-camellia-context-c>, ^mode: int32, ^input: c-pointer<int>, ^output: c-pointer<int>): int32
-  c inline "(int)mbedtls_camellia_crypt_ecb((struct mbedtls_camellia_context*)#1, (int)#2, (unsigned char*)#3, (unsigned char*)#4)"
-
-pub inline fun ffi/mbedtls-camellia-crypt-ecb(^ctx1: c-pointer<mbedtls-camellia-context-c>, ^mode: int, ^input: c-array<int>, ^output: c-array<int>): <> int
-  external/mbedtls-camellia-crypt-ecb(ctx1, mode.int32, input.cextern/carray/ptr, output.cextern/carray/ptr).int
-
-// \brief          Perform a CAMELLIA-CBC buffer encryption/decryption operation.
-// 
-// \note           Upon exit, the content of the IV is updated so that you can
-// call the function same function again on the following
-// block(s) of data and get the same result as if it was
-// encrypted in one call. This allows a "streaming" usage.
-// If on the other hand you need to retain the contents of the
-// IV, you should either save it manually or use the cipher
-// module instead.
-// 
-// \param ctx      The CAMELLIA context to use. This must be initialized
-// and bound to a key.
-// \param mode     The mode of operation. This must be either
-// #MBEDTLS_CAMELLIA_ENCRYPT or #MBEDTLS_CAMELLIA_DECRYPT.
-// \param length   The length in Bytes of the input data \p input.
-// This must be a multiple of \c 16 Bytes.
-// \param iv       The initialization vector. This must be a read/write buffer
-// of length \c 16 Bytes. It is updated to allow streaming
-// use as explained above.
-// \param input    The buffer holding the input data. This must point to a
-// readable buffer of length \p length Bytes.
-// \param output   The buffer holding the output data. This must point to a
-// writable buffer of length \p length Bytes.
-// 
-// \return         \c 0 if successful.
-// \return         A negative error code on failure.
-pub extern external/mbedtls-camellia-crypt-cbc(^ctx1: c-pointer<mbedtls-camellia-context-c>, ^mode: int32, ^length: ssize_t, ^iv: c-pointer<int>, ^input: c-pointer<int>, ^output: c-pointer<int>): int32
-  c inline "(int)mbedtls_camellia_crypt_cbc((struct mbedtls_camellia_context*)#1, (int)#2, (size_t)#3, (unsigned char*)#4, (unsigned char*)#5, (unsigned char*)#6)"
-
-pub inline fun ffi/mbedtls-camellia-crypt-cbc(^ctx1: c-pointer<mbedtls-camellia-context-c>, ^mode: int, ^length: int, ^iv: c-array<int>, ^input: c-pointer<int>, ^output: c-pointer<int>): <> int
-  external/mbedtls-camellia-crypt-cbc(ctx1, mode.int32, length.ssize_t, iv.cextern/carray/ptr, input, output).int
-
-// \brief          Perform a CAMELLIA-CFB128 buffer encryption/decryption
-// operation.
-// 
-// \note           Due to the nature of CFB mode, you should use the same
-// key for both encryption and decryption. In particular, calls
-// to this function should be preceded by a key-schedule via
-// mbedtls_camellia_setkey_enc() regardless of whether \p mode
-// is #MBEDTLS_CAMELLIA_ENCRYPT or #MBEDTLS_CAMELLIA_DECRYPT.
-// 
-// \note           Upon exit, the content of the IV is updated so that you can
-// call the function same function again on the following
-// block(s) of data and get the same result as if it was
-// encrypted in one call. This allows a "streaming" usage.
-// If on the other hand you need to retain the contents of the
-// IV, you should either save it manually or use the cipher
-// module instead.
-// 
-// \param ctx      The CAMELLIA context to use. This must be initialized
-// and bound to a key.
-// \param mode     The mode of operation. This must be either
-// #MBEDTLS_CAMELLIA_ENCRYPT or #MBEDTLS_CAMELLIA_DECRYPT.
-// \param length   The length of the input data \p input. Any value is allowed.
-// \param iv_off   The current offset in the IV. This must be smaller
-// than \c 16 Bytes. It is updated after this call to allow
-// the aforementioned streaming usage.
-// \param iv       The initialization vector. This must be a read/write buffer
-// of length \c 16 Bytes. It is updated after this call to
-// allow the aforementioned streaming usage.
-// \param input    The buffer holding the input data. This must be a readable
-// buffer of size \p length Bytes.
-// \param output   The buffer to hold the output data. This must be a writable
-// buffer of length \p length Bytes.
-// 
-// \return         \c 0 if successful.
-// \return         A negative error code on failure.
-pub extern external/mbedtls-camellia-crypt-cfb128(^ctx1: c-pointer<mbedtls-camellia-context-c>, ^mode: int32, ^length: ssize_t, ^iv-off: c-pointer<int>, ^iv: c-pointer<int>, ^input: c-pointer<int>, ^output: c-pointer<int>): int32
-  c inline "(int)mbedtls_camellia_crypt_cfb128((struct mbedtls_camellia_context*)#1, (int)#2, (size_t)#3, (size_t*)#4, (unsigned char*)#5, (unsigned char*)#6, (unsigned char*)#7)"
-
-pub inline fun ffi/mbedtls-camellia-crypt-cfb128(^ctx1: c-pointer<mbedtls-camellia-context-c>, ^mode: int, ^length: int, ^iv-off: c-pointer<int>, ^iv: c-array<int>, ^input: c-pointer<int>, ^output: c-pointer<int>): <> int
-  external/mbedtls-camellia-crypt-cfb128(ctx1, mode.int32, length.ssize_t, iv-off, iv.cextern/carray/ptr, input, output).int
-
-// \brief      Perform a CAMELLIA-CTR buffer encryption/decryption operation.
-// 
-// *note       Due to the nature of CTR mode, you should use the same
-// key for both encryption and decryption. In particular, calls
-// to this function should be preceded by a key-schedule via
-// mbedtls_camellia_setkey_enc() regardless of whether the mode
-// is #MBEDTLS_CAMELLIA_ENCRYPT or #MBEDTLS_CAMELLIA_DECRYPT.
-// 
-// \warning    You must never reuse a nonce value with the same key. Doing so
-// would void the encryption for the two messages encrypted with
-// the same nonce and key.
-// 
-// There are two common strategies for managing nonces with CTR:
-// 
-// 1. You can handle everything as a single message processed over
-// successive calls to this function. In that case, you want to
-// set \p nonce_counter and \p nc_off to 0 for the first call, and
-// then preserve the values of \p nonce_counter, \p nc_off and \p
-// stream_block across calls to this function as they will be
-// updated by this function.
-// 
-// With this strategy, you must not encrypt more than 2**128
-// blocks of data with the same key.
-// 
-// 2. You can encrypt separate messages by dividing the \p
-// nonce_counter buffer in two areas: the first one used for a
-// per-message nonce, handled by yourself, and the second one
-// updated by this function internally.
-// 
-// For example, you might reserve the first \c 12 Bytes for the
-// per-message nonce, and the last \c 4 Bytes for internal use.
-// In that case, before calling this function on a new message you
-// need to set the first \c 12 Bytes of \p nonce_counter to your
-// chosen nonce value, the last four to \c 0, and \p nc_off to \c 0
-// (which will cause \p stream_block to be ignored). That way, you
-// can encrypt at most \c 2**96 messages of up to \c 2**32 blocks
-// each  with the same key.
-// 
-// The per-message nonce (or information sufficient to reconstruct
-// it) needs to be communicated with the ciphertext and must be
-// unique. The recommended way to ensure uniqueness is to use a
-// message counter. An alternative is to generate random nonces,
-// but this limits the number of messages that can be securely
-// encrypted: for example, with 96-bit random nonces, you should
-// not encrypt more than 2**32 messages with the same key.
-// 
-// Note that for both strategies, sizes are measured in blocks and
-// that a CAMELLIA block is \c 16 Bytes.
-// 
-// \warning    Upon return, \p stream_block contains sensitive data. Its
-// content must not be written to insecure storage and should be
-// securely discarded as soon as it's no longer needed.
-// 
-// \param ctx           The CAMELLIA context to use. This must be initialized
-// and bound to a key.
-// \param length        The length of the input data \p input in Bytes.
-// Any value is allowed.
-// \param nc_off        The offset in the current \p stream_block (for resuming
-// within current cipher stream). The offset pointer to
-// should be \c 0 at the start of a stream. It is updated
-// at the end of this call.
-// \param nonce_counter The 128-bit nonce and counter. This must be a read/write
-// buffer of length \c 16 Bytes.
-// \param stream_block  The saved stream-block for resuming. This must be a
-// read/write buffer of length \c 16 Bytes.
-// \param input         The input data stream. This must be a readable buffer of
-// size \p length Bytes.
-// \param output        The output data stream. This must be a writable buffer
-// of size \p length Bytes.
-// 
-// \return              \c 0 if successful.
-// \return              A negative error code on failure.
-pub extern external/mbedtls-camellia-crypt-ctr(^ctx1: c-pointer<mbedtls-camellia-context-c>, ^length: ssize_t, ^nc-off: c-pointer<int>, ^nonce-counter: c-pointer<int>, ^stream-block: c-pointer<int>, ^input: c-pointer<int>, ^output: c-pointer<int>): int32
-  c inline "(int)mbedtls_camellia_crypt_ctr((struct mbedtls_camellia_context*)#1, (size_t)#2, (size_t*)#3, (unsigned char*)#4, (unsigned char*)#5, (unsigned char*)#6, (unsigned char*)#7)"
-
-pub inline fun ffi/mbedtls-camellia-crypt-ctr(^ctx1: c-pointer<mbedtls-camellia-context-c>, ^length: int, ^nc-off: c-pointer<int>, ^nonce-counter: c-array<int>, ^stream-block: c-array<int>, ^input: c-pointer<int>, ^output: c-pointer<int>): <> int
-  external/mbedtls-camellia-crypt-ctr(ctx1, length.ssize_t, nc-off, nonce-counter.cextern/carray/ptr, stream-block.cextern/carray/ptr, input, output).int
-
-// \brief          Checkup routine
-// 
-// \return         0 if successful, or 1 if the test failed
-pub extern external/mbedtls-camellia-self-test(^verbose: int32): int32
-  c inline "(int)mbedtls_camellia_self_test((int)#1)"
-
-pub inline fun ffi/mbedtls-camellia-self-test(^verbose: int): <> int
-  external/mbedtls-camellia-self-test(verbose.int32).int
-
-// Constant-time buffer comparison without branches.
-// 
-// This is equivalent to the standard memcmp function, but is likely to be
-// compiled to code using bitwise operations rather than a branch, such that
-// the time taken is constant w.r.t. the data pointed to by \p a and \p b,
-// and w.r.t. whether \p a and \p b are equal or not. It is not constant-time
-// w.r.t. \p n .
-// 
-// This function can be used to write constant-time code by replacing branches
-// with bit operations using masks.
-// 
-// \param a     Pointer to the first buffer, containing at least \p n bytes. May not be NULL.
-// \param b     Pointer to the second buffer, containing at least \p n bytes. May not be NULL.
-// \param n     The number of bytes to compare.
-// 
-// \return      Zero if the contents of the two buffers are the same,
-// otherwise non-zero.
-pub extern external/mbedtls-ct-memcmp(^a: c-pointer<()>, ^b: c-pointer<()>, ^n: ssize_t): int32
-  c inline "(int)mbedtls_ct_memcmp((void*)#1, (void*)#2, (size_t)#3)"
-
-pub inline fun ffi/mbedtls-ct-memcmp(^a: c-pointer<()>, ^b: c-pointer<()>, ^n: int): <> int
-  external/mbedtls-ct-memcmp(a, b, n.ssize_t).int
-
-// \brief          Initialize cookie context
-pub extern external/mbedtls-ssl-cookie-init(^ctx1: c-pointer<mbedtls-ssl-cookie-ctx-c>): ()
-  c inline "(void)mbedtls_ssl_cookie_init((struct mbedtls_ssl_cookie_ctx*)#1)"
-
-// \brief          Setup cookie context (generate keys)
-pub extern external/mbedtls-ssl-cookie-setup(^ctx1: c-pointer<mbedtls-ssl-cookie-ctx-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): int32
-  c inline "(int)mbedtls_ssl_cookie_setup((struct mbedtls_ssl_cookie_ctx*)#1, (int (*)(void*, unsigned char*, size_t))#2, (void*)#3)"
-
-pub inline fun ffi/mbedtls-ssl-cookie-setup(^ctx1: c-pointer<mbedtls-ssl-cookie-ctx-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>): <> int
-  external/mbedtls-ssl-cookie-setup(ctx1, f-rng, p-rng).int
-
-// \brief          Set expiration delay for cookies
-// (Default MBEDTLS_SSL_COOKIE_TIMEOUT)
-// 
-// \param ctx      Cookie context
-// \param delay    Delay, in seconds if HAVE_TIME, or in number of cookies
-// issued in the meantime.
-// 0 to disable expiration (NOT recommended)
-pub extern external/mbedtls-ssl-cookie-set-timeout(^ctx1: c-pointer<mbedtls-ssl-cookie-ctx-c>, ^delay: int64): ()
-  c inline "(void)mbedtls_ssl_cookie_set_timeout((struct mbedtls_ssl_cookie_ctx*)#1, (unsigned long)#2)"
-
-pub inline fun ffi/mbedtls-ssl-cookie-set-timeout(^ctx1: c-pointer<mbedtls-ssl-cookie-ctx-c>, ^delay: int): <> ()
-  external/mbedtls-ssl-cookie-set-timeout(ctx1, delay.int64)
-
-// \brief          Free cookie context
-pub extern external/mbedtls-ssl-cookie-free(^ctx1: c-pointer<mbedtls-ssl-cookie-ctx-c>): ()
-  c inline "(void)mbedtls_ssl_cookie_free((struct mbedtls_ssl_cookie_ctx*)#1)"
-
-// \brief          Generate cookie, see \c mbedtls_ssl_cookie_write_t
-pub extern external/mbedtls-ssl-cookie-write(^arg0: c-pointer<()>, ^arg1: c-pointer<c-pointer<int>>, ^arg2: c-pointer<int>, ^arg3: c-pointer<int>, ^arg4: ssize_t): int32
-  c inline "(int)mbedtls_ssl_cookie_write((void*)#1, (unsigned char**)#2, (unsigned char*)#3, (unsigned char*)#4, (size_t)#5)"
-
-pub inline fun ffi/mbedtls-ssl-cookie-write(^arg0: c-pointer<()>, ^arg1: c-pointer<c-pointer<int>>, ^arg2: c-pointer<int>, ^arg3: c-pointer<int>, ^arg4: int): <> int
-  external/mbedtls-ssl-cookie-write(arg0, arg1, arg2, arg3, arg4.ssize_t).int
-
-// \brief          Verify cookie, see \c mbedtls_ssl_cookie_write_t
-pub extern external/mbedtls-ssl-cookie-check(^arg0: c-pointer<()>, ^arg1: c-pointer<int>, ^arg2: ssize_t, ^arg3: c-pointer<int>, ^arg4: ssize_t): int32
-  c inline "(int)mbedtls_ssl_cookie_check((void*)#1, (unsigned char*)#2, (size_t)#3, (unsigned char*)#4, (size_t)#5)"
-
-pub inline fun ffi/mbedtls-ssl-cookie-check(^arg0: c-pointer<()>, ^arg1: c-pointer<int>, ^arg2: int, ^arg3: c-pointer<int>, ^arg4: int): <> int
-  external/mbedtls-ssl-cookie-check(arg0, arg1, arg2.ssize_t, arg3, arg4.ssize_t).int
-
 // \brief               This function initializes the CTR_DRBG context,
 // and prepares it for mbedtls_ctr_drbg_seed()
 // or mbedtls_ctr_drbg_free().
@@ -20202,1439 +18088,24 @@ pub extern external/mbedtls-ctr-drbg-self-test(^verbose: int32): int32
 pub inline fun ffi/mbedtls-ctr-drbg-self-test(^verbose: int): <> int
   external/mbedtls-ctr-drbg-self-test(verbose.int32).int
 
-// \brief          Initialize DES context
-// 
-// \param ctx      DES context to be initialized
-// 
-// \warning        DES/3DES are considered weak ciphers and their use constitutes a
-// security risk. We recommend considering stronger ciphers
-// instead.
-pub extern external/mbedtls-des-init(^ctx1: c-pointer<mbedtls-des-context-c>): ()
-  c inline "(void)mbedtls_des_init((struct mbedtls_des_context*)#1)"
-
-// \brief          Clear DES context
-// 
-// \param ctx      DES context to be cleared
-// 
-// \warning        DES/3DES are considered weak ciphers and their use constitutes a
-// security risk. We recommend considering stronger ciphers
-// instead.
-pub extern external/mbedtls-des-free(^ctx1: c-pointer<mbedtls-des-context-c>): ()
-  c inline "(void)mbedtls_des_free((struct mbedtls_des_context*)#1)"
-
-// \brief          Initialize Triple-DES context
-// 
-// \param ctx      DES3 context to be initialized
-// 
-// \warning        DES/3DES are considered weak ciphers and their use constitutes a
-// security risk. We recommend considering stronger ciphers
-// instead.
-pub extern external/mbedtls-des3-init(^ctx1: c-pointer<mbedtls-des3-context-c>): ()
-  c inline "(void)mbedtls_des3_init((struct mbedtls_des3_context*)#1)"
-
-// \brief          Clear Triple-DES context
-// 
-// \param ctx      DES3 context to be cleared
-// 
-// \warning        DES/3DES are considered weak ciphers and their use constitutes a
-// security risk. We recommend considering stronger ciphers
-// instead.
-pub extern external/mbedtls-des3-free(^ctx1: c-pointer<mbedtls-des3-context-c>): ()
-  c inline "(void)mbedtls_des3_free((struct mbedtls_des3_context*)#1)"
-
-// \brief          Set key parity on the given key to odd.
-// 
-// DES keys are 56 bits long, but each byte is padded with
-// a parity bit to allow verification.
-// 
-// \param key      8-byte secret key
-// 
-// \warning        DES/3DES are considered weak ciphers and their use constitutes a
-// security risk. We recommend considering stronger ciphers
-// instead.
-pub extern external/mbedtls-des-key-set-parity(^key: c-pointer<int>): ()
-  c inline "(void)mbedtls_des_key_set_parity((unsigned char*)#1)"
-
-// \brief          Check that key parity on the given key is odd.
-// 
-// DES keys are 56 bits long, but each byte is padded with
-// a parity bit to allow verification.
-// 
-// \param key      8-byte secret key
-// 
-// \return         0 is parity was ok, 1 if parity was not correct.
-// 
-// \warning        DES/3DES are considered weak ciphers and their use constitutes a
-// security risk. We recommend considering stronger ciphers
-// instead.
-pub extern external/mbedtls-des-key-check-key-parity(^key: c-pointer<int>): int32
-  c inline "(int)mbedtls_des_key_check_key_parity((unsigned char*)#1)"
-
-pub inline fun ffi/mbedtls-des-key-check-key-parity(^key: c-array<int>): <> int
-  external/mbedtls-des-key-check-key-parity(key.cextern/carray/ptr).int
-
-// \brief          Check that key is not a weak or semi-weak DES key
-// 
-// \param key      8-byte secret key
-// 
-// \return         0 if no weak key was found, 1 if a weak key was identified.
-// 
-// \warning        DES/3DES are considered weak ciphers and their use constitutes a
-// security risk. We recommend considering stronger ciphers
-// instead.
-pub extern external/mbedtls-des-key-check-weak(^key: c-pointer<int>): int32
-  c inline "(int)mbedtls_des_key_check_weak((unsigned char*)#1)"
-
-pub inline fun ffi/mbedtls-des-key-check-weak(^key: c-array<int>): <> int
-  external/mbedtls-des-key-check-weak(key.cextern/carray/ptr).int
-
-// \brief          DES key schedule (56-bit, encryption)
-// 
-// \param ctx      DES context to be initialized
-// \param key      8-byte secret key
-// 
-// \return         0
-// 
-// \warning        DES/3DES are considered weak ciphers and their use constitutes a
-// security risk. We recommend considering stronger ciphers
-// instead.
-pub extern external/mbedtls-des-setkey-enc(^ctx1: c-pointer<mbedtls-des-context-c>, ^key: c-pointer<int>): int32
-  c inline "(int)mbedtls_des_setkey_enc((struct mbedtls_des_context*)#1, (unsigned char*)#2)"
-
-pub inline fun ffi/mbedtls-des-setkey-enc(^ctx1: c-pointer<mbedtls-des-context-c>, ^key: c-array<int>): <> int
-  external/mbedtls-des-setkey-enc(ctx1, key.cextern/carray/ptr).int
-
-// \brief          DES key schedule (56-bit, decryption)
-// 
-// \param ctx      DES context to be initialized
-// \param key      8-byte secret key
-// 
-// \return         0
-// 
-// \warning        DES/3DES are considered weak ciphers and their use constitutes a
-// security risk. We recommend considering stronger ciphers
-// instead.
-pub extern external/mbedtls-des-setkey-dec(^ctx1: c-pointer<mbedtls-des-context-c>, ^key: c-pointer<int>): int32
-  c inline "(int)mbedtls_des_setkey_dec((struct mbedtls_des_context*)#1, (unsigned char*)#2)"
-
-pub inline fun ffi/mbedtls-des-setkey-dec(^ctx1: c-pointer<mbedtls-des-context-c>, ^key: c-array<int>): <> int
-  external/mbedtls-des-setkey-dec(ctx1, key.cextern/carray/ptr).int
-
-// \brief          Triple-DES key schedule (112-bit, encryption)
-// 
-// \param ctx      3DES context to be initialized
-// \param key      16-byte secret key
-// 
-// \return         0
-// 
-// \warning        DES/3DES are considered weak ciphers and their use constitutes a
-// security risk. We recommend considering stronger ciphers
-// instead.
-pub extern external/mbedtls-des3-set2key-enc(^ctx1: c-pointer<mbedtls-des3-context-c>, ^key: c-pointer<int>): int32
-  c inline "(int)mbedtls_des3_set2key_enc((struct mbedtls_des3_context*)#1, (unsigned char*)#2)"
-
-pub inline fun ffi/mbedtls-des3-set2key-enc(^ctx1: c-pointer<mbedtls-des3-context-c>, ^key: c-array<int>): <> int
-  external/mbedtls-des3-set2key-enc(ctx1, key.cextern/carray/ptr).int
-
-// \brief          Triple-DES key schedule (112-bit, decryption)
-// 
-// \param ctx      3DES context to be initialized
-// \param key      16-byte secret key
-// 
-// \return         0
-// 
-// \warning        DES/3DES are considered weak ciphers and their use constitutes a
-// security risk. We recommend considering stronger ciphers
-// instead.
-pub extern external/mbedtls-des3-set2key-dec(^ctx1: c-pointer<mbedtls-des3-context-c>, ^key: c-pointer<int>): int32
-  c inline "(int)mbedtls_des3_set2key_dec((struct mbedtls_des3_context*)#1, (unsigned char*)#2)"
-
-pub inline fun ffi/mbedtls-des3-set2key-dec(^ctx1: c-pointer<mbedtls-des3-context-c>, ^key: c-array<int>): <> int
-  external/mbedtls-des3-set2key-dec(ctx1, key.cextern/carray/ptr).int
-
-// \brief          Triple-DES key schedule (168-bit, encryption)
-// 
-// \param ctx      3DES context to be initialized
-// \param key      24-byte secret key
-// 
-// \return         0
-// 
-// \warning        DES/3DES are considered weak ciphers and their use constitutes a
-// security risk. We recommend considering stronger ciphers
-// instead.
-pub extern external/mbedtls-des3-set3key-enc(^ctx1: c-pointer<mbedtls-des3-context-c>, ^key: c-pointer<int>): int32
-  c inline "(int)mbedtls_des3_set3key_enc((struct mbedtls_des3_context*)#1, (unsigned char*)#2)"
-
-pub inline fun ffi/mbedtls-des3-set3key-enc(^ctx1: c-pointer<mbedtls-des3-context-c>, ^key: c-array<int>): <> int
-  external/mbedtls-des3-set3key-enc(ctx1, key.cextern/carray/ptr).int
-
-// \brief          Triple-DES key schedule (168-bit, decryption)
-// 
-// \param ctx      3DES context to be initialized
-// \param key      24-byte secret key
-// 
-// \return         0
-// 
-// \warning        DES/3DES are considered weak ciphers and their use constitutes a
-// security risk. We recommend considering stronger ciphers
-// instead.
-pub extern external/mbedtls-des3-set3key-dec(^ctx1: c-pointer<mbedtls-des3-context-c>, ^key: c-pointer<int>): int32
-  c inline "(int)mbedtls_des3_set3key_dec((struct mbedtls_des3_context*)#1, (unsigned char*)#2)"
-
-pub inline fun ffi/mbedtls-des3-set3key-dec(^ctx1: c-pointer<mbedtls-des3-context-c>, ^key: c-array<int>): <> int
-  external/mbedtls-des3-set3key-dec(ctx1, key.cextern/carray/ptr).int
-
-// \brief          DES-ECB block encryption/decryption
-// 
-// \param ctx      DES context
-// \param input    64-bit input block
-// \param output   64-bit output block
-// 
-// \return         0 if successful
-// 
-// \warning        DES/3DES are considered weak ciphers and their use constitutes a
-// security risk. We recommend considering stronger ciphers
-// instead.
-pub extern external/mbedtls-des-crypt-ecb(^ctx1: c-pointer<mbedtls-des-context-c>, ^input: c-pointer<int>, ^output: c-pointer<int>): int32
-  c inline "(int)mbedtls_des_crypt_ecb((struct mbedtls_des_context*)#1, (unsigned char*)#2, (unsigned char*)#3)"
-
-pub inline fun ffi/mbedtls-des-crypt-ecb(^ctx1: c-pointer<mbedtls-des-context-c>, ^input: c-array<int>, ^output: c-array<int>): <> int
-  external/mbedtls-des-crypt-ecb(ctx1, input.cextern/carray/ptr, output.cextern/carray/ptr).int
-
-// \brief          DES-CBC buffer encryption/decryption
-// 
-// \note           Upon exit, the content of the IV is updated so that you can
-// call the function same function again on the following
-// block(s) of data and get the same result as if it was
-// encrypted in one call. This allows a "streaming" usage.
-// If on the other hand you need to retain the contents of the
-// IV, you should either save it manually or use the cipher
-// module instead.
-// 
-// \param ctx      DES context
-// \param mode     MBEDTLS_DES_ENCRYPT or MBEDTLS_DES_DECRYPT
-// \param length   length of the input data
-// \param iv       initialization vector (updated after use)
-// \param input    buffer holding the input data
-// \param output   buffer holding the output data
-// 
-// \warning        DES/3DES are considered weak ciphers and their use constitutes a
-// security risk. We recommend considering stronger ciphers
-// instead.
-pub extern external/mbedtls-des-crypt-cbc(^ctx1: c-pointer<mbedtls-des-context-c>, ^mode: int32, ^length: ssize_t, ^iv: c-pointer<int>, ^input: c-pointer<int>, ^output: c-pointer<int>): int32
-  c inline "(int)mbedtls_des_crypt_cbc((struct mbedtls_des_context*)#1, (int)#2, (size_t)#3, (unsigned char*)#4, (unsigned char*)#5, (unsigned char*)#6)"
-
-pub inline fun ffi/mbedtls-des-crypt-cbc(^ctx1: c-pointer<mbedtls-des-context-c>, ^mode: int, ^length: int, ^iv: c-array<int>, ^input: c-pointer<int>, ^output: c-pointer<int>): <> int
-  external/mbedtls-des-crypt-cbc(ctx1, mode.int32, length.ssize_t, iv.cextern/carray/ptr, input, output).int
-
-// \brief          3DES-ECB block encryption/decryption
-// 
-// \param ctx      3DES context
-// \param input    64-bit input block
-// \param output   64-bit output block
-// 
-// \return         0 if successful
-// 
-// \warning        DES/3DES are considered weak ciphers and their use constitutes a
-// security risk. We recommend considering stronger ciphers
-// instead.
-pub extern external/mbedtls-des3-crypt-ecb(^ctx1: c-pointer<mbedtls-des3-context-c>, ^input: c-pointer<int>, ^output: c-pointer<int>): int32
-  c inline "(int)mbedtls_des3_crypt_ecb((struct mbedtls_des3_context*)#1, (unsigned char*)#2, (unsigned char*)#3)"
-
-pub inline fun ffi/mbedtls-des3-crypt-ecb(^ctx1: c-pointer<mbedtls-des3-context-c>, ^input: c-array<int>, ^output: c-array<int>): <> int
-  external/mbedtls-des3-crypt-ecb(ctx1, input.cextern/carray/ptr, output.cextern/carray/ptr).int
-
-// \brief          3DES-CBC buffer encryption/decryption
-// 
-// \note           Upon exit, the content of the IV is updated so that you can
-// call the function same function again on the following
-// block(s) of data and get the same result as if it was
-// encrypted in one call. This allows a "streaming" usage.
-// If on the other hand you need to retain the contents of the
-// IV, you should either save it manually or use the cipher
-// module instead.
-// 
-// \param ctx      3DES context
-// \param mode     MBEDTLS_DES_ENCRYPT or MBEDTLS_DES_DECRYPT
-// \param length   length of the input data
-// \param iv       initialization vector (updated after use)
-// \param input    buffer holding the input data
-// \param output   buffer holding the output data
-// 
-// \return         0 if successful, or MBEDTLS_ERR_DES_INVALID_INPUT_LENGTH
-// 
-// \warning        DES/3DES are considered weak ciphers and their use constitutes a
-// security risk. We recommend considering stronger ciphers
-// instead.
-pub extern external/mbedtls-des3-crypt-cbc(^ctx1: c-pointer<mbedtls-des3-context-c>, ^mode: int32, ^length: ssize_t, ^iv: c-pointer<int>, ^input: c-pointer<int>, ^output: c-pointer<int>): int32
-  c inline "(int)mbedtls_des3_crypt_cbc((struct mbedtls_des3_context*)#1, (int)#2, (size_t)#3, (unsigned char*)#4, (unsigned char*)#5, (unsigned char*)#6)"
-
-pub inline fun ffi/mbedtls-des3-crypt-cbc(^ctx1: c-pointer<mbedtls-des3-context-c>, ^mode: int, ^length: int, ^iv: c-array<int>, ^input: c-pointer<int>, ^output: c-pointer<int>): <> int
-  external/mbedtls-des3-crypt-cbc(ctx1, mode.int32, length.ssize_t, iv.cextern/carray/ptr, input, output).int
-
-// \brief          Internal function for key expansion.
-// (Only exposed to allow overriding it,
-// see MBEDTLS_DES_SETKEY_ALT)
-// 
-// \param SK       Round keys
-// \param key      Base key
-// 
-// \warning        DES/3DES are considered weak ciphers and their use constitutes a
-// security risk. We recommend considering stronger ciphers
-// instead.
-pub extern external/mbedtls-des-setkey(^sk: c-pointer<int>, ^key: c-pointer<int>): ()
-  c inline "(void)mbedtls_des_setkey((int32_t*)#1, (unsigned char*)#2)"
-
-// \brief          Checkup routine
-// 
-// \return         0 if successful, or 1 if the test failed
-pub extern external/mbedtls-des-self-test(^verbose: int32): int32
-  c inline "(int)mbedtls_des_self_test((int)#1)"
-
-pub inline fun ffi/mbedtls-des-self-test(^verbose: int): <> int
-  external/mbedtls-des-self-test(verbose.int32).int
-
-// \brief           Write a length field in ASN.1 format.
-// 
-// \note            This function works backwards in data buffer.
-// 
-// \param p         The reference to the current position pointer.
-// \param start     The start of the buffer, for bounds-checking.
-// \param len       The length value to write.
-// 
-// \return          The number of bytes written to \p p on success.
-// \return          A negative \c MBEDTLS_ERR_ASN1_XXX error code on failure.
-pub extern external/mbedtls-asn1-write-len(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^len: ssize_t): int32
-  c inline "(int)mbedtls_asn1_write_len((unsigned char**)#1, (unsigned char*)#2, (size_t)#3)"
-
-pub inline fun ffi/mbedtls-asn1-write-len(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^len: int): <> int
-  external/mbedtls-asn1-write-len(p, start, len.ssize_t).int
-
-// \brief           Write an ASN.1 tag in ASN.1 format.
-// 
-// \note            This function works backwards in data buffer.
-// 
-// \param p         The reference to the current position pointer.
-// \param start     The start of the buffer, for bounds-checking.
-// \param tag       The tag to write.
-// 
-// \return          The number of bytes written to \p p on success.
-// \return          A negative \c MBEDTLS_ERR_ASN1_XXX error code on failure.
-pub extern external/mbedtls-asn1-write-tag(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^tag: int8): int32
-  c inline "(int)mbedtls_asn1_write_tag((unsigned char**)#1, (unsigned char*)#2, (unsigned char)#3)"
-
-pub inline fun ffi/mbedtls-asn1-write-tag(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^tag: int): <> int
-  external/mbedtls-asn1-write-tag(p, start, tag.int8).int
-
-// \brief           Write raw buffer data.
-// 
-// \note            This function works backwards in data buffer.
-// 
-// \param p         The reference to the current position pointer.
-// \param start     The start of the buffer, for bounds-checking.
-// \param buf       The data buffer to write.
-// \param size      The length of the data buffer.
-// 
-// \return          The number of bytes written to \p p on success.
-// \return          A negative \c MBEDTLS_ERR_ASN1_XXX error code on failure.
-pub extern external/mbedtls-asn1-write-raw-buffer(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^buf: c-pointer<int>, ^size: ssize_t): int32
-  c inline "(int)mbedtls_asn1_write_raw_buffer((unsigned char**)#1, (unsigned char*)#2, (unsigned char*)#3, (size_t)#4)"
-
-pub inline fun ffi/mbedtls-asn1-write-raw-buffer(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^buf: c-pointer<int>, ^size: int): <> int
-  external/mbedtls-asn1-write-raw-buffer(p, start, buf, size.ssize_t).int
-
-// \brief           Write an arbitrary-precision number (#MBEDTLS_ASN1_INTEGER)
-// in ASN.1 format.
-// 
-// \note            This function works backwards in data buffer.
-// 
-// \param p         The reference to the current position pointer.
-// \param start     The start of the buffer, for bounds-checking.
-// \param X         The MPI to write.
-// It must be non-negative.
-// 
-// \return          The number of bytes written to \p p on success.
-// \return          A negative \c MBEDTLS_ERR_ASN1_XXX error code on failure.
-pub extern external/mbedtls-asn1-write-mpi(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^x: c-pointer<mbedtls-mpi-c>): int32
-  c inline "(int)mbedtls_asn1_write_mpi((unsigned char**)#1, (unsigned char*)#2, (struct mbedtls_mpi*)#3)"
-
-pub inline fun ffi/mbedtls-asn1-write-mpi(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^x: c-pointer<mbedtls-mpi-c>): <> int
-  external/mbedtls-asn1-write-mpi(p, start, x).int
-
-// \brief           Write a NULL tag (#MBEDTLS_ASN1_NULL) with zero data
-// in ASN.1 format.
-// 
-// \note            This function works backwards in data buffer.
-// 
-// \param p         The reference to the current position pointer.
-// \param start     The start of the buffer, for bounds-checking.
-// 
-// \return          The number of bytes written to \p p on success.
-// \return          A negative \c MBEDTLS_ERR_ASN1_XXX error code on failure.
-pub extern external/mbedtls-asn1-write-null(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>): int32
-  c inline "(int)mbedtls_asn1_write_null((unsigned char**)#1, (unsigned char*)#2)"
-
-pub inline fun ffi/mbedtls-asn1-write-null(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>): <> int
-  external/mbedtls-asn1-write-null(p, start).int
-
-// \brief           Write an OID tag (#MBEDTLS_ASN1_OID) and data
-// in ASN.1 format.
-// 
-// \note            This function works backwards in data buffer.
-// 
-// \param p         The reference to the current position pointer.
-// \param start     The start of the buffer, for bounds-checking.
-// \param oid       The OID to write.
-// \param oid_len   The length of the OID.
-// 
-// \return          The number of bytes written to \p p on success.
-// \return          A negative \c MBEDTLS_ERR_ASN1_XXX error code on failure.
-pub extern external/mbedtls-asn1-write-oid(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^oid: c-pointer<int>, ^oid-len: ssize_t): int32
-  c inline "(int)mbedtls_asn1_write_oid((unsigned char**)#1, (unsigned char*)#2, (char*)#3, (size_t)#4)"
-
-pub inline fun ffi/mbedtls-asn1-write-oid(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^oid: c-pointer<int>, ^oid-len: int): <> int
-  external/mbedtls-asn1-write-oid(p, start, oid, oid-len.ssize_t).int
-
-// \brief           Write an AlgorithmIdentifier sequence in ASN.1 format.
-// 
-// \note            This function works backwards in data buffer.
-// 
-// \param p         The reference to the current position pointer.
-// \param start     The start of the buffer, for bounds-checking.
-// \param oid       The OID of the algorithm to write.
-// \param oid_len   The length of the algorithm's OID.
-// \param par_len   The length of the parameters, which must be already written.
-// If 0, NULL parameters are added
-// 
-// \return          The number of bytes written to \p p on success.
-// \return          A negative \c MBEDTLS_ERR_ASN1_XXX error code on failure.
-pub extern external/mbedtls-asn1-write-algorithm-identifier(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^oid: c-pointer<int>, ^oid-len: ssize_t, ^par-len: ssize_t): int32
-  c inline "(int)mbedtls_asn1_write_algorithm_identifier((unsigned char**)#1, (unsigned char*)#2, (char*)#3, (size_t)#4, (size_t)#5)"
-
-pub inline fun ffi/mbedtls-asn1-write-algorithm-identifier(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^oid: c-pointer<int>, ^oid-len: int, ^par-len: int): <> int
-  external/mbedtls-asn1-write-algorithm-identifier(p, start, oid, oid-len.ssize_t, par-len.ssize_t).int
-
-// \brief           Write an AlgorithmIdentifier sequence in ASN.1 format.
-// 
-// \note            This function works backwards in data buffer.
-// 
-// \param p         The reference to the current position pointer.
-// \param start     The start of the buffer, for bounds-checking.
-// \param oid       The OID of the algorithm to write.
-// \param oid_len   The length of the algorithm's OID.
-// \param par_len   The length of the parameters, which must be already written.
-// \param has_par   If there are any parameters. If 0, par_len must be 0. If 1
-// and \p par_len is 0, NULL parameters are added.
-// 
-// \return          The number of bytes written to \p p on success.
-// \return          A negative \c MBEDTLS_ERR_ASN1_XXX error code on failure.
-pub extern external/mbedtls-asn1-write-algorithm-identifier-ext(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^oid: c-pointer<int>, ^oid-len: ssize_t, ^par-len: ssize_t, ^has-par: int32): int32
-  c inline "(int)mbedtls_asn1_write_algorithm_identifier_ext((unsigned char**)#1, (unsigned char*)#2, (char*)#3, (size_t)#4, (size_t)#5, (int)#6)"
-
-pub inline fun ffi/mbedtls-asn1-write-algorithm-identifier-ext(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^oid: c-pointer<int>, ^oid-len: int, ^par-len: int, ^has-par: int): <> int
-  external/mbedtls-asn1-write-algorithm-identifier-ext(p, start, oid, oid-len.ssize_t, par-len.ssize_t, has-par.int32).int
-
-// \brief           Write a boolean tag (#MBEDTLS_ASN1_BOOLEAN) and value
-// in ASN.1 format.
-// 
-// \note            This function works backwards in data buffer.
-// 
-// \param p         The reference to the current position pointer.
-// \param start     The start of the buffer, for bounds-checking.
-// \param boolean   The boolean value to write, either \c 0 or \c 1.
-// 
-// \return          The number of bytes written to \p p on success.
-// \return          A negative \c MBEDTLS_ERR_ASN1_XXX error code on failure.
-pub extern external/mbedtls-asn1-write-bool(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^boolean: int32): int32
-  c inline "(int)mbedtls_asn1_write_bool((unsigned char**)#1, (unsigned char*)#2, (int)#3)"
-
-pub inline fun ffi/mbedtls-asn1-write-bool(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^boolean: int): <> int
-  external/mbedtls-asn1-write-bool(p, start, boolean.int32).int
-
-// \brief           Write an int tag (#MBEDTLS_ASN1_INTEGER) and value
-// in ASN.1 format.
-// 
-// \note            This function works backwards in data buffer.
-// 
-// \param p         The reference to the current position pointer.
-// \param start     The start of the buffer, for bounds-checking.
-// \param val       The integer value to write.
-// It must be non-negative.
-// 
-// \return          The number of bytes written to \p p on success.
-// \return          A negative \c MBEDTLS_ERR_ASN1_XXX error code on failure.
-pub extern external/mbedtls-asn1-write-int(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^val: int32): int32
-  c inline "(int)mbedtls_asn1_write_int((unsigned char**)#1, (unsigned char*)#2, (int)#3)"
-
-pub inline fun ffi/mbedtls-asn1-write-int(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^val: int): <> int
-  external/mbedtls-asn1-write-int(p, start, val.int32).int
-
-// \brief           Write an enum tag (#MBEDTLS_ASN1_ENUMERATED) and value
-// in ASN.1 format.
-// 
-// \note            This function works backwards in data buffer.
-// 
-// \param p         The reference to the current position pointer.
-// \param start     The start of the buffer, for bounds-checking.
-// \param val       The integer value to write.
-// 
-// \return          The number of bytes written to \p p on success.
-// \return          A negative \c MBEDTLS_ERR_ASN1_XXX error code on failure.
-pub extern external/mbedtls-asn1-write-enum(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^val: int32): int32
-  c inline "(int)mbedtls_asn1_write_enum((unsigned char**)#1, (unsigned char*)#2, (int)#3)"
-
-pub inline fun ffi/mbedtls-asn1-write-enum(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^val: int): <> int
-  external/mbedtls-asn1-write-enum(p, start, val.int32).int
-
-// \brief           Write a string in ASN.1 format using a specific
-// string encoding tag.
-// 
-// \note            This function works backwards in data buffer.
-// 
-// \param p         The reference to the current position pointer.
-// \param start     The start of the buffer, for bounds-checking.
-// \param tag       The string encoding tag to write, e.g.
-// #MBEDTLS_ASN1_UTF8_STRING.
-// \param text      The string to write.
-// \param text_len  The length of \p text in bytes (which might
-// be strictly larger than the number of characters).
-// 
-// \return          The number of bytes written to \p p on success.
-// \return          A negative error code on failure.
-pub extern external/mbedtls-asn1-write-tagged-string(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^tag: int32, ^text: c-pointer<int>, ^text-len: ssize_t): int32
-  c inline "(int)mbedtls_asn1_write_tagged_string((unsigned char**)#1, (unsigned char*)#2, (int)#3, (char*)#4, (size_t)#5)"
-
-pub inline fun ffi/mbedtls-asn1-write-tagged-string(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^tag: int, ^text: c-pointer<int>, ^text-len: int): <> int
-  external/mbedtls-asn1-write-tagged-string(p, start, tag.int32, text, text-len.ssize_t).int
-
-// \brief           Write a string in ASN.1 format using the PrintableString
-// string encoding tag (#MBEDTLS_ASN1_PRINTABLE_STRING).
-// 
-// \note            This function works backwards in data buffer.
-// 
-// \param p         The reference to the current position pointer.
-// \param start     The start of the buffer, for bounds-checking.
-// \param text      The string to write.
-// \param text_len  The length of \p text in bytes (which might
-// be strictly larger than the number of characters).
-// 
-// \return          The number of bytes written to \p p on success.
-// \return          A negative error code on failure.
-pub extern external/mbedtls-asn1-write-printable-string(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^text: c-pointer<int>, ^text-len: ssize_t): int32
-  c inline "(int)mbedtls_asn1_write_printable_string((unsigned char**)#1, (unsigned char*)#2, (char*)#3, (size_t)#4)"
-
-pub inline fun ffi/mbedtls-asn1-write-printable-string(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^text: c-pointer<int>, ^text-len: int): <> int
-  external/mbedtls-asn1-write-printable-string(p, start, text, text-len.ssize_t).int
-
-// \brief           Write a UTF8 string in ASN.1 format using the UTF8String
-// string encoding tag (#MBEDTLS_ASN1_UTF8_STRING).
-// 
-// \note            This function works backwards in data buffer.
-// 
-// \param p         The reference to the current position pointer.
-// \param start     The start of the buffer, for bounds-checking.
-// \param text      The string to write.
-// \param text_len  The length of \p text in bytes (which might
-// be strictly larger than the number of characters).
-// 
-// \return          The number of bytes written to \p p on success.
-// \return          A negative error code on failure.
-pub extern external/mbedtls-asn1-write-utf8-string(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^text: c-pointer<int>, ^text-len: ssize_t): int32
-  c inline "(int)mbedtls_asn1_write_utf8_string((unsigned char**)#1, (unsigned char*)#2, (char*)#3, (size_t)#4)"
-
-pub inline fun ffi/mbedtls-asn1-write-utf8-string(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^text: c-pointer<int>, ^text-len: int): <> int
-  external/mbedtls-asn1-write-utf8-string(p, start, text, text-len.ssize_t).int
-
-// \brief           Write a string in ASN.1 format using the IA5String
-// string encoding tag (#MBEDTLS_ASN1_IA5_STRING).
-// 
-// \note            This function works backwards in data buffer.
-// 
-// \param p         The reference to the current position pointer.
-// \param start     The start of the buffer, for bounds-checking.
-// \param text      The string to write.
-// \param text_len  The length of \p text in bytes (which might
-// be strictly larger than the number of characters).
-// 
-// \return          The number of bytes written to \p p on success.
-// \return          A negative error code on failure.
-pub extern external/mbedtls-asn1-write-ia5-string(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^text: c-pointer<int>, ^text-len: ssize_t): int32
-  c inline "(int)mbedtls_asn1_write_ia5_string((unsigned char**)#1, (unsigned char*)#2, (char*)#3, (size_t)#4)"
-
-pub inline fun ffi/mbedtls-asn1-write-ia5-string(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^text: c-pointer<int>, ^text-len: int): <> int
-  external/mbedtls-asn1-write-ia5-string(p, start, text, text-len.ssize_t).int
-
-// \brief           Write a bitstring tag (#MBEDTLS_ASN1_BIT_STRING) and
-// value in ASN.1 format.
-// 
-// \note            This function works backwards in data buffer.
-// 
-// \param p         The reference to the current position pointer.
-// \param start     The start of the buffer, for bounds-checking.
-// \param buf       The bitstring to write.
-// \param bits      The total number of bits in the bitstring.
-// 
-// \return          The number of bytes written to \p p on success.
-// \return          A negative error code on failure.
-pub extern external/mbedtls-asn1-write-bitstring(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^buf: c-pointer<int>, ^bits: ssize_t): int32
-  c inline "(int)mbedtls_asn1_write_bitstring((unsigned char**)#1, (unsigned char*)#2, (unsigned char*)#3, (size_t)#4)"
-
-pub inline fun ffi/mbedtls-asn1-write-bitstring(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^buf: c-pointer<int>, ^bits: int): <> int
-  external/mbedtls-asn1-write-bitstring(p, start, buf, bits.ssize_t).int
-
-// \brief           This function writes a named bitstring tag
-// (#MBEDTLS_ASN1_BIT_STRING) and value in ASN.1 format.
-// 
-// As stated in RFC 5280 Appendix B, trailing zeroes are
-// omitted when encoding named bitstrings in DER.
-// 
-// \note            This function works backwards within the data buffer.
-// 
-// \param p         The reference to the current position pointer.
-// \param start     The start of the buffer which is used for bounds-checking.
-// \param buf       The bitstring to write.
-// \param bits      The total number of bits in the bitstring.
-// 
-// \return          The number of bytes written to \p p on success.
-// \return          A negative error code on failure.
-pub extern external/mbedtls-asn1-write-named-bitstring(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^buf: c-pointer<int>, ^bits: ssize_t): int32
-  c inline "(int)mbedtls_asn1_write_named_bitstring((unsigned char**)#1, (unsigned char*)#2, (unsigned char*)#3, (size_t)#4)"
-
-pub inline fun ffi/mbedtls-asn1-write-named-bitstring(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^buf: c-pointer<int>, ^bits: int): <> int
-  external/mbedtls-asn1-write-named-bitstring(p, start, buf, bits.ssize_t).int
-
-// \brief           Write an octet string tag (#MBEDTLS_ASN1_OCTET_STRING)
-// and value in ASN.1 format.
-// 
-// \note            This function works backwards in data buffer.
-// 
-// \param p         The reference to the current position pointer.
-// \param start     The start of the buffer, for bounds-checking.
-// \param buf       The buffer holding the data to write.
-// \param size      The length of the data buffer \p buf.
-// 
-// \return          The number of bytes written to \p p on success.
-// \return          A negative error code on failure.
-pub extern external/mbedtls-asn1-write-octet-string(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^buf: c-pointer<int>, ^size: ssize_t): int32
-  c inline "(int)mbedtls_asn1_write_octet_string((unsigned char**)#1, (unsigned char*)#2, (unsigned char*)#3, (size_t)#4)"
-
-pub inline fun ffi/mbedtls-asn1-write-octet-string(^p: c-pointer<c-pointer<int>>, ^start: c-pointer<int>, ^buf: c-pointer<int>, ^size: int): <> int
-  external/mbedtls-asn1-write-octet-string(p, start, buf, size.ssize_t).int
-
-// \brief           Create or find a specific named_data entry for writing in a
-// sequence or list based on the OID. If not already in there,
-// a new entry is added to the head of the list.
-// Warning: Destructive behaviour for the val data!
-// 
-// \param list      The pointer to the location of the head of the list to seek
-// through (will be updated in case of a new entry).
-// \param oid       The OID to look for.
-// \param oid_len   The size of the OID.
-// \param val       The associated data to store. If this is \c NULL,
-// no data is copied to the new or existing buffer.
-// \param val_len   The minimum length of the data buffer needed.
-// If this is 0, do not allocate a buffer for the associated
-// data.
-// If the OID was already present, enlarge, shrink or free
-// the existing buffer to fit \p val_len.
-// 
-// \return          A pointer to the new / existing entry on success.
-// \return          \c NULL if there was a memory allocation error.
-pub extern external/mbedtls-asn1-store-named-data(^list: c-pointer<c-pointer<mbedtls-asn1-named-data-c>>, ^oid: c-pointer<int>, ^oid-len: ssize_t, ^val: c-pointer<int>, ^val-len: ssize_t): c-pointer<mbedtls-asn1-named-data-c>
-  c inline "(intptr_t)mbedtls_asn1_store_named_data((struct mbedtls_asn1_named_data**)#1, (char*)#2, (size_t)#3, (unsigned char*)#4, (size_t)#5)"
-
-pub inline fun ffi/mbedtls-asn1-store-named-data(^list: c-pointer<c-pointer<mbedtls-asn1-named-data-c>>, ^oid: c-pointer<int>, ^oid-len: int, ^val: c-pointer<int>, ^val-len: int): <> c-pointer<mbedtls-asn1-named-data-c>
-  external/mbedtls-asn1-store-named-data(list, oid, oid-len.ssize_t, val, val-len.ssize_t)
-
-// The random generator function for the PSA subsystem.
-// 
-// This function is suitable as the `f_rng` random generator function
-// parameter of many `mbedtls_xxx` functions.
-// 
-// The implementation of this function depends on the configuration of the
-// library.
-// 
-// \note This function may only be used if the PSA crypto subsystem is active.
-// This means that you must call psa_crypto_init() before any call to
-// this function, and you must not call this function after calling
-// mbedtls_psa_crypto_free().
-// 
-// \param p_rng         This parameter is only kept for backward compatibility
-// reasons with legacy `f_rng` functions and it's ignored.
-// Set to #MBEDTLS_PSA_RANDOM_STATE or NULL.
-// \param output        The buffer to fill. It must have room for
-// \c output_size bytes.
-// \param output_size   The number of bytes to write to \p output.
-// This function may fail if \p output_size is too
-// large. It is guaranteed to accept any output size
-// requested by Mbed TLS library functions. The
-// maximum request size depends on the library
-// configuration.
-// 
-// \return              \c 0 on success.
-// \return              An `MBEDTLS_ERR_ENTROPY_xxx`,
-// `MBEDTLS_ERR_PLATFORM_xxx,
-// `MBEDTLS_ERR_CTR_DRBG_xxx` or
-// `MBEDTLS_ERR_HMAC_DRBG_xxx` on error.
-pub extern external/mbedtls-psa-get-random(^p-rng: c-pointer<()>, ^output: c-pointer<int>, ^output-size: ssize_t): int32
-  c inline "(int)mbedtls_psa_get_random((void*)#1, (unsigned char*)#2, (size_t)#3)"
-
-pub inline fun ffi/mbedtls-psa-get-random(^p-rng: c-pointer<()>, ^output: c-pointer<int>, ^output-size: int): <> int
-  external/mbedtls-psa-get-random(p-rng, output, output-size.ssize_t).int
-
-// Convert an ECC curve identifier from the Mbed TLS encoding to PSA.
-// 
-// \param grpid         An Mbed TLS elliptic curve identifier
-// (`MBEDTLS_ECP_DP_xxx`).
-// \param[out] bits     On success the bit size of the curve; 0 on failure.
-// 
-// \return              If the curve is supported in the PSA API, this function
-// returns the proper PSA curve identifier
-// (`PSA_ECC_FAMILY_xxx`). This holds even if the curve is
-// not supported by the ECP module.
-// \return              \c 0 if the curve is not supported in the PSA API.
-pub extern external/mbedtls-ecc-group-to-psa(^grpid: int32, ^bits: c-pointer<int>): int8
-  c inline "(psa_ecc_family_t)mbedtls_ecc_group_to_psa((int32_t)#1, (size_t*)#2)"
-
-pub inline fun ffi/mbedtls-ecc-group-to-psa(^grpid: mbedtls-ecp-group-id, ^bits: c-pointer<int>): <exn> int
-  external/mbedtls-ecc-group-to-psa(grpid.mbedtls-ecp-group-id/int, bits).int
-
-// Convert an ECC curve identifier from the PSA encoding to Mbed TLS.
-// 
-// \param family        A PSA elliptic curve family identifier
-// (`PSA_ECC_FAMILY_xxx`).
-// \param bits          The bit-length of a private key on \p curve.
-// 
-// \return              If the curve is supported in the PSA API, this function
-// returns the corresponding Mbed TLS elliptic curve
-// identifier (`MBEDTLS_ECP_DP_xxx`).
-// \return              #MBEDTLS_ECP_DP_NONE if the combination of \c curve
-// and \p bits is not supported.
-pub extern external/mbedtls-ecc-group-from-psa(^family: int8, ^bits: ssize_t): int32
-  c inline "(int32_t)mbedtls_ecc_group_from_psa((psa_ecc_family_t)#1, (size_t)#2)"
-
-pub inline fun ffi/mbedtls-ecc-group-from-psa(^family: int, ^bits: int): <exn> mbedtls-ecp-group-id
-  external/mbedtls-ecc-group-from-psa(family.int8, bits.ssize_t).int/mbedtls-ecp-group-id
-
-// Convert an ECDSA signature from raw format to DER ASN.1 format.
-// 
-// \param       bits        Size of each coordinate in bits.
-// \param       raw         Buffer that contains the signature in raw format.
-// \param       raw_len     Length of \p raw in bytes. This must be
-// PSA_BITS_TO_BYTES(bits) bytes.
-// \param[out]  der         Buffer that will be filled with the converted DER
-// output. It can overlap with raw buffer.
-// \param       der_size    Size of \p der in bytes. It is enough if \p der_size
-// is at least the size of the actual output. (The size
-// of the output can vary depending on the presence of
-// leading zeros in the data.) You can use
-// #MBEDTLS_ECDSA_MAX_SIG_LEN(\p bits) to determine a
-// size that is large enough for all signatures for a
-// given value of \p bits.
-// \param[out]  der_len     On success it contains the amount of valid data
-// (in bytes) written to \p der. It's undefined
-// in case of failure.
-pub extern external/mbedtls-ecdsa-raw-to-der(^bits: ssize_t, ^raw: c-pointer<int>, ^raw-len: ssize_t, ^der: c-pointer<int>, ^der-size: ssize_t, ^der-len: c-pointer<int>): int32
-  c inline "(int)mbedtls_ecdsa_raw_to_der((size_t)#1, (unsigned char*)#2, (size_t)#3, (unsigned char*)#4, (size_t)#5, (size_t*)#6)"
-
-pub inline fun ffi/mbedtls-ecdsa-raw-to-der(^bits: int, ^raw: c-pointer<int>, ^raw-len: int, ^der: c-pointer<int>, ^der-size: int, ^der-len: c-pointer<int>): <> int
-  external/mbedtls-ecdsa-raw-to-der(bits.ssize_t, raw, raw-len.ssize_t, der, der-size.ssize_t, der-len).int
-
-// Convert an ECDSA signature from DER ASN.1 format to raw format.
-// 
-// \param       bits        Size of each coordinate in bits.
-// \param       der         Buffer that contains the signature in DER format.
-// \param       der_len     Size of \p der in bytes.
-// \param[out]  raw         Buffer that will be filled with the converted raw
-// signature. It can overlap with der buffer.
-// \param       raw_size    Size of \p raw in bytes. Must be at least
-// 2 * PSA_BITS_TO_BYTES(bits) bytes.
-// \param[out]  raw_len     On success it is updated with the amount of valid
-// data (in bytes) written to \p raw. It's undefined
-// in case of failure.
-pub extern external/mbedtls-ecdsa-der-to-raw(^bits: ssize_t, ^der: c-pointer<int>, ^der-len: ssize_t, ^raw: c-pointer<int>, ^raw-size: ssize_t, ^raw-len: c-pointer<int>): int32
-  c inline "(int)mbedtls_ecdsa_der_to_raw((size_t)#1, (unsigned char*)#2, (size_t)#3, (unsigned char*)#4, (size_t)#5, (size_t*)#6)"
-
-pub inline fun ffi/mbedtls-ecdsa-der-to-raw(^bits: int, ^der: c-pointer<int>, ^der-len: int, ^raw: c-pointer<int>, ^raw-size: int, ^raw-len: c-pointer<int>): <> int
-  external/mbedtls-ecdsa-der-to-raw(bits.ssize_t, der, der-len.ssize_t, raw, raw-size.ssize_t, raw-len).int
-
-// \brief               HMAC_DRBG context initialization.
-// 
-// This function makes the context ready for mbedtls_hmac_drbg_seed(),
-// mbedtls_hmac_drbg_seed_buf() or mbedtls_hmac_drbg_free().
-// 
-// \note                The reseed interval is #MBEDTLS_HMAC_DRBG_RESEED_INTERVAL
-// by default. Override this value by calling
-// mbedtls_hmac_drbg_set_reseed_interval().
-// 
-// \param ctx           HMAC_DRBG context to be initialized.
-pub extern external/mbedtls-hmac-drbg-init(^ctx1: c-pointer<mbedtls-hmac-drbg-context-c>): ()
-  c inline "(void)mbedtls_hmac_drbg_init((struct mbedtls_hmac_drbg_context*)#1)"
-
-// \param ctx           HMAC_DRBG context to be seeded.
-// \param md_info       MD algorithm to use for HMAC_DRBG.
-// \param f_entropy     The entropy callback, taking as arguments the
-// \p p_entropy context, the buffer to fill, and the
-// length of the buffer.
-// \p f_entropy is always called with a length that is
-// less than or equal to the entropy length.
-// \param p_entropy     The entropy context to pass to \p f_entropy.
-// \param custom        The personalization string.
-// This can be \c NULL, in which case the personalization
-// string is empty regardless of the value of \p len.
-// \param len           The length of the personalization string.
-// This must be at most #MBEDTLS_HMAC_DRBG_MAX_INPUT
-// and also at most
-// #MBEDTLS_HMAC_DRBG_MAX_SEED_INPUT - \c entropy_len * 3 / 2
-// where \c entropy_len is the entropy length
-// described above.
-// 
-// \return              \c 0 if successful.
-// \return              #MBEDTLS_ERR_MD_BAD_INPUT_DATA if \p md_info is
-// invalid.
-// \return              #MBEDTLS_ERR_MD_ALLOC_FAILED if there was not enough
-// memory to allocate context data.
-// \return              #MBEDTLS_ERR_HMAC_DRBG_ENTROPY_SOURCE_FAILED
-// if the call to \p f_entropy failed.
-pub extern external/mbedtls-hmac-drbg-seed(^ctx1: c-pointer<mbedtls-hmac-drbg-context-c>, ^md-info: c-pointer<mbedtls-md-info-t-c>, ^f-entropy: c-pointer<intptr_t>, ^p-entropy: c-pointer<()>, ^custom: c-pointer<int>, ^len: ssize_t): int32
-  c inline "(int)mbedtls_hmac_drbg_seed((struct mbedtls_hmac_drbg_context*)#1, (struct mbedtls_md_info_t*)#2, (int (*)(void*, unsigned char*, size_t))#3, (void*)#4, (unsigned char*)#5, (size_t)#6)"
-
-pub inline fun ffi/mbedtls-hmac-drbg-seed(^ctx1: c-pointer<mbedtls-hmac-drbg-context-c>, ^md-info: c-pointer<mbedtls-md-info-t-c>, ^f-entropy: c-pointer<intptr_t>, ^p-entropy: c-pointer<()>, ^custom: c-pointer<int>, ^len: int): <> int
-  external/mbedtls-hmac-drbg-seed(ctx1, md-info, f-entropy, p-entropy, custom, len.ssize_t).int
-
-// \param ctx           HMAC_DRBG context to be initialised.
-// \param md_info       MD algorithm to use for HMAC_DRBG.
-// \param data          Concatenation of the initial entropy string and
-// the additional data.
-// \param data_len      Length of \p data in bytes.
-// 
-// \return              \c 0 if successful. or
-// \return              #MBEDTLS_ERR_MD_BAD_INPUT_DATA if \p md_info is
-// invalid.
-// \return              #MBEDTLS_ERR_MD_ALLOC_FAILED if there was not enough
-// memory to allocate context data.
-pub extern external/mbedtls-hmac-drbg-seed-buf(^ctx1: c-pointer<mbedtls-hmac-drbg-context-c>, ^md-info: c-pointer<mbedtls-md-info-t-c>, ^data: c-pointer<int>, ^data-len: ssize_t): int32
-  c inline "(int)mbedtls_hmac_drbg_seed_buf((struct mbedtls_hmac_drbg_context*)#1, (struct mbedtls_md_info_t*)#2, (unsigned char*)#3, (size_t)#4)"
-
-pub inline fun ffi/mbedtls-hmac-drbg-seed-buf(^ctx1: c-pointer<mbedtls-hmac-drbg-context-c>, ^md-info: c-pointer<mbedtls-md-info-t-c>, ^data: c-pointer<int>, ^data-len: int): <> int
-  external/mbedtls-hmac-drbg-seed-buf(ctx1, md-info, data, data-len.ssize_t).int
-
-// \brief               This function turns prediction resistance on or off.
-// The default value is off.
-// 
-// \note                If enabled, entropy is gathered at the beginning of
-// every call to mbedtls_hmac_drbg_random_with_add()
-// or mbedtls_hmac_drbg_random().
-// Only use this if your entropy source has sufficient
-// throughput.
-// 
-// \param ctx           The HMAC_DRBG context.
-// \param resistance    #MBEDTLS_HMAC_DRBG_PR_ON or #MBEDTLS_HMAC_DRBG_PR_OFF.
-pub extern external/mbedtls-hmac-drbg-set-prediction-resistance(^ctx1: c-pointer<mbedtls-hmac-drbg-context-c>, ^resistance: int32): ()
-  c inline "(void)mbedtls_hmac_drbg_set_prediction_resistance((struct mbedtls_hmac_drbg_context*)#1, (int)#2)"
-
-pub inline fun ffi/mbedtls-hmac-drbg-set-prediction-resistance(^ctx1: c-pointer<mbedtls-hmac-drbg-context-c>, ^resistance: int): <> ()
-  external/mbedtls-hmac-drbg-set-prediction-resistance(ctx1, resistance.int32)
-
-// \brief               This function sets the amount of entropy grabbed on each
-// seed or reseed.
-// 
-// See the documentation of mbedtls_hmac_drbg_seed() for the default value.
-// 
-// \param ctx           The HMAC_DRBG context.
-// \param len           The amount of entropy to grab, in bytes.
-pub extern external/mbedtls-hmac-drbg-set-entropy-len(^ctx1: c-pointer<mbedtls-hmac-drbg-context-c>, ^len: ssize_t): ()
-  c inline "(void)mbedtls_hmac_drbg_set_entropy_len((struct mbedtls_hmac_drbg_context*)#1, (size_t)#2)"
-
-pub inline fun ffi/mbedtls-hmac-drbg-set-entropy-len(^ctx1: c-pointer<mbedtls-hmac-drbg-context-c>, ^len: int): <> ()
-  external/mbedtls-hmac-drbg-set-entropy-len(ctx1, len.ssize_t)
-
-// \brief               Set the reseed interval.
-// 
-// The reseed interval is the number of calls to mbedtls_hmac_drbg_random()
-// or mbedtls_hmac_drbg_random_with_add() after which the entropy function
-// is called again.
-// 
-// The default value is #MBEDTLS_HMAC_DRBG_RESEED_INTERVAL.
-// 
-// \param ctx           The HMAC_DRBG context.
-// \param interval      The reseed interval.
-pub extern external/mbedtls-hmac-drbg-set-reseed-interval(^ctx1: c-pointer<mbedtls-hmac-drbg-context-c>, ^interval: int32): ()
-  c inline "(void)mbedtls_hmac_drbg_set_reseed_interval((struct mbedtls_hmac_drbg_context*)#1, (int)#2)"
-
-pub inline fun ffi/mbedtls-hmac-drbg-set-reseed-interval(^ctx1: c-pointer<mbedtls-hmac-drbg-context-c>, ^interval: int): <> ()
-  external/mbedtls-hmac-drbg-set-reseed-interval(ctx1, interval.int32)
-
-// \brief               This function updates the state of the HMAC_DRBG context.
-// 
-// \note                This function is not thread-safe. It is not safe
-// to call this function if another thread might be
-// concurrently obtaining random numbers from the same
-// context or updating or reseeding the same context.
-// 
-// \param ctx           The HMAC_DRBG context.
-// \param additional    The data to update the state with.
-// If this is \c NULL, there is no additional data.
-// \param add_len       Length of \p additional in bytes.
-// Unused if \p additional is \c NULL.
-// 
-// \return              \c 0 on success, or an error from the underlying
-// hash calculation.
-pub extern external/mbedtls-hmac-drbg-update(^ctx1: c-pointer<mbedtls-hmac-drbg-context-c>, ^additional: c-pointer<int>, ^add-len: ssize_t): int32
-  c inline "(int)mbedtls_hmac_drbg_update((struct mbedtls_hmac_drbg_context*)#1, (unsigned char*)#2, (size_t)#3)"
-
-pub inline fun ffi/mbedtls-hmac-drbg-update(^ctx1: c-pointer<mbedtls-hmac-drbg-context-c>, ^additional: c-pointer<int>, ^add-len: int): <> int
-  external/mbedtls-hmac-drbg-update(ctx1, additional, add-len.ssize_t).int
-
-// \brief               This function reseeds the HMAC_DRBG context, that is
-// extracts data from the entropy source.
-// 
-// \note                This function is not thread-safe. It is not safe
-// to call this function if another thread might be
-// concurrently obtaining random numbers from the same
-// context or updating or reseeding the same context.
-// 
-// \param ctx           The HMAC_DRBG context.
-// \param additional    Additional data to add to the state.
-// If this is \c NULL, there is no additional data
-// and \p len should be \c 0.
-// \param len           The length of the additional data.
-// This must be at most #MBEDTLS_HMAC_DRBG_MAX_INPUT
-// and also at most
-// #MBEDTLS_HMAC_DRBG_MAX_SEED_INPUT - \c entropy_len
-// where \c entropy_len is the entropy length
-// (see mbedtls_hmac_drbg_set_entropy_len()).
-// 
-// \return              \c 0 if successful.
-// \return              #MBEDTLS_ERR_HMAC_DRBG_ENTROPY_SOURCE_FAILED
-// if a call to the entropy function failed.
-pub extern external/mbedtls-hmac-drbg-reseed(^ctx1: c-pointer<mbedtls-hmac-drbg-context-c>, ^additional: c-pointer<int>, ^len: ssize_t): int32
-  c inline "(int)mbedtls_hmac_drbg_reseed((struct mbedtls_hmac_drbg_context*)#1, (unsigned char*)#2, (size_t)#3)"
-
-pub inline fun ffi/mbedtls-hmac-drbg-reseed(^ctx1: c-pointer<mbedtls-hmac-drbg-context-c>, ^additional: c-pointer<int>, ^len: int): <> int
-  external/mbedtls-hmac-drbg-reseed(ctx1, additional, len.ssize_t).int
-
-// \brief   This function updates an HMAC_DRBG instance with additional
-// data and uses it to generate random data.
-// 
-// This function automatically reseeds if the reseed counter is exceeded
-// or prediction resistance is enabled.
-// 
-// \note                This function is not thread-safe. It is not safe
-// to call this function if another thread might be
-// concurrently obtaining random numbers from the same
-// context or updating or reseeding the same context.
-// 
-// \param p_rng         The HMAC_DRBG context. This must be a pointer to a
-// #mbedtls_hmac_drbg_context structure.
-// \param output        The buffer to fill.
-// \param output_len    The length of the buffer in bytes.
-// This must be at most #MBEDTLS_HMAC_DRBG_MAX_REQUEST.
-// \param additional    Additional data to update with.
-// If this is \c NULL, there is no additional data
-// and \p add_len should be \c 0.
-// \param add_len       The length of the additional data.
-// This must be at most #MBEDTLS_HMAC_DRBG_MAX_INPUT.
-// 
-// \return              \c 0 if successful.
-// \return              #MBEDTLS_ERR_HMAC_DRBG_ENTROPY_SOURCE_FAILED
-// if a call to the entropy source failed.
-// \return              #MBEDTLS_ERR_HMAC_DRBG_REQUEST_TOO_BIG if
-// \p output_len > #MBEDTLS_HMAC_DRBG_MAX_REQUEST.
-// \return              #MBEDTLS_ERR_HMAC_DRBG_INPUT_TOO_BIG if
-// \p add_len > #MBEDTLS_HMAC_DRBG_MAX_INPUT.
-pub extern external/mbedtls-hmac-drbg-random-with-add(^p-rng: c-pointer<()>, ^output: c-pointer<int>, ^output-len: ssize_t, ^additional: c-pointer<int>, ^add-len: ssize_t): int32
-  c inline "(int)mbedtls_hmac_drbg_random_with_add((void*)#1, (unsigned char*)#2, (size_t)#3, (unsigned char*)#4, (size_t)#5)"
-
-pub inline fun ffi/mbedtls-hmac-drbg-random-with-add(^p-rng: c-pointer<()>, ^output: c-pointer<int>, ^output-len: int, ^additional: c-pointer<int>, ^add-len: int): <> int
-  external/mbedtls-hmac-drbg-random-with-add(p-rng, output, output-len.ssize_t, additional, add-len.ssize_t).int
-
-// \param p_rng         The HMAC_DRBG context. This must be a pointer to a
-// #mbedtls_hmac_drbg_context structure.
-// \param output        The buffer to fill.
-// \param out_len       The length of the buffer in bytes.
-// This must be at most #MBEDTLS_HMAC_DRBG_MAX_REQUEST.
-// 
-// \return              \c 0 if successful.
-// \return              #MBEDTLS_ERR_HMAC_DRBG_ENTROPY_SOURCE_FAILED
-// if a call to the entropy source failed.
-// \return              #MBEDTLS_ERR_HMAC_DRBG_REQUEST_TOO_BIG if
-// \p out_len > #MBEDTLS_HMAC_DRBG_MAX_REQUEST.
-pub extern external/mbedtls-hmac-drbg-random(^p-rng: c-pointer<()>, ^output: c-pointer<int>, ^out-len: ssize_t): int32
-  c inline "(int)mbedtls_hmac_drbg_random((void*)#1, (unsigned char*)#2, (size_t)#3)"
-
-pub inline fun ffi/mbedtls-hmac-drbg-random(^p-rng: c-pointer<()>, ^output: c-pointer<int>, ^out-len: int): <> int
-  external/mbedtls-hmac-drbg-random(p-rng, output, out-len.ssize_t).int
-
-// \brief               This function resets HMAC_DRBG context to the state immediately
-// after initial call of mbedtls_hmac_drbg_init().
-// 
-// \param ctx           The HMAC_DRBG context to free.
-pub extern external/mbedtls-hmac-drbg-free(^ctx1: c-pointer<mbedtls-hmac-drbg-context-c>): ()
-  c inline "(void)mbedtls_hmac_drbg_free((struct mbedtls_hmac_drbg_context*)#1)"
-
-// \brief               This function writes a seed file.
-// 
-// \param ctx           The HMAC_DRBG context.
-// \param path          The name of the file.
-// 
-// \return              \c 0 on success.
-// \return              #MBEDTLS_ERR_HMAC_DRBG_FILE_IO_ERROR on file error.
-// \return              #MBEDTLS_ERR_HMAC_DRBG_ENTROPY_SOURCE_FAILED on reseed
-// failure.
-pub extern external/mbedtls-hmac-drbg-write-seed-file(^ctx1: c-pointer<mbedtls-hmac-drbg-context-c>, ^path: c-pointer<int>): int32
-  c inline "(int)mbedtls_hmac_drbg_write_seed_file((struct mbedtls_hmac_drbg_context*)#1, (char*)#2)"
-
-pub inline fun ffi/mbedtls-hmac-drbg-write-seed-file(^ctx1: c-pointer<mbedtls-hmac-drbg-context-c>, ^path: c-pointer<int>): <> int
-  external/mbedtls-hmac-drbg-write-seed-file(ctx1, path).int
-
-// \brief               This function reads and updates a seed file. The seed
-// is added to this instance.
-// 
-// \param ctx           The HMAC_DRBG context.
-// \param path          The name of the file.
-// 
-// \return              \c 0 on success.
-// \return              #MBEDTLS_ERR_HMAC_DRBG_FILE_IO_ERROR on file error.
-// \return              #MBEDTLS_ERR_HMAC_DRBG_ENTROPY_SOURCE_FAILED on
-// reseed failure.
-// \return              #MBEDTLS_ERR_HMAC_DRBG_INPUT_TOO_BIG if the existing
-// seed file is too large.
-pub extern external/mbedtls-hmac-drbg-update-seed-file(^ctx1: c-pointer<mbedtls-hmac-drbg-context-c>, ^path: c-pointer<int>): int32
-  c inline "(int)mbedtls_hmac_drbg_update_seed_file((struct mbedtls_hmac_drbg_context*)#1, (char*)#2)"
-
-pub inline fun ffi/mbedtls-hmac-drbg-update-seed-file(^ctx1: c-pointer<mbedtls-hmac-drbg-context-c>, ^path: c-pointer<int>): <> int
-  external/mbedtls-hmac-drbg-update-seed-file(ctx1, path).int
-
-// \brief               The HMAC_DRBG Checkup routine.
-// 
-// \return              \c 0 if successful.
-// \return              \c 1 if the test failed.
-pub extern external/mbedtls-hmac-drbg-self-test(^verbose: int32): int32
-  c inline "(int)mbedtls_hmac_drbg_self_test((int)#1)"
-
-pub inline fun ffi/mbedtls-hmac-drbg-self-test(^verbose: int): <> int
-  external/mbedtls-hmac-drbg-self-test(verbose.int32).int
-
-// \brief           Initialize a ticket context.
-// (Just make it ready for mbedtls_ssl_ticket_setup()
-// or mbedtls_ssl_ticket_free().)
-// 
-// \param ctx       Context to be initialized
-pub extern external/mbedtls-ssl-ticket-init(^ctx1: c-pointer<mbedtls-ssl-ticket-context-c>): ()
-  c inline "(void)mbedtls_ssl_ticket_init((struct mbedtls_ssl_ticket_context*)#1)"
-
-// \brief           Prepare context to be actually used
-// 
-// \param ctx       Context to be set up
-// \param f_rng     RNG callback function (mandatory)
-// \param p_rng     RNG callback context
-// \param cipher    AEAD cipher to use for ticket protection.
-// Recommended value: MBEDTLS_CIPHER_AES_256_GCM.
-// \param lifetime  Tickets lifetime in seconds
-// Recommended value: 86400 (one day).
-// 
-// \note            It is highly recommended to select a cipher that is at
-// least as strong as the strongest ciphersuite
-// supported. Usually that means a 256-bit key.
-// 
-// \note            It is recommended to pick a reasonable lifetime so as not
-// to negate the benefits of forward secrecy.
-// 
-// \note            The TLS 1.3 specification states that ticket lifetime must
-// be smaller than seven days. If ticket lifetime has been
-// set to a value greater than seven days in this module then
-// if the TLS 1.3 is configured to send tickets after the
-// handshake it will fail the connection when trying to send
-// the first ticket.
-// 
-// \return          0 if successful,
-// or a specific MBEDTLS_ERR_XXX error code
-pub extern external/mbedtls-ssl-ticket-setup(^ctx1: c-pointer<mbedtls-ssl-ticket-context-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>, ^cipher: int32, ^lifetime: int32): int32
-  c inline "(int)mbedtls_ssl_ticket_setup((struct mbedtls_ssl_ticket_context*)#1, (int (*)(void*, unsigned char*, size_t))#2, (void*)#3, (int32_t)#4, (int32_t)#5)"
-
-pub inline fun ffi/mbedtls-ssl-ticket-setup(^ctx1: c-pointer<mbedtls-ssl-ticket-context-c>, ^f-rng: c-pointer<intptr_t>, ^p-rng: c-pointer<()>, ^cipher: mbedtls-cipher-type-t, ^lifetime: int): <exn> int
-  external/mbedtls-ssl-ticket-setup(ctx1, f-rng, p-rng, cipher.mbedtls-cipher-type-t/int, lifetime.int32).int
-
-// \brief           Rotate session ticket encryption key to new specified key.
-// Provides for external control of session ticket encryption
-// key rotation, e.g. for synchronization between different
-// machines.  If this function is not used, or if not called
-// before ticket lifetime expires, then a new session ticket
-// encryption key is generated internally in order to avoid
-// unbounded session ticket encryption key lifetimes.
-// 
-// \param ctx       Context to be set up
-// \param name      Session ticket encryption key name
-// \param nlength   Session ticket encryption key name length in bytes
-// \param k         Session ticket encryption key
-// \param klength   Session ticket encryption key length in bytes
-// \param lifetime  Tickets lifetime in seconds
-// Recommended value: 86400 (one day).
-// 
-// \note            \c name and \c k are recommended to be cryptographically
-// random data.
-// 
-// \note            \c nlength must match sizeof( ctx->name )
-// 
-// \note            \c klength must be sufficient for use by cipher specified
-// to \c mbedtls_ssl_ticket_setup
-// 
-// \note            It is recommended to pick a reasonable lifetime so as not
-// to negate the benefits of forward secrecy.
-// 
-// \note            The TLS 1.3 specification states that ticket lifetime must
-// be smaller than seven days. If ticket lifetime has been
-// set to a value greater than seven days in this module then
-// if the TLS 1.3 is configured to send tickets after the
-// handshake it will fail the connection when trying to send
-// the first ticket.
-// 
-// \return          0 if successful,
-// or a specific MBEDTLS_ERR_XXX error code
-pub extern external/mbedtls-ssl-ticket-rotate(^ctx1: c-pointer<mbedtls-ssl-ticket-context-c>, ^name: c-pointer<int>, ^nlength: ssize_t, ^k: c-pointer<int>, ^klength: ssize_t, ^lifetime: int32): int32
-  c inline "(int)mbedtls_ssl_ticket_rotate((struct mbedtls_ssl_ticket_context*)#1, (unsigned char*)#2, (size_t)#3, (unsigned char*)#4, (size_t)#5, (int32_t)#6)"
-
-pub inline fun ffi/mbedtls-ssl-ticket-rotate(^ctx1: c-pointer<mbedtls-ssl-ticket-context-c>, ^name: c-pointer<int>, ^nlength: int, ^k: c-pointer<int>, ^klength: int, ^lifetime: int): <> int
-  external/mbedtls-ssl-ticket-rotate(ctx1, name, nlength.ssize_t, k, klength.ssize_t, lifetime.int32).int
-
-// \brief           Implementation of the ticket write callback
-// 
-// \note            See \c mbedtls_ssl_ticket_write_t for description
-pub extern external/mbedtls-ssl-ticket-write(^arg0: c-pointer<()>, ^arg1: c-pointer<mbedtls-ssl-session-c>, ^arg2: c-pointer<int>, ^arg3: c-pointer<int>, ^arg4: c-pointer<int>, ^arg5: c-pointer<int>): int32
-  c inline "(int)mbedtls_ssl_ticket_write((void*)#1, (struct mbedtls_ssl_session*)#2, (unsigned char*)#3, (unsigned char*)#4, (size_t*)#5, (int32_t*)#6)"
-
-pub inline fun ffi/mbedtls-ssl-ticket-write(^arg0: c-pointer<()>, ^arg1: c-pointer<mbedtls-ssl-session-c>, ^arg2: c-pointer<int>, ^arg3: c-pointer<int>, ^arg4: c-pointer<int>, ^arg5: c-pointer<int>): <> int
-  external/mbedtls-ssl-ticket-write(arg0, arg1, arg2, arg3, arg4, arg5).int
-
-// \brief           Implementation of the ticket parse callback
-// 
-// \note            See \c mbedtls_ssl_ticket_parse_t for description
-pub extern external/mbedtls-ssl-ticket-parse(^arg0: c-pointer<()>, ^arg1: c-pointer<mbedtls-ssl-session-c>, ^arg2: c-pointer<int>, ^arg3: ssize_t): int32
-  c inline "(int)mbedtls_ssl_ticket_parse((void*)#1, (struct mbedtls_ssl_session*)#2, (unsigned char*)#3, (size_t)#4)"
-
-pub inline fun ffi/mbedtls-ssl-ticket-parse(^arg0: c-pointer<()>, ^arg1: c-pointer<mbedtls-ssl-session-c>, ^arg2: c-pointer<int>, ^arg3: int): <> int
-  external/mbedtls-ssl-ticket-parse(arg0, arg1, arg2, arg3.ssize_t).int
-
-// \brief           Free a context's content and zeroize it.
-// 
-// \param ctx       Context to be cleaned up
-pub extern external/mbedtls-ssl-ticket-free(^ctx1: c-pointer<mbedtls-ssl-ticket-context-c>): ()
-  c inline "(void)mbedtls_ssl_ticket_free((struct mbedtls_ssl_ticket_context*)#1)"
-
-// \brief          Initialize an SSL cache context
-// 
-// \param cache    SSL cache context
-pub extern external/mbedtls-ssl-cache-init(^cache: c-pointer<mbedtls-ssl-cache-context-c>): ()
-  c inline "(void)mbedtls_ssl_cache_init((struct mbedtls_ssl_cache_context*)#1)"
-
-// \brief          Cache get callback implementation
-// (Thread-safe if MBEDTLS_THREADING_C is enabled)
-// 
-// \param data            The SSL cache context to use.
-// \param session_id      The pointer to the buffer holding the session ID
-// for the session to load.
-// \param session_id_len  The length of \p session_id in bytes.
-// \param session         The address at which to store the session
-// associated with \p session_id, if present.
-// 
-// \return                \c 0 on success.
-// \return                #MBEDTLS_ERR_SSL_CACHE_ENTRY_NOT_FOUND if there is
-// no cache entry with specified session ID found, or
-// any other negative error code for other failures.
-pub extern external/mbedtls-ssl-cache-get(^data: c-pointer<()>, ^session-id: c-pointer<int>, ^session-id-len: ssize_t, ^session: c-pointer<mbedtls-ssl-session-c>): int32
-  c inline "(int)mbedtls_ssl_cache_get((void*)#1, (unsigned char*)#2, (size_t)#3, (struct mbedtls_ssl_session*)#4)"
-
-pub inline fun ffi/mbedtls-ssl-cache-get(^data: c-pointer<()>, ^session-id: c-pointer<int>, ^session-id-len: int, ^session: c-pointer<mbedtls-ssl-session-c>): <> int
-  external/mbedtls-ssl-cache-get(data, session-id, session-id-len.ssize_t, session).int
-
-// \brief          Cache set callback implementation
-// (Thread-safe if MBEDTLS_THREADING_C is enabled)
-// 
-// \param data            The SSL cache context to use.
-// \param session_id      The pointer to the buffer holding the session ID
-// associated to \p session.
-// \param session_id_len  The length of \p session_id in bytes.
-// \param session         The session to store.
-// 
-// \return                \c 0 on success.
-// \return                A negative error code on failure.
-pub extern external/mbedtls-ssl-cache-set(^data: c-pointer<()>, ^session-id: c-pointer<int>, ^session-id-len: ssize_t, ^session: c-pointer<mbedtls-ssl-session-c>): int32
-  c inline "(int)mbedtls_ssl_cache_set((void*)#1, (unsigned char*)#2, (size_t)#3, (struct mbedtls_ssl_session*)#4)"
-
-pub inline fun ffi/mbedtls-ssl-cache-set(^data: c-pointer<()>, ^session-id: c-pointer<int>, ^session-id-len: int, ^session: c-pointer<mbedtls-ssl-session-c>): <> int
-  external/mbedtls-ssl-cache-set(data, session-id, session-id-len.ssize_t, session).int
-
-// \brief          Remove the cache entry by the session ID
-// (Thread-safe if MBEDTLS_THREADING_C is enabled)
-// 
-// \param data            The SSL cache context to use.
-// \param session_id      The pointer to the buffer holding the session ID
-// associated to session.
-// \param session_id_len  The length of \p session_id in bytes.
-// 
-// \return                \c 0 on success. This indicates the cache entry for
-// the session with provided ID is removed or does not
-// exist.
-// \return                A negative error code on failure.
-pub extern external/mbedtls-ssl-cache-remove(^data: c-pointer<()>, ^session-id: c-pointer<int>, ^session-id-len: ssize_t): int32
-  c inline "(int)mbedtls_ssl_cache_remove((void*)#1, (unsigned char*)#2, (size_t)#3)"
-
-pub inline fun ffi/mbedtls-ssl-cache-remove(^data: c-pointer<()>, ^session-id: c-pointer<int>, ^session-id-len: int): <> int
-  external/mbedtls-ssl-cache-remove(data, session-id, session-id-len.ssize_t).int
-
-// \brief          Set the cache timeout
-// (Default: MBEDTLS_SSL_CACHE_DEFAULT_TIMEOUT (1 day))
-// 
-// A timeout of 0 indicates no timeout.
-// 
-// \param cache    SSL cache context
-// \param timeout  cache entry timeout in seconds
-pub extern external/mbedtls-ssl-cache-set-timeout(^cache: c-pointer<mbedtls-ssl-cache-context-c>, ^timeout: int32): ()
-  c inline "(void)mbedtls_ssl_cache_set_timeout((struct mbedtls_ssl_cache_context*)#1, (int)#2)"
-
-pub inline fun ffi/mbedtls-ssl-cache-set-timeout(^cache: c-pointer<mbedtls-ssl-cache-context-c>, ^timeout: int): <> ()
-  external/mbedtls-ssl-cache-set-timeout(cache, timeout.int32)
-
-// \brief          Set the maximum number of cache entries
-// (Default: MBEDTLS_SSL_CACHE_DEFAULT_MAX_ENTRIES (50))
-// 
-// \param cache    SSL cache context
-// \param max      cache entry maximum
-pub extern external/mbedtls-ssl-cache-set-max-entries(^cache: c-pointer<mbedtls-ssl-cache-context-c>, ^max: int32): ()
-  c inline "(void)mbedtls_ssl_cache_set_max_entries((struct mbedtls_ssl_cache_context*)#1, (int)#2)"
-
-pub inline fun ffi/mbedtls-ssl-cache-set-max-entries(^cache: c-pointer<mbedtls-ssl-cache-context-c>, ^max: int): <> ()
-  external/mbedtls-ssl-cache-set-max-entries(cache, max.int32)
-
-// \brief          Free referenced items in a cache context and clear memory
-// 
-// \param cache    SSL cache context
-pub extern external/mbedtls-ssl-cache-free(^cache: c-pointer<mbedtls-ssl-cache-context-c>): ()
-  c inline "(void)mbedtls_ssl_cache_free((struct mbedtls_ssl_cache_context*)#1)"
-
-// \brief   This function performs any platform-specific initialization
-// operations.
-// 
-// \note    This function should be called before any other library functions.
-// 
-// Its implementation is platform-specific, and unless
-// platform-specific code is provided, it does nothing.
-// 
-// \note    The usage and necessity of this function is dependent on the platform.
-// 
-// \param   ctx     The platform context.
-// 
-// \return  \c 0 on success.
-pub extern external/mbedtls-platform-setup(^ctx1: c-pointer<mbedtls-platform-context-c>): int32
-  c inline "(int)mbedtls_platform_setup((struct mbedtls_platform_context*)#1)"
-
-pub inline fun ffi/mbedtls-platform-setup(^ctx1: c-pointer<mbedtls-platform-context-c>): <> int
-  external/mbedtls-platform-setup(ctx1).int
-
-// \brief   This function performs any platform teardown operations.
-// 
-// \note    This function should be called after every other Mbed TLS module
-// has been correctly freed using the appropriate free function.
-// 
-// Its implementation is platform-specific, and unless
-// platform-specific code is provided, it does nothing.
-// 
-// \note    The usage and necessity of this function is dependent on the platform.
-// 
-// \param   ctx     The platform context.
-pub extern external/mbedtls-platform-teardown(^ctx1: c-pointer<mbedtls-platform-context-c>): ()
-  c inline "(void)mbedtls_platform_teardown((struct mbedtls_platform_context*)#1)"
-
-// \brief                    This function initializes an LMS public context
-// 
-// \param ctx                The uninitialized LMS context that will then be
-// initialized.
-pub extern external/mbedtls-lms-public-init(^ctx1: c-pointer<mbedtls-lms-public-t-c>): ()
-  c inline "(void)mbedtls_lms_public_init((mbedtls_lms_public_t*)#1)"
-
-// \brief                    This function uninitializes an LMS public context
-// 
-// \param ctx                The initialized LMS context that will then be
-// uninitialized.
-pub extern external/mbedtls-lms-public-free(^ctx1: c-pointer<mbedtls-lms-public-t-c>): ()
-  c inline "(void)mbedtls_lms_public_free((mbedtls_lms_public_t*)#1)"
-
-// \brief                    This function imports an LMS public key into a
-// public LMS context.
-// 
-// \note                     Before this function is called, the context must
-// have been initialized.
-// 
-// \note                     See IETF RFC8554 for details of the encoding of
-// this public key.
-// 
-// \param ctx                The initialized LMS context store the key in.
-// \param key                The buffer from which the key will be read.
-// #MBEDTLS_LMS_PUBLIC_KEY_LEN bytes will be read from
-// this.
-// \param key_size           The size of the key being imported.
-// 
-// \return         \c 0 on success.
-// \return         A non-zero error code on failure.
-pub extern external/mbedtls-lms-import-public-key(^ctx1: c-pointer<mbedtls-lms-public-t-c>, ^key: c-pointer<int>, ^key-size: ssize_t): int32
-  c inline "(int)mbedtls_lms_import_public_key((mbedtls_lms_public_t*)#1, (unsigned char*)#2, (size_t)#3)"
-
-pub inline fun ffi/mbedtls-lms-import-public-key(^ctx1: c-pointer<mbedtls-lms-public-t-c>, ^key: c-pointer<int>, ^key-size: int): <> int
-  external/mbedtls-lms-import-public-key(ctx1, key, key-size.ssize_t).int
-
-// \brief                    This function exports an LMS public key from a
-// LMS public context that already contains a public
-// key.
-// 
-// \note                     Before this function is called, the context must
-// have been initialized and the context must contain
-// a public key.
-// 
-// \note                     See IETF RFC8554 for details of the encoding of
-// this public key.
-// 
-// \param ctx                The initialized LMS public context that contains
-// the public key.
-// \param key                The buffer into which the key will be output. Must
-// be at least #MBEDTLS_LMS_PUBLIC_KEY_LEN in size.
-// \param key_size           The size of the key buffer.
-// \param key_len            If not NULL, will be written with the size of the
-// key.
-// 
-// \return         \c 0 on success.
-// \return         A non-zero error code on failure.
-pub extern external/mbedtls-lms-export-public-key(^ctx1: c-pointer<mbedtls-lms-public-t-c>, ^key: c-pointer<int>, ^key-size: ssize_t, ^key-len: c-pointer<int>): int32
-  c inline "(int)mbedtls_lms_export_public_key((mbedtls_lms_public_t*)#1, (unsigned char*)#2, (size_t)#3, (size_t*)#4)"
-
-pub inline fun ffi/mbedtls-lms-export-public-key(^ctx1: c-pointer<mbedtls-lms-public-t-c>, ^key: c-pointer<int>, ^key-size: int, ^key-len: c-pointer<int>): <> int
-  external/mbedtls-lms-export-public-key(ctx1, key, key-size.ssize_t, key-len).int
-
-// \brief                    This function verifies a LMS signature, using a
-// LMS context that contains a public key.
-// 
-// \note                     Before this function is called, the context must
-// have been initialized and must contain a public key
-// (either by import or generation).
-// 
-// \param ctx                The initialized LMS public context from which the
-// public key will be read.
-// \param msg                The buffer from which the message will be read.
-// \param msg_size           The size of the message that will be read.
-// \param sig                The buf from which the signature will be read.
-// #MBEDTLS_LMS_SIG_LEN bytes will be read from
-// this.
-// \param sig_size           The size of the signature to be verified.
-// 
-// \return         \c 0 on successful verification.
-// \return         A non-zero error code on failure.
-pub extern external/mbedtls-lms-verify(^ctx1: c-pointer<mbedtls-lms-public-t-c>, ^msg: c-pointer<int>, ^msg-size: ssize_t, ^sig: c-pointer<int>, ^sig-size: ssize_t): int32
-  c inline "(int)mbedtls_lms_verify((mbedtls_lms_public_t*)#1, (unsigned char*)#2, (size_t)#3, (unsigned char*)#4, (size_t)#5)"
-
-pub inline fun ffi/mbedtls-lms-verify(^ctx1: c-pointer<mbedtls-lms-public-t-c>, ^msg: c-pointer<int>, ^msg-size: int, ^sig: c-pointer<int>, ^sig-size: int): <> int
-  external/mbedtls-lms-verify(ctx1, msg, msg-size.ssize_t, sig, sig-size.ssize_t).int
-
-// \brief       PEM context structure
-pub value struct mbedtls-pem-context
-  // !< buffer for decoded data
-  private-buf: c-pointer<int>
-  // !< length of the buffer
-  private-buflen: int
-  // !< buffer for extra header information
-  private-info: c-pointer<int>
-
-pub type mbedtls-pem-context-c
-pub alias mbedtls-pem-contextp = c-pointer<mbedtls-pem-context-c>
-pub alias mbedtls-pem-contextc = owned-c<mbedtls-pem-context-c>
-pub alias mbedtls-pem-contextcb<s::S> = borrowed-c<s,mbedtls-pem-context-c>
-pub alias mbedtls-pem-contextca = owned-c<c-array<mbedtls-pem-context-c>>
-
-pub extern mbedtls-pem-context/size-of(c: c-null<mbedtls-pem-context-c>): int32
-  c inline "sizeof(struct mbedtls_pem_context)"
-
-pub fun mbedtls-pem-contextc(): mbedtls-pem-contextc
-  malloc(?size-of=mbedtls-pem-context/size-of)
-
-pub fun mbedtls-pem-contextc-calloc(): mbedtls-pem-contextc
-  malloc-c(?size-of=mbedtls-pem-context/size-of)
-
-pub fun mbedtls-pem-contextc-array(n: int): mbedtls-pem-contextca
-  malloc(n.int32, ?size-of=mbedtls-pem-context/size-of)
-
-pub fun mbedtls-pem-contextc-array-calloc(n: int): mbedtls-pem-contextca
-  malloc-c(n.int32, ?size-of=mbedtls-pem-context/size-of)
-
-pub inline extern mbedtls-pem-context-ptrraw/private-buf(s: intptr_t): c-pointer<int>
-  c inline "(intptr_t)(((struct mbedtls_pem_context*)#1)->private_buf)"
-
-pub inline fun mbedtls-pem-contextp/private-buf(s: mbedtls-pem-contextp): <> c-pointer<int>
-  s.cextern/c-pointer/ptr.mbedtls-pem-context-ptrraw/private-buf
-
-pub inline fun mbedtls-pem-contextc/private-buf(^s: mbedtls-pem-contextc): <> c-pointer<int>
-  s.with-ptr(mbedtls-pem-contextp/private-buf)
-
-pub inline fun mbedtls-pem-contextcb/private-buf(^s: mbedtls-pem-contextcb<s::S>): <> c-pointer<int>
-  s.with-ptr(mbedtls-pem-contextp/private-buf)
-
-pub inline extern mbedtls-pem-context-ptrraw/set-private-buf(s: intptr_t, private-buf: c-pointer<int>): ()
-  c inline "((struct mbedtls_pem_context*)#1)->private_buf = (unsigned char*)#2"
-
-pub inline fun mbedtls-pem-contextp/set-private-buf(s: mbedtls-pem-contextp, private-buf: c-pointer<int>): ()
-  s.mbedtls-pem-context-ptrraw/set-private-buf(private-buf)
-
-pub inline fun mbedtls-pem-contextc/set-private-buf(^s: mbedtls-pem-contextc, private-buf: c-pointer<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-pem-contextp/set-private-buf(private-buf))
-
-pub inline fun mbedtls-pem-contextcb/set-private-buf(^s: mbedtls-pem-contextcb<s::S>, private-buf: c-pointer<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-pem-contextp/set-private-buf(private-buf))
-
-pub inline extern mbedtls-pem-context-ptrraw/private-buflen(s: intptr_t): ssize_t
-  c inline "(size_t)(((struct mbedtls_pem_context*)#1)->private_buflen)"
-
-pub inline fun mbedtls-pem-contextp/private-buflen(s: mbedtls-pem-contextp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-pem-context-ptrraw/private-buflen.int
-
-pub inline fun mbedtls-pem-contextc/private-buflen(^s: mbedtls-pem-contextc): <> int
-  s.with-ptr(mbedtls-pem-contextp/private-buflen)
-
-pub inline fun mbedtls-pem-contextcb/private-buflen(^s: mbedtls-pem-contextcb<s::S>): <> int
-  s.with-ptr(mbedtls-pem-contextp/private-buflen)
-
-pub inline extern mbedtls-pem-context-ptrraw/set-private-buflen(s: intptr_t, private-buflen: ssize_t): ()
-  c inline "((struct mbedtls_pem_context*)#1)->private_buflen = (size_t)#2"
-
-pub inline fun mbedtls-pem-contextp/set-private-buflen(s: mbedtls-pem-contextp, private-buflen: int): ()
-  s.mbedtls-pem-context-ptrraw/set-private-buflen(private-buflen.ssize_t)
-
-pub inline fun mbedtls-pem-contextc/set-private-buflen(^s: mbedtls-pem-contextc, private-buflen: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-pem-contextp/set-private-buflen(private-buflen))
-
-pub inline fun mbedtls-pem-contextcb/set-private-buflen(^s: mbedtls-pem-contextcb<s::S>, private-buflen: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-pem-contextp/set-private-buflen(private-buflen))
-
-pub inline extern mbedtls-pem-context-ptrraw/private-info(s: intptr_t): c-pointer<int>
-  c inline "(intptr_t)(((struct mbedtls_pem_context*)#1)->private_info)"
-
-pub inline fun mbedtls-pem-contextp/private-info(s: mbedtls-pem-contextp): <> c-pointer<int>
-  s.cextern/c-pointer/ptr.mbedtls-pem-context-ptrraw/private-info
-
-pub inline fun mbedtls-pem-contextc/private-info(^s: mbedtls-pem-contextc): <> c-pointer<int>
-  s.with-ptr(mbedtls-pem-contextp/private-info)
-
-pub inline fun mbedtls-pem-contextcb/private-info(^s: mbedtls-pem-contextcb<s::S>): <> c-pointer<int>
-  s.with-ptr(mbedtls-pem-contextp/private-info)
-
-pub inline extern mbedtls-pem-context-ptrraw/set-private-info(s: intptr_t, private-info: c-pointer<int>): ()
-  c inline "((struct mbedtls_pem_context*)#1)->private_info = (unsigned char*)#2"
-
-pub inline fun mbedtls-pem-contextp/set-private-info(s: mbedtls-pem-contextp, private-info: c-pointer<int>): ()
-  s.mbedtls-pem-context-ptrraw/set-private-info(private-info)
-
-pub inline fun mbedtls-pem-contextc/set-private-info(^s: mbedtls-pem-contextc, private-info: c-pointer<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-pem-contextp/set-private-info(private-info))
-
-pub inline fun mbedtls-pem-contextcb/set-private-info(^s: mbedtls-pem-contextcb<s::S>, private-info: c-pointer<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-pem-contextp/set-private-info(private-info))
+// \brief   Set the threshold error level to handle globally all debug output.
+// Debug messages that have a level over the threshold value are
+// discarded.
+// (Default value: 0 = No debug )
+// 
+// \param threshold     threshold level of messages to filter on. Messages at a
+// higher level will be discarded.
+// - Debug levels
+// - 0 No debug
+// - 1 Error
+// - 2 State change
+// - 3 Informational
+// - 4 Verbose
+pub extern external/mbedtls-debug-set-threshold(^threshold: int32): ()
+  c inline "(void)mbedtls_debug_set_threshold((int)#1)"
+
+pub inline fun ffi/mbedtls-debug-set-threshold(^threshold: int): <> ()
+  external/mbedtls-debug-set-threshold(threshold.int32)
 
 alias mbedtls-ms-time-t = int
 pub struct tm
@@ -21789,704 +18260,6 @@ pub fun int/mbedtls-mpi-gen-prime-flag-t(i: int32): exn mbedtls-mpi-gen-prime-fl
   match i.int
     1 -> MBEDTLS_MPI_GEN_PRIME_FLAG_DH
     2 -> MBEDTLS_MPI_GEN_PRIME_FLAG_LOW_ERR
-
-// Type-length-value structure that allows for ASN1 using DER.
-pub value struct mbedtls-asn1-buf
-  // < ASN1 type, e.g. MBEDTLS_ASN1_UTF8_STRING.
-  tag: int
-  // < ASN1 length, in octets.
-  len: int
-  // < ASN1 data, e.g. in ASCII.
-  p: c-pointer<int>
-
-pub type mbedtls-asn1-buf-c
-pub alias mbedtls-asn1-bufp = c-pointer<mbedtls-asn1-buf-c>
-pub alias mbedtls-asn1-bufc = owned-c<mbedtls-asn1-buf-c>
-pub alias mbedtls-asn1-bufcb<s::S> = borrowed-c<s,mbedtls-asn1-buf-c>
-pub alias mbedtls-asn1-bufca = owned-c<c-array<mbedtls-asn1-buf-c>>
-
-pub extern mbedtls-asn1-buf/size-of(c: c-null<mbedtls-asn1-buf-c>): int32
-  c inline "sizeof(struct mbedtls_asn1_buf)"
-
-pub fun mbedtls-asn1-bufc(): mbedtls-asn1-bufc
-  malloc(?size-of=mbedtls-asn1-buf/size-of)
-
-pub fun mbedtls-asn1-bufc-calloc(): mbedtls-asn1-bufc
-  malloc-c(?size-of=mbedtls-asn1-buf/size-of)
-
-pub fun mbedtls-asn1-bufc-array(n: int): mbedtls-asn1-bufca
-  malloc(n.int32, ?size-of=mbedtls-asn1-buf/size-of)
-
-pub fun mbedtls-asn1-bufc-array-calloc(n: int): mbedtls-asn1-bufca
-  malloc-c(n.int32, ?size-of=mbedtls-asn1-buf/size-of)
-
-pub inline extern mbedtls-asn1-buf-ptrraw/tag(s: intptr_t): int32
-  c inline "(int)(((struct mbedtls_asn1_buf*)#1)->tag)"
-
-pub inline fun mbedtls-asn1-bufp/tag(s: mbedtls-asn1-bufp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-asn1-buf-ptrraw/tag.int
-
-pub inline fun mbedtls-asn1-bufc/tag(^s: mbedtls-asn1-bufc): <> int
-  s.with-ptr(mbedtls-asn1-bufp/tag)
-
-pub inline fun mbedtls-asn1-bufcb/tag(^s: mbedtls-asn1-bufcb<s::S>): <> int
-  s.with-ptr(mbedtls-asn1-bufp/tag)
-
-pub inline extern mbedtls-asn1-buf-ptrraw/set-tag(s: intptr_t, tag: int32): ()
-  c inline "((struct mbedtls_asn1_buf*)#1)->tag = (int)#2"
-
-pub inline fun mbedtls-asn1-bufp/set-tag(s: mbedtls-asn1-bufp, tag: int): ()
-  s.mbedtls-asn1-buf-ptrraw/set-tag(tag.int32)
-
-pub inline fun mbedtls-asn1-bufc/set-tag(^s: mbedtls-asn1-bufc, tag: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-bufp/set-tag(tag))
-
-pub inline fun mbedtls-asn1-bufcb/set-tag(^s: mbedtls-asn1-bufcb<s::S>, tag: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-bufp/set-tag(tag))
-
-pub inline extern mbedtls-asn1-buf-ptrraw/len(s: intptr_t): ssize_t
-  c inline "(size_t)(((struct mbedtls_asn1_buf*)#1)->len)"
-
-pub inline fun mbedtls-asn1-bufp/len(s: mbedtls-asn1-bufp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-asn1-buf-ptrraw/len.int
-
-pub inline fun mbedtls-asn1-bufc/len(^s: mbedtls-asn1-bufc): <> int
-  s.with-ptr(mbedtls-asn1-bufp/len)
-
-pub inline fun mbedtls-asn1-bufcb/len(^s: mbedtls-asn1-bufcb<s::S>): <> int
-  s.with-ptr(mbedtls-asn1-bufp/len)
-
-pub inline extern mbedtls-asn1-buf-ptrraw/set-len(s: intptr_t, len: ssize_t): ()
-  c inline "((struct mbedtls_asn1_buf*)#1)->len = (size_t)#2"
-
-pub inline fun mbedtls-asn1-bufp/set-len(s: mbedtls-asn1-bufp, len: int): ()
-  s.mbedtls-asn1-buf-ptrraw/set-len(len.ssize_t)
-
-pub inline fun mbedtls-asn1-bufc/set-len(^s: mbedtls-asn1-bufc, len: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-bufp/set-len(len))
-
-pub inline fun mbedtls-asn1-bufcb/set-len(^s: mbedtls-asn1-bufcb<s::S>, len: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-bufp/set-len(len))
-
-pub inline extern mbedtls-asn1-buf-ptrraw/p(s: intptr_t): c-pointer<int>
-  c inline "(intptr_t)(((struct mbedtls_asn1_buf*)#1)->p)"
-
-pub inline fun mbedtls-asn1-bufp/p(s: mbedtls-asn1-bufp): <> c-pointer<int>
-  s.cextern/c-pointer/ptr.mbedtls-asn1-buf-ptrraw/p
-
-pub inline fun mbedtls-asn1-bufc/p(^s: mbedtls-asn1-bufc): <> c-pointer<int>
-  s.with-ptr(mbedtls-asn1-bufp/p)
-
-pub inline fun mbedtls-asn1-bufcb/p(^s: mbedtls-asn1-bufcb<s::S>): <> c-pointer<int>
-  s.with-ptr(mbedtls-asn1-bufp/p)
-
-pub inline extern mbedtls-asn1-buf-ptrraw/set-p(s: intptr_t, p: c-pointer<int>): ()
-  c inline "((struct mbedtls_asn1_buf*)#1)->p = (unsigned char*)#2"
-
-pub inline fun mbedtls-asn1-bufp/set-p(s: mbedtls-asn1-bufp, p: c-pointer<int>): ()
-  s.mbedtls-asn1-buf-ptrraw/set-p(p)
-
-pub inline fun mbedtls-asn1-bufc/set-p(^s: mbedtls-asn1-bufc, p: c-pointer<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-bufp/set-p(p))
-
-pub inline fun mbedtls-asn1-bufcb/set-p(^s: mbedtls-asn1-bufcb<s::S>, p: c-pointer<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-bufp/set-p(p))
-
-// Container for ASN1 bit strings.
-pub value struct mbedtls-asn1-bitstring
-  // < ASN1 length, in octets.
-  len: int
-  // < Number of unused bits at the end of the string
-  unused-bits: int
-  // < Raw ASN1 data for the bit string
-  p: c-pointer<int>
-
-pub type mbedtls-asn1-bitstring-c
-pub alias mbedtls-asn1-bitstringp = c-pointer<mbedtls-asn1-bitstring-c>
-pub alias mbedtls-asn1-bitstringc = owned-c<mbedtls-asn1-bitstring-c>
-pub alias mbedtls-asn1-bitstringcb<s::S> = borrowed-c<s,mbedtls-asn1-bitstring-c>
-pub alias mbedtls-asn1-bitstringca = owned-c<c-array<mbedtls-asn1-bitstring-c>>
-
-pub extern mbedtls-asn1-bitstring/size-of(c: c-null<mbedtls-asn1-bitstring-c>): int32
-  c inline "sizeof(struct mbedtls_asn1_bitstring)"
-
-pub fun mbedtls-asn1-bitstringc(): mbedtls-asn1-bitstringc
-  malloc(?size-of=mbedtls-asn1-bitstring/size-of)
-
-pub fun mbedtls-asn1-bitstringc-calloc(): mbedtls-asn1-bitstringc
-  malloc-c(?size-of=mbedtls-asn1-bitstring/size-of)
-
-pub fun mbedtls-asn1-bitstringc-array(n: int): mbedtls-asn1-bitstringca
-  malloc(n.int32, ?size-of=mbedtls-asn1-bitstring/size-of)
-
-pub fun mbedtls-asn1-bitstringc-array-calloc(n: int): mbedtls-asn1-bitstringca
-  malloc-c(n.int32, ?size-of=mbedtls-asn1-bitstring/size-of)
-
-pub inline extern mbedtls-asn1-bitstring-ptrraw/len(s: intptr_t): ssize_t
-  c inline "(size_t)(((struct mbedtls_asn1_bitstring*)#1)->len)"
-
-pub inline fun mbedtls-asn1-bitstringp/len(s: mbedtls-asn1-bitstringp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-asn1-bitstring-ptrraw/len.int
-
-pub inline fun mbedtls-asn1-bitstringc/len(^s: mbedtls-asn1-bitstringc): <> int
-  s.with-ptr(mbedtls-asn1-bitstringp/len)
-
-pub inline fun mbedtls-asn1-bitstringcb/len(^s: mbedtls-asn1-bitstringcb<s::S>): <> int
-  s.with-ptr(mbedtls-asn1-bitstringp/len)
-
-pub inline extern mbedtls-asn1-bitstring-ptrraw/set-len(s: intptr_t, len: ssize_t): ()
-  c inline "((struct mbedtls_asn1_bitstring*)#1)->len = (size_t)#2"
-
-pub inline fun mbedtls-asn1-bitstringp/set-len(s: mbedtls-asn1-bitstringp, len: int): ()
-  s.mbedtls-asn1-bitstring-ptrraw/set-len(len.ssize_t)
-
-pub inline fun mbedtls-asn1-bitstringc/set-len(^s: mbedtls-asn1-bitstringc, len: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-bitstringp/set-len(len))
-
-pub inline fun mbedtls-asn1-bitstringcb/set-len(^s: mbedtls-asn1-bitstringcb<s::S>, len: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-bitstringp/set-len(len))
-
-pub inline extern mbedtls-asn1-bitstring-ptrraw/unused-bits(s: intptr_t): int8
-  c inline "(unsigned char)(((struct mbedtls_asn1_bitstring*)#1)->unused_bits)"
-
-pub inline fun mbedtls-asn1-bitstringp/unused-bits(s: mbedtls-asn1-bitstringp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-asn1-bitstring-ptrraw/unused-bits.int
-
-pub inline fun mbedtls-asn1-bitstringc/unused-bits(^s: mbedtls-asn1-bitstringc): <> int
-  s.with-ptr(mbedtls-asn1-bitstringp/unused-bits)
-
-pub inline fun mbedtls-asn1-bitstringcb/unused-bits(^s: mbedtls-asn1-bitstringcb<s::S>): <> int
-  s.with-ptr(mbedtls-asn1-bitstringp/unused-bits)
-
-pub inline extern mbedtls-asn1-bitstring-ptrraw/set-unused-bits(s: intptr_t, unused-bits: int8): ()
-  c inline "((struct mbedtls_asn1_bitstring*)#1)->unused_bits = (unsigned char)#2"
-
-pub inline fun mbedtls-asn1-bitstringp/set-unused-bits(s: mbedtls-asn1-bitstringp, unused-bits: int): ()
-  s.mbedtls-asn1-bitstring-ptrraw/set-unused-bits(unused-bits.int8)
-
-pub inline fun mbedtls-asn1-bitstringc/set-unused-bits(^s: mbedtls-asn1-bitstringc, unused-bits: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-bitstringp/set-unused-bits(unused-bits))
-
-pub inline fun mbedtls-asn1-bitstringcb/set-unused-bits(^s: mbedtls-asn1-bitstringcb<s::S>, unused-bits: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-bitstringp/set-unused-bits(unused-bits))
-
-pub inline extern mbedtls-asn1-bitstring-ptrraw/p(s: intptr_t): c-pointer<int>
-  c inline "(intptr_t)(((struct mbedtls_asn1_bitstring*)#1)->p)"
-
-pub inline fun mbedtls-asn1-bitstringp/p(s: mbedtls-asn1-bitstringp): <> c-pointer<int>
-  s.cextern/c-pointer/ptr.mbedtls-asn1-bitstring-ptrraw/p
-
-pub inline fun mbedtls-asn1-bitstringc/p(^s: mbedtls-asn1-bitstringc): <> c-pointer<int>
-  s.with-ptr(mbedtls-asn1-bitstringp/p)
-
-pub inline fun mbedtls-asn1-bitstringcb/p(^s: mbedtls-asn1-bitstringcb<s::S>): <> c-pointer<int>
-  s.with-ptr(mbedtls-asn1-bitstringp/p)
-
-pub inline extern mbedtls-asn1-bitstring-ptrraw/set-p(s: intptr_t, p: c-pointer<int>): ()
-  c inline "((struct mbedtls_asn1_bitstring*)#1)->p = (unsigned char*)#2"
-
-pub inline fun mbedtls-asn1-bitstringp/set-p(s: mbedtls-asn1-bitstringp, p: c-pointer<int>): ()
-  s.mbedtls-asn1-bitstring-ptrraw/set-p(p)
-
-pub inline fun mbedtls-asn1-bitstringc/set-p(^s: mbedtls-asn1-bitstringc, p: c-pointer<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-bitstringp/set-p(p))
-
-pub inline fun mbedtls-asn1-bitstringcb/set-p(^s: mbedtls-asn1-bitstringcb<s::S>, p: c-pointer<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-bitstringp/set-p(p))
-
-// Container for a sequence of ASN.1 items
-pub value struct mbedtls-asn1-sequence
-  // < Buffer containing the given ASN.1 item.
-  buf: mbedtls-asn1-buf-c
-  // The next entry in the sequence.
-  // 
-  // The details of memory management for sequences are not documented and
-  // may change in future versions. Set this field to \p NULL when
-  // initializing a structure, and do not modify it except via Mbed TLS
-  // library functions.
-  next: mbedtls-asn1-sequence-c
-
-pub type mbedtls-asn1-sequence-c
-pub alias mbedtls-asn1-sequencep = c-pointer<mbedtls-asn1-sequence-c>
-pub alias mbedtls-asn1-sequencec = owned-c<mbedtls-asn1-sequence-c>
-pub alias mbedtls-asn1-sequencecb<s::S> = borrowed-c<s,mbedtls-asn1-sequence-c>
-pub alias mbedtls-asn1-sequenceca = owned-c<c-array<mbedtls-asn1-sequence-c>>
-
-pub extern mbedtls-asn1-sequence/size-of(c: c-null<mbedtls-asn1-sequence-c>): int32
-  c inline "sizeof(struct mbedtls_asn1_sequence)"
-
-pub fun mbedtls-asn1-sequencec(): mbedtls-asn1-sequencec
-  malloc(?size-of=mbedtls-asn1-sequence/size-of)
-
-pub fun mbedtls-asn1-sequencec-calloc(): mbedtls-asn1-sequencec
-  malloc-c(?size-of=mbedtls-asn1-sequence/size-of)
-
-pub fun mbedtls-asn1-sequencec-array(n: int): mbedtls-asn1-sequenceca
-  malloc(n.int32, ?size-of=mbedtls-asn1-sequence/size-of)
-
-pub fun mbedtls-asn1-sequencec-array-calloc(n: int): mbedtls-asn1-sequenceca
-  malloc-c(n.int32, ?size-of=mbedtls-asn1-sequence/size-of)
-
-pub inline extern mbedtls-asn1-sequence-ptrraw/next(s: intptr_t): c-pointer<mbedtls-asn1-sequence-c>
-  c inline "(intptr_t)(((struct mbedtls_asn1_sequence*)#1)->next)"
-
-pub inline fun mbedtls-asn1-sequencep/next(s: mbedtls-asn1-sequencep): <> c-pointer<mbedtls-asn1-sequence-c>
-  s.cextern/c-pointer/ptr.mbedtls-asn1-sequence-ptrraw/next
-
-pub inline fun mbedtls-asn1-sequencec/next(^s: mbedtls-asn1-sequencec): <> c-pointer<mbedtls-asn1-sequence-c>
-  s.with-ptr(mbedtls-asn1-sequencep/next)
-
-pub inline fun mbedtls-asn1-sequencecb/next(^s: mbedtls-asn1-sequencecb<s::S>): <> c-pointer<mbedtls-asn1-sequence-c>
-  s.with-ptr(mbedtls-asn1-sequencep/next)
-
-pub inline extern mbedtls-asn1-sequence-ptrraw/set-next(s: intptr_t, next: c-pointer<mbedtls-asn1-sequence-c>): ()
-  c inline "((struct mbedtls_asn1_sequence*)#1)->next = (struct mbedtls_asn1_sequence*)#2"
-
-pub inline fun mbedtls-asn1-sequencep/set-next(s: mbedtls-asn1-sequencep, next: c-pointer<mbedtls-asn1-sequence-c>): ()
-  s.mbedtls-asn1-sequence-ptrraw/set-next(next)
-
-pub inline fun mbedtls-asn1-sequencec/set-next(^s: mbedtls-asn1-sequencec, next: c-pointer<mbedtls-asn1-sequence-c>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-sequencep/set-next(next))
-
-pub inline fun mbedtls-asn1-sequencecb/set-next(^s: mbedtls-asn1-sequencecb<s::S>, next: c-pointer<mbedtls-asn1-sequence-c>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-sequencep/set-next(next))
-
-// Container for a sequence or list of 'named' ASN.1 data items
-pub struct mbedtls-asn1-named-data
-  // < The object identifier.
-  oid: mbedtls-asn1-buf-c
-  // < The named value.
-  val: mbedtls-asn1-buf-c
-  // The next entry in the sequence.
-  // 
-  // The details of memory management for named data sequences are not
-  // documented and may change in future versions. Set this field to \p NULL
-  // when initializing a structure, and do not modify it except via Mbed TLS
-  // library functions.
-  next: mbedtls-asn1-named-data-c
-  // Merge next item into the current one?
-  // 
-  // This field exists for the sake of Mbed TLS's X.509 certificate parsing
-  // code and may change in future versions of the library.
-  private-next-merged: int
-
-pub type mbedtls-asn1-named-data-c
-pub alias mbedtls-asn1-named-datap = c-pointer<mbedtls-asn1-named-data-c>
-pub alias mbedtls-asn1-named-datac = owned-c<mbedtls-asn1-named-data-c>
-pub alias mbedtls-asn1-named-datacb<s::S> = borrowed-c<s,mbedtls-asn1-named-data-c>
-pub alias mbedtls-asn1-named-dataca = owned-c<c-array<mbedtls-asn1-named-data-c>>
-
-pub extern mbedtls-asn1-named-data/size-of(c: c-null<mbedtls-asn1-named-data-c>): int32
-  c inline "sizeof(struct mbedtls_asn1_named_data)"
-
-pub fun mbedtls-asn1-named-datac(): mbedtls-asn1-named-datac
-  malloc(?size-of=mbedtls-asn1-named-data/size-of)
-
-pub fun mbedtls-asn1-named-datac-calloc(): mbedtls-asn1-named-datac
-  malloc-c(?size-of=mbedtls-asn1-named-data/size-of)
-
-pub fun mbedtls-asn1-named-datac-array(n: int): mbedtls-asn1-named-dataca
-  malloc(n.int32, ?size-of=mbedtls-asn1-named-data/size-of)
-
-pub fun mbedtls-asn1-named-datac-array-calloc(n: int): mbedtls-asn1-named-dataca
-  malloc-c(n.int32, ?size-of=mbedtls-asn1-named-data/size-of)
-
-pub inline extern mbedtls-asn1-named-data-ptrraw/next(s: intptr_t): c-pointer<mbedtls-asn1-named-data-c>
-  c inline "(intptr_t)(((struct mbedtls_asn1_named_data*)#1)->next)"
-
-pub inline fun mbedtls-asn1-named-datap/next(s: mbedtls-asn1-named-datap): <> c-pointer<mbedtls-asn1-named-data-c>
-  s.cextern/c-pointer/ptr.mbedtls-asn1-named-data-ptrraw/next
-
-pub inline fun mbedtls-asn1-named-datac/next(^s: mbedtls-asn1-named-datac): <> c-pointer<mbedtls-asn1-named-data-c>
-  s.with-ptr(mbedtls-asn1-named-datap/next)
-
-pub inline fun mbedtls-asn1-named-datacb/next(^s: mbedtls-asn1-named-datacb<s::S>): <> c-pointer<mbedtls-asn1-named-data-c>
-  s.with-ptr(mbedtls-asn1-named-datap/next)
-
-pub inline extern mbedtls-asn1-named-data-ptrraw/set-next(s: intptr_t, next: c-pointer<mbedtls-asn1-named-data-c>): ()
-  c inline "((struct mbedtls_asn1_named_data*)#1)->next = (struct mbedtls_asn1_named_data*)#2"
-
-pub inline fun mbedtls-asn1-named-datap/set-next(s: mbedtls-asn1-named-datap, next: c-pointer<mbedtls-asn1-named-data-c>): ()
-  s.mbedtls-asn1-named-data-ptrraw/set-next(next)
-
-pub inline fun mbedtls-asn1-named-datac/set-next(^s: mbedtls-asn1-named-datac, next: c-pointer<mbedtls-asn1-named-data-c>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-named-datap/set-next(next))
-
-pub inline fun mbedtls-asn1-named-datacb/set-next(^s: mbedtls-asn1-named-datacb<s::S>, next: c-pointer<mbedtls-asn1-named-data-c>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-named-datap/set-next(next))
-
-pub inline extern mbedtls-asn1-named-data-ptrraw/private-next-merged(s: intptr_t): int8
-  c inline "(unsigned char)(((struct mbedtls_asn1_named_data*)#1)->private_next_merged)"
-
-pub inline fun mbedtls-asn1-named-datap/private-next-merged(s: mbedtls-asn1-named-datap): <> int
-  s.cextern/c-pointer/ptr.mbedtls-asn1-named-data-ptrraw/private-next-merged.int
-
-pub inline fun mbedtls-asn1-named-datac/private-next-merged(^s: mbedtls-asn1-named-datac): <> int
-  s.with-ptr(mbedtls-asn1-named-datap/private-next-merged)
-
-pub inline fun mbedtls-asn1-named-datacb/private-next-merged(^s: mbedtls-asn1-named-datacb<s::S>): <> int
-  s.with-ptr(mbedtls-asn1-named-datap/private-next-merged)
-
-pub inline extern mbedtls-asn1-named-data-ptrraw/set-private-next-merged(s: intptr_t, private-next-merged: int8): ()
-  c inline "((struct mbedtls_asn1_named_data*)#1)->private_next_merged = (unsigned char)#2"
-
-pub inline fun mbedtls-asn1-named-datap/set-private-next-merged(s: mbedtls-asn1-named-datap, private-next-merged: int): ()
-  s.mbedtls-asn1-named-data-ptrraw/set-private-next-merged(private-next-merged.int8)
-
-pub inline fun mbedtls-asn1-named-datac/set-private-next-merged(^s: mbedtls-asn1-named-datac, private-next-merged: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-named-datap/set-private-next-merged(private-next-merged))
-
-pub inline fun mbedtls-asn1-named-datacb/set-private-next-merged(^s: mbedtls-asn1-named-datacb<s::S>, private-next-merged: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-named-datap/set-private-next-merged(private-next-merged))
-
-// \brief     Supported message digests.
-// 
-// \warning   MD5 and SHA-1 are considered weak message digests and
-// their use constitutes a security risk. We recommend considering
-// stronger message digests instead.
-type mbedtls-md-type-t
-  // < None.
-  MBEDTLS_MD_NONE
-  // < The MD5 message digest.
-  MBEDTLS_MD_MD5
-  // < The RIPEMD-160 message digest.
-  MBEDTLS_MD_RIPEMD160
-  // < The SHA-1 message digest.
-  MBEDTLS_MD_SHA1
-  // < The SHA-224 message digest.
-  MBEDTLS_MD_SHA224
-  // < The SHA-256 message digest.
-  MBEDTLS_MD_SHA256
-  // < The SHA-384 message digest.
-  MBEDTLS_MD_SHA384
-  // < The SHA-512 message digest.
-  MBEDTLS_MD_SHA512
-  // < The SHA3-224 message digest.
-  MBEDTLS_MD_SHA3_224
-  // < The SHA3-256 message digest.
-  MBEDTLS_MD_SHA3_256
-  // < The SHA3-384 message digest.
-  MBEDTLS_MD_SHA3_384
-  // < The SHA3-512 message digest.
-  MBEDTLS_MD_SHA3_512
-
-pub fun mbedtls-md-type-t/int(i: mbedtls-md-type-t): int32
-  match i
-    MBEDTLS_MD_NONE -> 0.int32
-    MBEDTLS_MD_MD5 -> 3.int32
-    MBEDTLS_MD_RIPEMD160 -> 4.int32
-    MBEDTLS_MD_SHA1 -> 5.int32
-    MBEDTLS_MD_SHA224 -> 8.int32
-    MBEDTLS_MD_SHA256 -> 9.int32
-    MBEDTLS_MD_SHA384 -> 10.int32
-    MBEDTLS_MD_SHA512 -> 11.int32
-    MBEDTLS_MD_SHA3_224 -> 16.int32
-    MBEDTLS_MD_SHA3_256 -> 17.int32
-    MBEDTLS_MD_SHA3_384 -> 18.int32
-    MBEDTLS_MD_SHA3_512 -> 19.int32
-
-pub fun int/mbedtls-md-type-t(i: int32): exn mbedtls-md-type-t
-  match i.int
-    0 -> MBEDTLS_MD_NONE
-    3 -> MBEDTLS_MD_MD5
-    4 -> MBEDTLS_MD_RIPEMD160
-    5 -> MBEDTLS_MD_SHA1
-    8 -> MBEDTLS_MD_SHA224
-    9 -> MBEDTLS_MD_SHA256
-    10 -> MBEDTLS_MD_SHA384
-    11 -> MBEDTLS_MD_SHA512
-    16 -> MBEDTLS_MD_SHA3_224
-    17 -> MBEDTLS_MD_SHA3_256
-    18 -> MBEDTLS_MD_SHA3_384
-    19 -> MBEDTLS_MD_SHA3_512
-
-pub struct mbedtls-md-info-t
-pub type mbedtls-md-info-t-c
-pub alias mbedtls-md-info-tp = c-pointer<mbedtls-md-info-t-c>
-pub alias mbedtls-md-info-tc = owned-c<mbedtls-md-info-t-c>
-pub alias mbedtls-md-info-tcb<s::S> = borrowed-c<s,mbedtls-md-info-t-c>
-pub alias mbedtls-md-info-tca = owned-c<c-array<mbedtls-md-info-t-c>>
-
-// Used internally to indicate whether a context uses legacy or PSA.
-// 
-// Internal use only.
-type mbedtls-md-engine-t
-  MBEDTLS_MD_ENGINE_LEGACY
-  MBEDTLS_MD_ENGINE_PSA
-
-pub fun mbedtls-md-engine-t/int(i: mbedtls-md-engine-t): int32
-  match i
-    MBEDTLS_MD_ENGINE_LEGACY -> 0.int32
-    MBEDTLS_MD_ENGINE_PSA -> 1.int32
-
-pub fun int/mbedtls-md-engine-t(i: int32): exn mbedtls-md-engine-t
-  match i.int
-    0 -> MBEDTLS_MD_ENGINE_LEGACY
-    1 -> MBEDTLS_MD_ENGINE_PSA
-
-// The generic message-digest context.
-pub value struct mbedtls-md-context-t
-  // Information about the associated message digest.
-  private-md-info: mbedtls-md-info-t-c
-  // The digest-specific context (legacy) or the PSA operation.
-  private-md-ctx: c-pointer<()>
-  // The HMAC part of the context.
-  private-hmac-ctx: c-pointer<()>
-
-pub type mbedtls-md-context-t-c
-pub alias mbedtls-md-context-tp = c-pointer<mbedtls-md-context-t-c>
-pub alias mbedtls-md-context-tc = owned-c<mbedtls-md-context-t-c>
-pub alias mbedtls-md-context-tcb<s::S> = borrowed-c<s,mbedtls-md-context-t-c>
-pub alias mbedtls-md-context-tca = owned-c<c-array<mbedtls-md-context-t-c>>
-
-pub extern mbedtls-md-context-t/size-of(c: c-null<mbedtls-md-context-t-c>): int32
-  c inline "sizeof(struct mbedtls_md_context_t)"
-
-pub fun mbedtls-md-context-tc(): mbedtls-md-context-tc
-  malloc(?size-of=mbedtls-md-context-t/size-of)
-
-pub fun mbedtls-md-context-tc-calloc(): mbedtls-md-context-tc
-  malloc-c(?size-of=mbedtls-md-context-t/size-of)
-
-pub fun mbedtls-md-context-tc-array(n: int): mbedtls-md-context-tca
-  malloc(n.int32, ?size-of=mbedtls-md-context-t/size-of)
-
-pub fun mbedtls-md-context-tc-array-calloc(n: int): mbedtls-md-context-tca
-  malloc-c(n.int32, ?size-of=mbedtls-md-context-t/size-of)
-
-pub inline extern mbedtls-md-context-t-ptrraw/private-md-info(s: intptr_t): c-pointer<mbedtls-md-info-t-c>
-  c inline "(intptr_t)(((struct mbedtls_md_context_t*)#1)->private_md_info)"
-
-pub inline fun mbedtls-md-context-tp/private-md-info(s: mbedtls-md-context-tp): <> c-pointer<mbedtls-md-info-t-c>
-  s.cextern/c-pointer/ptr.mbedtls-md-context-t-ptrraw/private-md-info
-
-pub inline fun mbedtls-md-context-tc/private-md-info(^s: mbedtls-md-context-tc): <> c-pointer<mbedtls-md-info-t-c>
-  s.with-ptr(mbedtls-md-context-tp/private-md-info)
-
-pub inline fun mbedtls-md-context-tcb/private-md-info(^s: mbedtls-md-context-tcb<s::S>): <> c-pointer<mbedtls-md-info-t-c>
-  s.with-ptr(mbedtls-md-context-tp/private-md-info)
-
-pub inline extern mbedtls-md-context-t-ptrraw/set-private-md-info(s: intptr_t, private-md-info: c-pointer<mbedtls-md-info-t-c>): ()
-  c inline "((struct mbedtls_md_context_t*)#1)->private_md_info = (struct mbedtls_md_info_t*)#2"
-
-pub inline fun mbedtls-md-context-tp/set-private-md-info(s: mbedtls-md-context-tp, private-md-info: c-pointer<mbedtls-md-info-t-c>): ()
-  s.mbedtls-md-context-t-ptrraw/set-private-md-info(private-md-info)
-
-pub inline fun mbedtls-md-context-tc/set-private-md-info(^s: mbedtls-md-context-tc, private-md-info: c-pointer<mbedtls-md-info-t-c>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-md-context-tp/set-private-md-info(private-md-info))
-
-pub inline fun mbedtls-md-context-tcb/set-private-md-info(^s: mbedtls-md-context-tcb<s::S>, private-md-info: c-pointer<mbedtls-md-info-t-c>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-md-context-tp/set-private-md-info(private-md-info))
-
-pub inline extern mbedtls-md-context-t-ptrraw/private-md-ctx(s: intptr_t): c-pointer<()>
-  c inline "(intptr_t)(((struct mbedtls_md_context_t*)#1)->private_md_ctx)"
-
-pub inline fun mbedtls-md-context-tp/private-md-ctx(s: mbedtls-md-context-tp): <> c-pointer<()>
-  s.cextern/c-pointer/ptr.mbedtls-md-context-t-ptrraw/private-md-ctx
-
-pub inline fun mbedtls-md-context-tc/private-md-ctx(^s: mbedtls-md-context-tc): <> c-pointer<()>
-  s.with-ptr(mbedtls-md-context-tp/private-md-ctx)
-
-pub inline fun mbedtls-md-context-tcb/private-md-ctx(^s: mbedtls-md-context-tcb<s::S>): <> c-pointer<()>
-  s.with-ptr(mbedtls-md-context-tp/private-md-ctx)
-
-pub inline extern mbedtls-md-context-t-ptrraw/set-private-md-ctx(s: intptr_t, private-md-ctx: c-pointer<()>): ()
-  c inline "((struct mbedtls_md_context_t*)#1)->private_md_ctx = (void*)#2"
-
-pub inline fun mbedtls-md-context-tp/set-private-md-ctx(s: mbedtls-md-context-tp, private-md-ctx: c-pointer<()>): ()
-  s.mbedtls-md-context-t-ptrraw/set-private-md-ctx(private-md-ctx)
-
-pub inline fun mbedtls-md-context-tc/set-private-md-ctx(^s: mbedtls-md-context-tc, private-md-ctx: c-pointer<()>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-md-context-tp/set-private-md-ctx(private-md-ctx))
-
-pub inline fun mbedtls-md-context-tcb/set-private-md-ctx(^s: mbedtls-md-context-tcb<s::S>, private-md-ctx: c-pointer<()>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-md-context-tp/set-private-md-ctx(private-md-ctx))
-
-pub inline extern mbedtls-md-context-t-ptrraw/private-hmac-ctx(s: intptr_t): c-pointer<()>
-  c inline "(intptr_t)(((struct mbedtls_md_context_t*)#1)->private_hmac_ctx)"
-
-pub inline fun mbedtls-md-context-tp/private-hmac-ctx(s: mbedtls-md-context-tp): <> c-pointer<()>
-  s.cextern/c-pointer/ptr.mbedtls-md-context-t-ptrraw/private-hmac-ctx
-
-pub inline fun mbedtls-md-context-tc/private-hmac-ctx(^s: mbedtls-md-context-tc): <> c-pointer<()>
-  s.with-ptr(mbedtls-md-context-tp/private-hmac-ctx)
-
-pub inline fun mbedtls-md-context-tcb/private-hmac-ctx(^s: mbedtls-md-context-tcb<s::S>): <> c-pointer<()>
-  s.with-ptr(mbedtls-md-context-tp/private-hmac-ctx)
-
-pub inline extern mbedtls-md-context-t-ptrraw/set-private-hmac-ctx(s: intptr_t, private-hmac-ctx: c-pointer<()>): ()
-  c inline "((struct mbedtls_md_context_t*)#1)->private_hmac_ctx = (void*)#2"
-
-pub inline fun mbedtls-md-context-tp/set-private-hmac-ctx(s: mbedtls-md-context-tp, private-hmac-ctx: c-pointer<()>): ()
-  s.mbedtls-md-context-t-ptrraw/set-private-hmac-ctx(private-hmac-ctx)
-
-pub inline fun mbedtls-md-context-tc/set-private-hmac-ctx(^s: mbedtls-md-context-tc, private-hmac-ctx: c-pointer<()>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-md-context-tp/set-private-hmac-ctx(private-hmac-ctx))
-
-pub inline fun mbedtls-md-context-tcb/set-private-hmac-ctx(^s: mbedtls-md-context-tcb<s::S>, private-hmac-ctx: c-pointer<()>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-md-context-tp/set-private-hmac-ctx(private-hmac-ctx))
-
-// \brief   The RSA context structure.
-pub struct mbedtls-rsa-context
-  // !<  Reserved for internal purposes.
-  // Do not set this field in application
-  // code. Its meaning might change without
-  // notice.
-  private-ver: int
-  // !<  The size of \p N in Bytes.
-  private-len: int
-  // !<  The public modulus.
-  private-n: mbedtls-mpi-c
-  // !<  The public exponent.
-  private-e: mbedtls-mpi-c
-  // !<  The private exponent.
-  private-d: mbedtls-mpi-c
-  // !<  The first prime factor.
-  private-p: mbedtls-mpi-c
-  // !<  The second prime factor.
-  private-q: mbedtls-mpi-c
-  // !<  <code>D % (P - 1)</code>.
-  private-dp: mbedtls-mpi-c
-  // !<  <code>D % (Q - 1)</code>.
-  private-dq: mbedtls-mpi-c
-  // !<  <code>1 / (Q % P)</code>.
-  private-qp: mbedtls-mpi-c
-  // !<  cached <code>R^2 mod N</code>.
-  private-rn: mbedtls-mpi-c
-  // !<  cached <code>R^2 mod P</code>.
-  private-rp: mbedtls-mpi-c
-  // !<  cached <code>R^2 mod Q</code>.
-  private-rq: mbedtls-mpi-c
-  // !<  The cached blinding value.
-  private-vi: mbedtls-mpi-c
-  // !<  The cached un-blinding value.
-  private-vf: mbedtls-mpi-c
-  // !< Selects padding mode:
-  // #MBEDTLS_RSA_PKCS_V15 for 1.5 padding and
-  // #MBEDTLS_RSA_PKCS_V21 for OAEP or PSS.
-  private-padding: int
-  // !< Hash identifier of mbedtls_md_type_t type,
-  // as specified in md.h for use in the MGF
-  // mask generating function used in the
-  // EME-OAEP and EMSA-PSS encodings.
-  private-hash-id: int
-
-pub type mbedtls-rsa-context-c
-pub alias mbedtls-rsa-contextp = c-pointer<mbedtls-rsa-context-c>
-pub alias mbedtls-rsa-contextc = owned-c<mbedtls-rsa-context-c>
-pub alias mbedtls-rsa-contextcb<s::S> = borrowed-c<s,mbedtls-rsa-context-c>
-pub alias mbedtls-rsa-contextca = owned-c<c-array<mbedtls-rsa-context-c>>
-
-pub extern mbedtls-rsa-context/size-of(c: c-null<mbedtls-rsa-context-c>): int32
-  c inline "sizeof(struct mbedtls_rsa_context)"
-
-pub fun mbedtls-rsa-contextc(): mbedtls-rsa-contextc
-  malloc(?size-of=mbedtls-rsa-context/size-of)
-
-pub fun mbedtls-rsa-contextc-calloc(): mbedtls-rsa-contextc
-  malloc-c(?size-of=mbedtls-rsa-context/size-of)
-
-pub fun mbedtls-rsa-contextc-array(n: int): mbedtls-rsa-contextca
-  malloc(n.int32, ?size-of=mbedtls-rsa-context/size-of)
-
-pub fun mbedtls-rsa-contextc-array-calloc(n: int): mbedtls-rsa-contextca
-  malloc-c(n.int32, ?size-of=mbedtls-rsa-context/size-of)
-
-pub inline extern mbedtls-rsa-context-ptrraw/private-ver(s: intptr_t): int32
-  c inline "(int)(((struct mbedtls_rsa_context*)#1)->private_ver)"
-
-pub inline fun mbedtls-rsa-contextp/private-ver(s: mbedtls-rsa-contextp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-rsa-context-ptrraw/private-ver.int
-
-pub inline fun mbedtls-rsa-contextc/private-ver(^s: mbedtls-rsa-contextc): <> int
-  s.with-ptr(mbedtls-rsa-contextp/private-ver)
-
-pub inline fun mbedtls-rsa-contextcb/private-ver(^s: mbedtls-rsa-contextcb<s::S>): <> int
-  s.with-ptr(mbedtls-rsa-contextp/private-ver)
-
-pub inline extern mbedtls-rsa-context-ptrraw/set-private-ver(s: intptr_t, private-ver: int32): ()
-  c inline "((struct mbedtls_rsa_context*)#1)->private_ver = (int)#2"
-
-pub inline fun mbedtls-rsa-contextp/set-private-ver(s: mbedtls-rsa-contextp, private-ver: int): ()
-  s.mbedtls-rsa-context-ptrraw/set-private-ver(private-ver.int32)
-
-pub inline fun mbedtls-rsa-contextc/set-private-ver(^s: mbedtls-rsa-contextc, private-ver: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-rsa-contextp/set-private-ver(private-ver))
-
-pub inline fun mbedtls-rsa-contextcb/set-private-ver(^s: mbedtls-rsa-contextcb<s::S>, private-ver: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-rsa-contextp/set-private-ver(private-ver))
-
-pub inline extern mbedtls-rsa-context-ptrraw/private-len(s: intptr_t): ssize_t
-  c inline "(size_t)(((struct mbedtls_rsa_context*)#1)->private_len)"
-
-pub inline fun mbedtls-rsa-contextp/private-len(s: mbedtls-rsa-contextp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-rsa-context-ptrraw/private-len.int
-
-pub inline fun mbedtls-rsa-contextc/private-len(^s: mbedtls-rsa-contextc): <> int
-  s.with-ptr(mbedtls-rsa-contextp/private-len)
-
-pub inline fun mbedtls-rsa-contextcb/private-len(^s: mbedtls-rsa-contextcb<s::S>): <> int
-  s.with-ptr(mbedtls-rsa-contextp/private-len)
-
-pub inline extern mbedtls-rsa-context-ptrraw/set-private-len(s: intptr_t, private-len: ssize_t): ()
-  c inline "((struct mbedtls_rsa_context*)#1)->private_len = (size_t)#2"
-
-pub inline fun mbedtls-rsa-contextp/set-private-len(s: mbedtls-rsa-contextp, private-len: int): ()
-  s.mbedtls-rsa-context-ptrraw/set-private-len(private-len.ssize_t)
-
-pub inline fun mbedtls-rsa-contextc/set-private-len(^s: mbedtls-rsa-contextc, private-len: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-rsa-contextp/set-private-len(private-len))
-
-pub inline fun mbedtls-rsa-contextcb/set-private-len(^s: mbedtls-rsa-contextcb<s::S>, private-len: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-rsa-contextp/set-private-len(private-len))
-
-pub inline extern mbedtls-rsa-context-ptrraw/private-padding(s: intptr_t): int32
-  c inline "(int)(((struct mbedtls_rsa_context*)#1)->private_padding)"
-
-pub inline fun mbedtls-rsa-contextp/private-padding(s: mbedtls-rsa-contextp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-rsa-context-ptrraw/private-padding.int
-
-pub inline fun mbedtls-rsa-contextc/private-padding(^s: mbedtls-rsa-contextc): <> int
-  s.with-ptr(mbedtls-rsa-contextp/private-padding)
-
-pub inline fun mbedtls-rsa-contextcb/private-padding(^s: mbedtls-rsa-contextcb<s::S>): <> int
-  s.with-ptr(mbedtls-rsa-contextp/private-padding)
-
-pub inline extern mbedtls-rsa-context-ptrraw/set-private-padding(s: intptr_t, private-padding: int32): ()
-  c inline "((struct mbedtls_rsa_context*)#1)->private_padding = (int)#2"
-
-pub inline fun mbedtls-rsa-contextp/set-private-padding(s: mbedtls-rsa-contextp, private-padding: int): ()
-  s.mbedtls-rsa-context-ptrraw/set-private-padding(private-padding.int32)
-
-pub inline fun mbedtls-rsa-contextc/set-private-padding(^s: mbedtls-rsa-contextc, private-padding: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-rsa-contextp/set-private-padding(private-padding))
-
-pub inline fun mbedtls-rsa-contextcb/set-private-padding(^s: mbedtls-rsa-contextcb<s::S>, private-padding: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-rsa-contextp/set-private-padding(private-padding))
-
-pub inline extern mbedtls-rsa-context-ptrraw/private-hash-id(s: intptr_t): int32
-  c inline "(int)(((struct mbedtls_rsa_context*)#1)->private_hash_id)"
-
-pub inline fun mbedtls-rsa-contextp/private-hash-id(s: mbedtls-rsa-contextp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-rsa-context-ptrraw/private-hash-id.int
-
-pub inline fun mbedtls-rsa-contextc/private-hash-id(^s: mbedtls-rsa-contextc): <> int
-  s.with-ptr(mbedtls-rsa-contextp/private-hash-id)
-
-pub inline fun mbedtls-rsa-contextcb/private-hash-id(^s: mbedtls-rsa-contextcb<s::S>): <> int
-  s.with-ptr(mbedtls-rsa-contextp/private-hash-id)
-
-pub inline extern mbedtls-rsa-context-ptrraw/set-private-hash-id(s: intptr_t, private-hash-id: int32): ()
-  c inline "((struct mbedtls_rsa_context*)#1)->private_hash_id = (int)#2"
-
-pub inline fun mbedtls-rsa-contextp/set-private-hash-id(s: mbedtls-rsa-contextp, private-hash-id: int): ()
-  s.mbedtls-rsa-context-ptrraw/set-private-hash-id(private-hash-id.int32)
-
-pub inline fun mbedtls-rsa-contextc/set-private-hash-id(^s: mbedtls-rsa-contextc, private-hash-id: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-rsa-contextp/set-private-hash-id(private-hash-id))
-
-pub inline fun mbedtls-rsa-contextcb/set-private-hash-id(^s: mbedtls-rsa-contextcb<s::S>, private-hash-id: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-rsa-contextp/set-private-hash-id(private-hash-id))
 
 // Domain-parameter identifiers: curve, subgroup, and generator.
 // 
@@ -23140,6 +18913,355 @@ pub fun mbedtls-ecp-keypairc-array-calloc(n: int): mbedtls-ecp-keypairca
   malloc-c(n.int32, ?size-of=mbedtls-ecp-keypair/size-of)
 
 alias mbedtls-ecp-restart-ctx = ()
+// \brief     Supported message digests.
+// 
+// \warning   MD5 and SHA-1 are considered weak message digests and
+// their use constitutes a security risk. We recommend considering
+// stronger message digests instead.
+type mbedtls-md-type-t
+  // < None.
+  MBEDTLS_MD_NONE
+  // < The MD5 message digest.
+  MBEDTLS_MD_MD5
+  // < The RIPEMD-160 message digest.
+  MBEDTLS_MD_RIPEMD160
+  // < The SHA-1 message digest.
+  MBEDTLS_MD_SHA1
+  // < The SHA-224 message digest.
+  MBEDTLS_MD_SHA224
+  // < The SHA-256 message digest.
+  MBEDTLS_MD_SHA256
+  // < The SHA-384 message digest.
+  MBEDTLS_MD_SHA384
+  // < The SHA-512 message digest.
+  MBEDTLS_MD_SHA512
+  // < The SHA3-224 message digest.
+  MBEDTLS_MD_SHA3_224
+  // < The SHA3-256 message digest.
+  MBEDTLS_MD_SHA3_256
+  // < The SHA3-384 message digest.
+  MBEDTLS_MD_SHA3_384
+  // < The SHA3-512 message digest.
+  MBEDTLS_MD_SHA3_512
+
+pub fun mbedtls-md-type-t/int(i: mbedtls-md-type-t): int32
+  match i
+    MBEDTLS_MD_NONE -> 0.int32
+    MBEDTLS_MD_MD5 -> 3.int32
+    MBEDTLS_MD_RIPEMD160 -> 4.int32
+    MBEDTLS_MD_SHA1 -> 5.int32
+    MBEDTLS_MD_SHA224 -> 8.int32
+    MBEDTLS_MD_SHA256 -> 9.int32
+    MBEDTLS_MD_SHA384 -> 10.int32
+    MBEDTLS_MD_SHA512 -> 11.int32
+    MBEDTLS_MD_SHA3_224 -> 16.int32
+    MBEDTLS_MD_SHA3_256 -> 17.int32
+    MBEDTLS_MD_SHA3_384 -> 18.int32
+    MBEDTLS_MD_SHA3_512 -> 19.int32
+
+pub fun int/mbedtls-md-type-t(i: int32): exn mbedtls-md-type-t
+  match i.int
+    0 -> MBEDTLS_MD_NONE
+    3 -> MBEDTLS_MD_MD5
+    4 -> MBEDTLS_MD_RIPEMD160
+    5 -> MBEDTLS_MD_SHA1
+    8 -> MBEDTLS_MD_SHA224
+    9 -> MBEDTLS_MD_SHA256
+    10 -> MBEDTLS_MD_SHA384
+    11 -> MBEDTLS_MD_SHA512
+    16 -> MBEDTLS_MD_SHA3_224
+    17 -> MBEDTLS_MD_SHA3_256
+    18 -> MBEDTLS_MD_SHA3_384
+    19 -> MBEDTLS_MD_SHA3_512
+
+pub struct mbedtls-md-info-t
+pub type mbedtls-md-info-t-c
+pub alias mbedtls-md-info-tp = c-pointer<mbedtls-md-info-t-c>
+pub alias mbedtls-md-info-tc = owned-c<mbedtls-md-info-t-c>
+pub alias mbedtls-md-info-tcb<s::S> = borrowed-c<s,mbedtls-md-info-t-c>
+pub alias mbedtls-md-info-tca = owned-c<c-array<mbedtls-md-info-t-c>>
+
+// Used internally to indicate whether a context uses legacy or PSA.
+// 
+// Internal use only.
+type mbedtls-md-engine-t
+  MBEDTLS_MD_ENGINE_LEGACY
+  MBEDTLS_MD_ENGINE_PSA
+
+pub fun mbedtls-md-engine-t/int(i: mbedtls-md-engine-t): int32
+  match i
+    MBEDTLS_MD_ENGINE_LEGACY -> 0.int32
+    MBEDTLS_MD_ENGINE_PSA -> 1.int32
+
+pub fun int/mbedtls-md-engine-t(i: int32): exn mbedtls-md-engine-t
+  match i.int
+    0 -> MBEDTLS_MD_ENGINE_LEGACY
+    1 -> MBEDTLS_MD_ENGINE_PSA
+
+// The generic message-digest context.
+pub value struct mbedtls-md-context-t
+  // Information about the associated message digest.
+  private-md-info: mbedtls-md-info-t-c
+  // The digest-specific context (legacy) or the PSA operation.
+  private-md-ctx: c-pointer<()>
+  // The HMAC part of the context.
+  private-hmac-ctx: c-pointer<()>
+
+pub type mbedtls-md-context-t-c
+pub alias mbedtls-md-context-tp = c-pointer<mbedtls-md-context-t-c>
+pub alias mbedtls-md-context-tc = owned-c<mbedtls-md-context-t-c>
+pub alias mbedtls-md-context-tcb<s::S> = borrowed-c<s,mbedtls-md-context-t-c>
+pub alias mbedtls-md-context-tca = owned-c<c-array<mbedtls-md-context-t-c>>
+
+pub extern mbedtls-md-context-t/size-of(c: c-null<mbedtls-md-context-t-c>): int32
+  c inline "sizeof(struct mbedtls_md_context_t)"
+
+pub fun mbedtls-md-context-tc(): mbedtls-md-context-tc
+  malloc(?size-of=mbedtls-md-context-t/size-of)
+
+pub fun mbedtls-md-context-tc-calloc(): mbedtls-md-context-tc
+  malloc-c(?size-of=mbedtls-md-context-t/size-of)
+
+pub fun mbedtls-md-context-tc-array(n: int): mbedtls-md-context-tca
+  malloc(n.int32, ?size-of=mbedtls-md-context-t/size-of)
+
+pub fun mbedtls-md-context-tc-array-calloc(n: int): mbedtls-md-context-tca
+  malloc-c(n.int32, ?size-of=mbedtls-md-context-t/size-of)
+
+pub inline extern mbedtls-md-context-t-ptrraw/private-md-info(s: intptr_t): c-pointer<mbedtls-md-info-t-c>
+  c inline "(intptr_t)(((struct mbedtls_md_context_t*)#1)->private_md_info)"
+
+pub inline fun mbedtls-md-context-tp/private-md-info(s: mbedtls-md-context-tp): <> c-pointer<mbedtls-md-info-t-c>
+  s.cextern/c-pointer/ptr.mbedtls-md-context-t-ptrraw/private-md-info
+
+pub inline fun mbedtls-md-context-tc/private-md-info(^s: mbedtls-md-context-tc): <> c-pointer<mbedtls-md-info-t-c>
+  s.with-ptr(mbedtls-md-context-tp/private-md-info)
+
+pub inline fun mbedtls-md-context-tcb/private-md-info(^s: mbedtls-md-context-tcb<s::S>): <> c-pointer<mbedtls-md-info-t-c>
+  s.with-ptr(mbedtls-md-context-tp/private-md-info)
+
+pub inline extern mbedtls-md-context-t-ptrraw/set-private-md-info(s: intptr_t, private-md-info: c-pointer<mbedtls-md-info-t-c>): ()
+  c inline "((struct mbedtls_md_context_t*)#1)->private_md_info = (struct mbedtls_md_info_t*)#2"
+
+pub inline fun mbedtls-md-context-tp/set-private-md-info(s: mbedtls-md-context-tp, private-md-info: c-pointer<mbedtls-md-info-t-c>): ()
+  s.mbedtls-md-context-t-ptrraw/set-private-md-info(private-md-info)
+
+pub inline fun mbedtls-md-context-tc/set-private-md-info(^s: mbedtls-md-context-tc, private-md-info: c-pointer<mbedtls-md-info-t-c>): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-md-context-tp/set-private-md-info(private-md-info))
+
+pub inline fun mbedtls-md-context-tcb/set-private-md-info(^s: mbedtls-md-context-tcb<s::S>, private-md-info: c-pointer<mbedtls-md-info-t-c>): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-md-context-tp/set-private-md-info(private-md-info))
+
+pub inline extern mbedtls-md-context-t-ptrraw/private-md-ctx(s: intptr_t): c-pointer<()>
+  c inline "(intptr_t)(((struct mbedtls_md_context_t*)#1)->private_md_ctx)"
+
+pub inline fun mbedtls-md-context-tp/private-md-ctx(s: mbedtls-md-context-tp): <> c-pointer<()>
+  s.cextern/c-pointer/ptr.mbedtls-md-context-t-ptrraw/private-md-ctx
+
+pub inline fun mbedtls-md-context-tc/private-md-ctx(^s: mbedtls-md-context-tc): <> c-pointer<()>
+  s.with-ptr(mbedtls-md-context-tp/private-md-ctx)
+
+pub inline fun mbedtls-md-context-tcb/private-md-ctx(^s: mbedtls-md-context-tcb<s::S>): <> c-pointer<()>
+  s.with-ptr(mbedtls-md-context-tp/private-md-ctx)
+
+pub inline extern mbedtls-md-context-t-ptrraw/set-private-md-ctx(s: intptr_t, private-md-ctx: c-pointer<()>): ()
+  c inline "((struct mbedtls_md_context_t*)#1)->private_md_ctx = (void*)#2"
+
+pub inline fun mbedtls-md-context-tp/set-private-md-ctx(s: mbedtls-md-context-tp, private-md-ctx: c-pointer<()>): ()
+  s.mbedtls-md-context-t-ptrraw/set-private-md-ctx(private-md-ctx)
+
+pub inline fun mbedtls-md-context-tc/set-private-md-ctx(^s: mbedtls-md-context-tc, private-md-ctx: c-pointer<()>): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-md-context-tp/set-private-md-ctx(private-md-ctx))
+
+pub inline fun mbedtls-md-context-tcb/set-private-md-ctx(^s: mbedtls-md-context-tcb<s::S>, private-md-ctx: c-pointer<()>): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-md-context-tp/set-private-md-ctx(private-md-ctx))
+
+pub inline extern mbedtls-md-context-t-ptrraw/private-hmac-ctx(s: intptr_t): c-pointer<()>
+  c inline "(intptr_t)(((struct mbedtls_md_context_t*)#1)->private_hmac_ctx)"
+
+pub inline fun mbedtls-md-context-tp/private-hmac-ctx(s: mbedtls-md-context-tp): <> c-pointer<()>
+  s.cextern/c-pointer/ptr.mbedtls-md-context-t-ptrraw/private-hmac-ctx
+
+pub inline fun mbedtls-md-context-tc/private-hmac-ctx(^s: mbedtls-md-context-tc): <> c-pointer<()>
+  s.with-ptr(mbedtls-md-context-tp/private-hmac-ctx)
+
+pub inline fun mbedtls-md-context-tcb/private-hmac-ctx(^s: mbedtls-md-context-tcb<s::S>): <> c-pointer<()>
+  s.with-ptr(mbedtls-md-context-tp/private-hmac-ctx)
+
+pub inline extern mbedtls-md-context-t-ptrraw/set-private-hmac-ctx(s: intptr_t, private-hmac-ctx: c-pointer<()>): ()
+  c inline "((struct mbedtls_md_context_t*)#1)->private_hmac_ctx = (void*)#2"
+
+pub inline fun mbedtls-md-context-tp/set-private-hmac-ctx(s: mbedtls-md-context-tp, private-hmac-ctx: c-pointer<()>): ()
+  s.mbedtls-md-context-t-ptrraw/set-private-hmac-ctx(private-hmac-ctx)
+
+pub inline fun mbedtls-md-context-tc/set-private-hmac-ctx(^s: mbedtls-md-context-tc, private-hmac-ctx: c-pointer<()>): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-md-context-tp/set-private-hmac-ctx(private-hmac-ctx))
+
+pub inline fun mbedtls-md-context-tcb/set-private-hmac-ctx(^s: mbedtls-md-context-tcb<s::S>, private-hmac-ctx: c-pointer<()>): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-md-context-tp/set-private-hmac-ctx(private-hmac-ctx))
+
+// \brief   The RSA context structure.
+pub struct mbedtls-rsa-context
+  // !<  Reserved for internal purposes.
+  // Do not set this field in application
+  // code. Its meaning might change without
+  // notice.
+  private-ver: int
+  // !<  The size of \p N in Bytes.
+  private-len: int
+  // !<  The public modulus.
+  private-n: mbedtls-mpi-c
+  // !<  The public exponent.
+  private-e: mbedtls-mpi-c
+  // !<  The private exponent.
+  private-d: mbedtls-mpi-c
+  // !<  The first prime factor.
+  private-p: mbedtls-mpi-c
+  // !<  The second prime factor.
+  private-q: mbedtls-mpi-c
+  // !<  <code>D % (P - 1)</code>.
+  private-dp: mbedtls-mpi-c
+  // !<  <code>D % (Q - 1)</code>.
+  private-dq: mbedtls-mpi-c
+  // !<  <code>1 / (Q % P)</code>.
+  private-qp: mbedtls-mpi-c
+  // !<  cached <code>R^2 mod N</code>.
+  private-rn: mbedtls-mpi-c
+  // !<  cached <code>R^2 mod P</code>.
+  private-rp: mbedtls-mpi-c
+  // !<  cached <code>R^2 mod Q</code>.
+  private-rq: mbedtls-mpi-c
+  // !<  The cached blinding value.
+  private-vi: mbedtls-mpi-c
+  // !<  The cached un-blinding value.
+  private-vf: mbedtls-mpi-c
+  // !< Selects padding mode:
+  // #MBEDTLS_RSA_PKCS_V15 for 1.5 padding and
+  // #MBEDTLS_RSA_PKCS_V21 for OAEP or PSS.
+  private-padding: int
+  // !< Hash identifier of mbedtls_md_type_t type,
+  // as specified in md.h for use in the MGF
+  // mask generating function used in the
+  // EME-OAEP and EMSA-PSS encodings.
+  private-hash-id: int
+
+pub type mbedtls-rsa-context-c
+pub alias mbedtls-rsa-contextp = c-pointer<mbedtls-rsa-context-c>
+pub alias mbedtls-rsa-contextc = owned-c<mbedtls-rsa-context-c>
+pub alias mbedtls-rsa-contextcb<s::S> = borrowed-c<s,mbedtls-rsa-context-c>
+pub alias mbedtls-rsa-contextca = owned-c<c-array<mbedtls-rsa-context-c>>
+
+pub extern mbedtls-rsa-context/size-of(c: c-null<mbedtls-rsa-context-c>): int32
+  c inline "sizeof(struct mbedtls_rsa_context)"
+
+pub fun mbedtls-rsa-contextc(): mbedtls-rsa-contextc
+  malloc(?size-of=mbedtls-rsa-context/size-of)
+
+pub fun mbedtls-rsa-contextc-calloc(): mbedtls-rsa-contextc
+  malloc-c(?size-of=mbedtls-rsa-context/size-of)
+
+pub fun mbedtls-rsa-contextc-array(n: int): mbedtls-rsa-contextca
+  malloc(n.int32, ?size-of=mbedtls-rsa-context/size-of)
+
+pub fun mbedtls-rsa-contextc-array-calloc(n: int): mbedtls-rsa-contextca
+  malloc-c(n.int32, ?size-of=mbedtls-rsa-context/size-of)
+
+pub inline extern mbedtls-rsa-context-ptrraw/private-ver(s: intptr_t): int32
+  c inline "(int)(((struct mbedtls_rsa_context*)#1)->private_ver)"
+
+pub inline fun mbedtls-rsa-contextp/private-ver(s: mbedtls-rsa-contextp): <> int
+  s.cextern/c-pointer/ptr.mbedtls-rsa-context-ptrraw/private-ver.int
+
+pub inline fun mbedtls-rsa-contextc/private-ver(^s: mbedtls-rsa-contextc): <> int
+  s.with-ptr(mbedtls-rsa-contextp/private-ver)
+
+pub inline fun mbedtls-rsa-contextcb/private-ver(^s: mbedtls-rsa-contextcb<s::S>): <> int
+  s.with-ptr(mbedtls-rsa-contextp/private-ver)
+
+pub inline extern mbedtls-rsa-context-ptrraw/set-private-ver(s: intptr_t, private-ver: int32): ()
+  c inline "((struct mbedtls_rsa_context*)#1)->private_ver = (int)#2"
+
+pub inline fun mbedtls-rsa-contextp/set-private-ver(s: mbedtls-rsa-contextp, private-ver: int): ()
+  s.mbedtls-rsa-context-ptrraw/set-private-ver(private-ver.int32)
+
+pub inline fun mbedtls-rsa-contextc/set-private-ver(^s: mbedtls-rsa-contextc, private-ver: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-rsa-contextp/set-private-ver(private-ver))
+
+pub inline fun mbedtls-rsa-contextcb/set-private-ver(^s: mbedtls-rsa-contextcb<s::S>, private-ver: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-rsa-contextp/set-private-ver(private-ver))
+
+pub inline extern mbedtls-rsa-context-ptrraw/private-len(s: intptr_t): ssize_t
+  c inline "(size_t)(((struct mbedtls_rsa_context*)#1)->private_len)"
+
+pub inline fun mbedtls-rsa-contextp/private-len(s: mbedtls-rsa-contextp): <> int
+  s.cextern/c-pointer/ptr.mbedtls-rsa-context-ptrraw/private-len.int
+
+pub inline fun mbedtls-rsa-contextc/private-len(^s: mbedtls-rsa-contextc): <> int
+  s.with-ptr(mbedtls-rsa-contextp/private-len)
+
+pub inline fun mbedtls-rsa-contextcb/private-len(^s: mbedtls-rsa-contextcb<s::S>): <> int
+  s.with-ptr(mbedtls-rsa-contextp/private-len)
+
+pub inline extern mbedtls-rsa-context-ptrraw/set-private-len(s: intptr_t, private-len: ssize_t): ()
+  c inline "((struct mbedtls_rsa_context*)#1)->private_len = (size_t)#2"
+
+pub inline fun mbedtls-rsa-contextp/set-private-len(s: mbedtls-rsa-contextp, private-len: int): ()
+  s.mbedtls-rsa-context-ptrraw/set-private-len(private-len.ssize_t)
+
+pub inline fun mbedtls-rsa-contextc/set-private-len(^s: mbedtls-rsa-contextc, private-len: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-rsa-contextp/set-private-len(private-len))
+
+pub inline fun mbedtls-rsa-contextcb/set-private-len(^s: mbedtls-rsa-contextcb<s::S>, private-len: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-rsa-contextp/set-private-len(private-len))
+
+pub inline extern mbedtls-rsa-context-ptrraw/private-padding(s: intptr_t): int32
+  c inline "(int)(((struct mbedtls_rsa_context*)#1)->private_padding)"
+
+pub inline fun mbedtls-rsa-contextp/private-padding(s: mbedtls-rsa-contextp): <> int
+  s.cextern/c-pointer/ptr.mbedtls-rsa-context-ptrraw/private-padding.int
+
+pub inline fun mbedtls-rsa-contextc/private-padding(^s: mbedtls-rsa-contextc): <> int
+  s.with-ptr(mbedtls-rsa-contextp/private-padding)
+
+pub inline fun mbedtls-rsa-contextcb/private-padding(^s: mbedtls-rsa-contextcb<s::S>): <> int
+  s.with-ptr(mbedtls-rsa-contextp/private-padding)
+
+pub inline extern mbedtls-rsa-context-ptrraw/set-private-padding(s: intptr_t, private-padding: int32): ()
+  c inline "((struct mbedtls_rsa_context*)#1)->private_padding = (int)#2"
+
+pub inline fun mbedtls-rsa-contextp/set-private-padding(s: mbedtls-rsa-contextp, private-padding: int): ()
+  s.mbedtls-rsa-context-ptrraw/set-private-padding(private-padding.int32)
+
+pub inline fun mbedtls-rsa-contextc/set-private-padding(^s: mbedtls-rsa-contextc, private-padding: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-rsa-contextp/set-private-padding(private-padding))
+
+pub inline fun mbedtls-rsa-contextcb/set-private-padding(^s: mbedtls-rsa-contextcb<s::S>, private-padding: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-rsa-contextp/set-private-padding(private-padding))
+
+pub inline extern mbedtls-rsa-context-ptrraw/private-hash-id(s: intptr_t): int32
+  c inline "(int)(((struct mbedtls_rsa_context*)#1)->private_hash_id)"
+
+pub inline fun mbedtls-rsa-contextp/private-hash-id(s: mbedtls-rsa-contextp): <> int
+  s.cextern/c-pointer/ptr.mbedtls-rsa-context-ptrraw/private-hash-id.int
+
+pub inline fun mbedtls-rsa-contextc/private-hash-id(^s: mbedtls-rsa-contextc): <> int
+  s.with-ptr(mbedtls-rsa-contextp/private-hash-id)
+
+pub inline fun mbedtls-rsa-contextcb/private-hash-id(^s: mbedtls-rsa-contextcb<s::S>): <> int
+  s.with-ptr(mbedtls-rsa-contextp/private-hash-id)
+
+pub inline extern mbedtls-rsa-context-ptrraw/set-private-hash-id(s: intptr_t, private-hash-id: int32): ()
+  c inline "((struct mbedtls_rsa_context*)#1)->private_hash_id = (int)#2"
+
+pub inline fun mbedtls-rsa-contextp/set-private-hash-id(s: mbedtls-rsa-contextp, private-hash-id: int): ()
+  s.mbedtls-rsa-context-ptrraw/set-private-hash-id(private-hash-id.int32)
+
+pub inline fun mbedtls-rsa-contextc/set-private-hash-id(^s: mbedtls-rsa-contextc, private-hash-id: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-rsa-contextp/set-private-hash-id(private-hash-id))
+
+pub inline fun mbedtls-rsa-contextcb/set-private-hash-id(^s: mbedtls-rsa-contextcb<s::S>, private-hash-id: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-rsa-contextp/set-private-hash-id(private-hash-id))
+
 alias mbedtls-ecdsa-restart-ctx = ()
 // \brief           The ECDSA context structure.
 // 
@@ -28952,134 +25074,6 @@ alias mbedtls-pk-rsa-alt-sign-funcfn = ((ctx1 : c-pointer<()>, f_rng : c-pointer
 alias mbedtls-pk-rsa-alt-key-len-func = c-pointer<intptr_t>
 alias mbedtls-pk-rsa-alt-key-len-funcfn = ((ctx1 : c-pointer<()>) -> int)
 alias mbedtls-pk-restart-ctx = ()
-// \brief Base OID descriptor structure
-pub struct mbedtls-oid-descriptor-t
-  // !< OID ASN.1 representation
-  private-asn1: c-pointer<int>
-  // !< length of asn1
-  private-asn1-len: int
-  // !< official name (e.g. from RFC)
-  private-name: c-pointer<int>
-  // !< human friendly description
-  private-description: c-pointer<int>
-
-pub type mbedtls-oid-descriptor-t-c
-pub alias mbedtls-oid-descriptor-tp = c-pointer<mbedtls-oid-descriptor-t-c>
-pub alias mbedtls-oid-descriptor-tc = owned-c<mbedtls-oid-descriptor-t-c>
-pub alias mbedtls-oid-descriptor-tcb<s::S> = borrowed-c<s,mbedtls-oid-descriptor-t-c>
-pub alias mbedtls-oid-descriptor-tca = owned-c<c-array<mbedtls-oid-descriptor-t-c>>
-
-pub extern mbedtls-oid-descriptor-t/size-of(c: c-null<mbedtls-oid-descriptor-t-c>): int32
-  c inline "sizeof(struct mbedtls_oid_descriptor_t)"
-
-pub fun mbedtls-oid-descriptor-tc(): mbedtls-oid-descriptor-tc
-  malloc(?size-of=mbedtls-oid-descriptor-t/size-of)
-
-pub fun mbedtls-oid-descriptor-tc-calloc(): mbedtls-oid-descriptor-tc
-  malloc-c(?size-of=mbedtls-oid-descriptor-t/size-of)
-
-pub fun mbedtls-oid-descriptor-tc-array(n: int): mbedtls-oid-descriptor-tca
-  malloc(n.int32, ?size-of=mbedtls-oid-descriptor-t/size-of)
-
-pub fun mbedtls-oid-descriptor-tc-array-calloc(n: int): mbedtls-oid-descriptor-tca
-  malloc-c(n.int32, ?size-of=mbedtls-oid-descriptor-t/size-of)
-
-pub inline extern mbedtls-oid-descriptor-t-ptrraw/private-asn1(s: intptr_t): c-pointer<int>
-  c inline "(intptr_t)(((struct mbedtls_oid_descriptor_t*)#1)->private_asn1)"
-
-pub inline fun mbedtls-oid-descriptor-tp/private-asn1(s: mbedtls-oid-descriptor-tp): <> c-pointer<int>
-  s.cextern/c-pointer/ptr.mbedtls-oid-descriptor-t-ptrraw/private-asn1
-
-pub inline fun mbedtls-oid-descriptor-tc/private-asn1(^s: mbedtls-oid-descriptor-tc): <> c-pointer<int>
-  s.with-ptr(mbedtls-oid-descriptor-tp/private-asn1)
-
-pub inline fun mbedtls-oid-descriptor-tcb/private-asn1(^s: mbedtls-oid-descriptor-tcb<s::S>): <> c-pointer<int>
-  s.with-ptr(mbedtls-oid-descriptor-tp/private-asn1)
-
-pub inline extern mbedtls-oid-descriptor-t-ptrraw/set-private-asn1(s: intptr_t, private-asn1: c-pointer<int>): ()
-  c inline "((struct mbedtls_oid_descriptor_t*)#1)->private_asn1 = (char*)#2"
-
-pub inline fun mbedtls-oid-descriptor-tp/set-private-asn1(s: mbedtls-oid-descriptor-tp, private-asn1: c-pointer<int>): ()
-  s.mbedtls-oid-descriptor-t-ptrraw/set-private-asn1(private-asn1)
-
-pub inline fun mbedtls-oid-descriptor-tc/set-private-asn1(^s: mbedtls-oid-descriptor-tc, private-asn1: c-pointer<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-oid-descriptor-tp/set-private-asn1(private-asn1))
-
-pub inline fun mbedtls-oid-descriptor-tcb/set-private-asn1(^s: mbedtls-oid-descriptor-tcb<s::S>, private-asn1: c-pointer<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-oid-descriptor-tp/set-private-asn1(private-asn1))
-
-pub inline extern mbedtls-oid-descriptor-t-ptrraw/private-asn1-len(s: intptr_t): ssize_t
-  c inline "(size_t)(((struct mbedtls_oid_descriptor_t*)#1)->private_asn1_len)"
-
-pub inline fun mbedtls-oid-descriptor-tp/private-asn1-len(s: mbedtls-oid-descriptor-tp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-oid-descriptor-t-ptrraw/private-asn1-len.int
-
-pub inline fun mbedtls-oid-descriptor-tc/private-asn1-len(^s: mbedtls-oid-descriptor-tc): <> int
-  s.with-ptr(mbedtls-oid-descriptor-tp/private-asn1-len)
-
-pub inline fun mbedtls-oid-descriptor-tcb/private-asn1-len(^s: mbedtls-oid-descriptor-tcb<s::S>): <> int
-  s.with-ptr(mbedtls-oid-descriptor-tp/private-asn1-len)
-
-pub inline extern mbedtls-oid-descriptor-t-ptrraw/set-private-asn1-len(s: intptr_t, private-asn1-len: ssize_t): ()
-  c inline "((struct mbedtls_oid_descriptor_t*)#1)->private_asn1_len = (size_t)#2"
-
-pub inline fun mbedtls-oid-descriptor-tp/set-private-asn1-len(s: mbedtls-oid-descriptor-tp, private-asn1-len: int): ()
-  s.mbedtls-oid-descriptor-t-ptrraw/set-private-asn1-len(private-asn1-len.ssize_t)
-
-pub inline fun mbedtls-oid-descriptor-tc/set-private-asn1-len(^s: mbedtls-oid-descriptor-tc, private-asn1-len: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-oid-descriptor-tp/set-private-asn1-len(private-asn1-len))
-
-pub inline fun mbedtls-oid-descriptor-tcb/set-private-asn1-len(^s: mbedtls-oid-descriptor-tcb<s::S>, private-asn1-len: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-oid-descriptor-tp/set-private-asn1-len(private-asn1-len))
-
-pub inline extern mbedtls-oid-descriptor-t-ptrraw/private-name(s: intptr_t): c-pointer<int>
-  c inline "(intptr_t)(((struct mbedtls_oid_descriptor_t*)#1)->private_name)"
-
-pub inline fun mbedtls-oid-descriptor-tp/private-name(s: mbedtls-oid-descriptor-tp): <> c-pointer<int>
-  s.cextern/c-pointer/ptr.mbedtls-oid-descriptor-t-ptrraw/private-name
-
-pub inline fun mbedtls-oid-descriptor-tc/private-name(^s: mbedtls-oid-descriptor-tc): <> c-pointer<int>
-  s.with-ptr(mbedtls-oid-descriptor-tp/private-name)
-
-pub inline fun mbedtls-oid-descriptor-tcb/private-name(^s: mbedtls-oid-descriptor-tcb<s::S>): <> c-pointer<int>
-  s.with-ptr(mbedtls-oid-descriptor-tp/private-name)
-
-pub inline extern mbedtls-oid-descriptor-t-ptrraw/set-private-name(s: intptr_t, private-name: c-pointer<int>): ()
-  c inline "((struct mbedtls_oid_descriptor_t*)#1)->private_name = (char*)#2"
-
-pub inline fun mbedtls-oid-descriptor-tp/set-private-name(s: mbedtls-oid-descriptor-tp, private-name: c-pointer<int>): ()
-  s.mbedtls-oid-descriptor-t-ptrraw/set-private-name(private-name)
-
-pub inline fun mbedtls-oid-descriptor-tc/set-private-name(^s: mbedtls-oid-descriptor-tc, private-name: c-pointer<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-oid-descriptor-tp/set-private-name(private-name))
-
-pub inline fun mbedtls-oid-descriptor-tcb/set-private-name(^s: mbedtls-oid-descriptor-tcb<s::S>, private-name: c-pointer<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-oid-descriptor-tp/set-private-name(private-name))
-
-pub inline extern mbedtls-oid-descriptor-t-ptrraw/private-description(s: intptr_t): c-pointer<int>
-  c inline "(intptr_t)(((struct mbedtls_oid_descriptor_t*)#1)->private_description)"
-
-pub inline fun mbedtls-oid-descriptor-tp/private-description(s: mbedtls-oid-descriptor-tp): <> c-pointer<int>
-  s.cextern/c-pointer/ptr.mbedtls-oid-descriptor-t-ptrraw/private-description
-
-pub inline fun mbedtls-oid-descriptor-tc/private-description(^s: mbedtls-oid-descriptor-tc): <> c-pointer<int>
-  s.with-ptr(mbedtls-oid-descriptor-tp/private-description)
-
-pub inline fun mbedtls-oid-descriptor-tcb/private-description(^s: mbedtls-oid-descriptor-tcb<s::S>): <> c-pointer<int>
-  s.with-ptr(mbedtls-oid-descriptor-tp/private-description)
-
-pub inline extern mbedtls-oid-descriptor-t-ptrraw/set-private-description(s: intptr_t, private-description: c-pointer<int>): ()
-  c inline "((struct mbedtls_oid_descriptor_t*)#1)->private_description = (char*)#2"
-
-pub inline fun mbedtls-oid-descriptor-tp/set-private-description(s: mbedtls-oid-descriptor-tp, private-description: c-pointer<int>): ()
-  s.mbedtls-oid-descriptor-t-ptrraw/set-private-description(private-description)
-
-pub inline fun mbedtls-oid-descriptor-tc/set-private-description(^s: mbedtls-oid-descriptor-tc, private-description: c-pointer<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-oid-descriptor-tp/set-private-description(private-description))
-
-pub inline fun mbedtls-oid-descriptor-tcb/set-private-description(^s: mbedtls-oid-descriptor-tcb<s::S>, private-description: c-pointer<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-oid-descriptor-tp/set-private-description(private-description))
-
 type mbedtls-key-exchange-type-t
   MBEDTLS_KEY_EXCHANGE_NONE
   MBEDTLS_KEY_EXCHANGE_RSA
@@ -29351,6 +25345,355 @@ pub inline fun mbedtls-ssl-ciphersuite-tc/set-private-max-tls-version(^s: mbedtl
 
 pub inline fun mbedtls-ssl-ciphersuite-tcb/set-private-max-tls-version(^s: mbedtls-ssl-ciphersuite-tcb<s::S>, private-max-tls-version: int): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-ciphersuite-tp/set-private-max-tls-version(private-max-tls-version))
+
+// Type-length-value structure that allows for ASN1 using DER.
+pub value struct mbedtls-asn1-buf
+  // < ASN1 type, e.g. MBEDTLS_ASN1_UTF8_STRING.
+  tag: int
+  // < ASN1 length, in octets.
+  len: int
+  // < ASN1 data, e.g. in ASCII.
+  p: c-pointer<int>
+
+pub type mbedtls-asn1-buf-c
+pub alias mbedtls-asn1-bufp = c-pointer<mbedtls-asn1-buf-c>
+pub alias mbedtls-asn1-bufc = owned-c<mbedtls-asn1-buf-c>
+pub alias mbedtls-asn1-bufcb<s::S> = borrowed-c<s,mbedtls-asn1-buf-c>
+pub alias mbedtls-asn1-bufca = owned-c<c-array<mbedtls-asn1-buf-c>>
+
+pub extern mbedtls-asn1-buf/size-of(c: c-null<mbedtls-asn1-buf-c>): int32
+  c inline "sizeof(struct mbedtls_asn1_buf)"
+
+pub fun mbedtls-asn1-bufc(): mbedtls-asn1-bufc
+  malloc(?size-of=mbedtls-asn1-buf/size-of)
+
+pub fun mbedtls-asn1-bufc-calloc(): mbedtls-asn1-bufc
+  malloc-c(?size-of=mbedtls-asn1-buf/size-of)
+
+pub fun mbedtls-asn1-bufc-array(n: int): mbedtls-asn1-bufca
+  malloc(n.int32, ?size-of=mbedtls-asn1-buf/size-of)
+
+pub fun mbedtls-asn1-bufc-array-calloc(n: int): mbedtls-asn1-bufca
+  malloc-c(n.int32, ?size-of=mbedtls-asn1-buf/size-of)
+
+pub inline extern mbedtls-asn1-buf-ptrraw/tag(s: intptr_t): int32
+  c inline "(int)(((struct mbedtls_asn1_buf*)#1)->tag)"
+
+pub inline fun mbedtls-asn1-bufp/tag(s: mbedtls-asn1-bufp): <> int
+  s.cextern/c-pointer/ptr.mbedtls-asn1-buf-ptrraw/tag.int
+
+pub inline fun mbedtls-asn1-bufc/tag(^s: mbedtls-asn1-bufc): <> int
+  s.with-ptr(mbedtls-asn1-bufp/tag)
+
+pub inline fun mbedtls-asn1-bufcb/tag(^s: mbedtls-asn1-bufcb<s::S>): <> int
+  s.with-ptr(mbedtls-asn1-bufp/tag)
+
+pub inline extern mbedtls-asn1-buf-ptrraw/set-tag(s: intptr_t, tag: int32): ()
+  c inline "((struct mbedtls_asn1_buf*)#1)->tag = (int)#2"
+
+pub inline fun mbedtls-asn1-bufp/set-tag(s: mbedtls-asn1-bufp, tag: int): ()
+  s.mbedtls-asn1-buf-ptrraw/set-tag(tag.int32)
+
+pub inline fun mbedtls-asn1-bufc/set-tag(^s: mbedtls-asn1-bufc, tag: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-bufp/set-tag(tag))
+
+pub inline fun mbedtls-asn1-bufcb/set-tag(^s: mbedtls-asn1-bufcb<s::S>, tag: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-bufp/set-tag(tag))
+
+pub inline extern mbedtls-asn1-buf-ptrraw/len(s: intptr_t): ssize_t
+  c inline "(size_t)(((struct mbedtls_asn1_buf*)#1)->len)"
+
+pub inline fun mbedtls-asn1-bufp/len(s: mbedtls-asn1-bufp): <> int
+  s.cextern/c-pointer/ptr.mbedtls-asn1-buf-ptrraw/len.int
+
+pub inline fun mbedtls-asn1-bufc/len(^s: mbedtls-asn1-bufc): <> int
+  s.with-ptr(mbedtls-asn1-bufp/len)
+
+pub inline fun mbedtls-asn1-bufcb/len(^s: mbedtls-asn1-bufcb<s::S>): <> int
+  s.with-ptr(mbedtls-asn1-bufp/len)
+
+pub inline extern mbedtls-asn1-buf-ptrraw/set-len(s: intptr_t, len: ssize_t): ()
+  c inline "((struct mbedtls_asn1_buf*)#1)->len = (size_t)#2"
+
+pub inline fun mbedtls-asn1-bufp/set-len(s: mbedtls-asn1-bufp, len: int): ()
+  s.mbedtls-asn1-buf-ptrraw/set-len(len.ssize_t)
+
+pub inline fun mbedtls-asn1-bufc/set-len(^s: mbedtls-asn1-bufc, len: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-bufp/set-len(len))
+
+pub inline fun mbedtls-asn1-bufcb/set-len(^s: mbedtls-asn1-bufcb<s::S>, len: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-bufp/set-len(len))
+
+pub inline extern mbedtls-asn1-buf-ptrraw/p(s: intptr_t): c-pointer<int>
+  c inline "(intptr_t)(((struct mbedtls_asn1_buf*)#1)->p)"
+
+pub inline fun mbedtls-asn1-bufp/p(s: mbedtls-asn1-bufp): <> c-pointer<int>
+  s.cextern/c-pointer/ptr.mbedtls-asn1-buf-ptrraw/p
+
+pub inline fun mbedtls-asn1-bufc/p(^s: mbedtls-asn1-bufc): <> c-pointer<int>
+  s.with-ptr(mbedtls-asn1-bufp/p)
+
+pub inline fun mbedtls-asn1-bufcb/p(^s: mbedtls-asn1-bufcb<s::S>): <> c-pointer<int>
+  s.with-ptr(mbedtls-asn1-bufp/p)
+
+pub inline extern mbedtls-asn1-buf-ptrraw/set-p(s: intptr_t, p: c-pointer<int>): ()
+  c inline "((struct mbedtls_asn1_buf*)#1)->p = (unsigned char*)#2"
+
+pub inline fun mbedtls-asn1-bufp/set-p(s: mbedtls-asn1-bufp, p: c-pointer<int>): ()
+  s.mbedtls-asn1-buf-ptrraw/set-p(p)
+
+pub inline fun mbedtls-asn1-bufc/set-p(^s: mbedtls-asn1-bufc, p: c-pointer<int>): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-bufp/set-p(p))
+
+pub inline fun mbedtls-asn1-bufcb/set-p(^s: mbedtls-asn1-bufcb<s::S>, p: c-pointer<int>): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-bufp/set-p(p))
+
+// Container for ASN1 bit strings.
+pub value struct mbedtls-asn1-bitstring
+  // < ASN1 length, in octets.
+  len: int
+  // < Number of unused bits at the end of the string
+  unused-bits: int
+  // < Raw ASN1 data for the bit string
+  p: c-pointer<int>
+
+pub type mbedtls-asn1-bitstring-c
+pub alias mbedtls-asn1-bitstringp = c-pointer<mbedtls-asn1-bitstring-c>
+pub alias mbedtls-asn1-bitstringc = owned-c<mbedtls-asn1-bitstring-c>
+pub alias mbedtls-asn1-bitstringcb<s::S> = borrowed-c<s,mbedtls-asn1-bitstring-c>
+pub alias mbedtls-asn1-bitstringca = owned-c<c-array<mbedtls-asn1-bitstring-c>>
+
+pub extern mbedtls-asn1-bitstring/size-of(c: c-null<mbedtls-asn1-bitstring-c>): int32
+  c inline "sizeof(struct mbedtls_asn1_bitstring)"
+
+pub fun mbedtls-asn1-bitstringc(): mbedtls-asn1-bitstringc
+  malloc(?size-of=mbedtls-asn1-bitstring/size-of)
+
+pub fun mbedtls-asn1-bitstringc-calloc(): mbedtls-asn1-bitstringc
+  malloc-c(?size-of=mbedtls-asn1-bitstring/size-of)
+
+pub fun mbedtls-asn1-bitstringc-array(n: int): mbedtls-asn1-bitstringca
+  malloc(n.int32, ?size-of=mbedtls-asn1-bitstring/size-of)
+
+pub fun mbedtls-asn1-bitstringc-array-calloc(n: int): mbedtls-asn1-bitstringca
+  malloc-c(n.int32, ?size-of=mbedtls-asn1-bitstring/size-of)
+
+pub inline extern mbedtls-asn1-bitstring-ptrraw/len(s: intptr_t): ssize_t
+  c inline "(size_t)(((struct mbedtls_asn1_bitstring*)#1)->len)"
+
+pub inline fun mbedtls-asn1-bitstringp/len(s: mbedtls-asn1-bitstringp): <> int
+  s.cextern/c-pointer/ptr.mbedtls-asn1-bitstring-ptrraw/len.int
+
+pub inline fun mbedtls-asn1-bitstringc/len(^s: mbedtls-asn1-bitstringc): <> int
+  s.with-ptr(mbedtls-asn1-bitstringp/len)
+
+pub inline fun mbedtls-asn1-bitstringcb/len(^s: mbedtls-asn1-bitstringcb<s::S>): <> int
+  s.with-ptr(mbedtls-asn1-bitstringp/len)
+
+pub inline extern mbedtls-asn1-bitstring-ptrraw/set-len(s: intptr_t, len: ssize_t): ()
+  c inline "((struct mbedtls_asn1_bitstring*)#1)->len = (size_t)#2"
+
+pub inline fun mbedtls-asn1-bitstringp/set-len(s: mbedtls-asn1-bitstringp, len: int): ()
+  s.mbedtls-asn1-bitstring-ptrraw/set-len(len.ssize_t)
+
+pub inline fun mbedtls-asn1-bitstringc/set-len(^s: mbedtls-asn1-bitstringc, len: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-bitstringp/set-len(len))
+
+pub inline fun mbedtls-asn1-bitstringcb/set-len(^s: mbedtls-asn1-bitstringcb<s::S>, len: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-bitstringp/set-len(len))
+
+pub inline extern mbedtls-asn1-bitstring-ptrraw/unused-bits(s: intptr_t): int8
+  c inline "(unsigned char)(((struct mbedtls_asn1_bitstring*)#1)->unused_bits)"
+
+pub inline fun mbedtls-asn1-bitstringp/unused-bits(s: mbedtls-asn1-bitstringp): <> int
+  s.cextern/c-pointer/ptr.mbedtls-asn1-bitstring-ptrraw/unused-bits.int
+
+pub inline fun mbedtls-asn1-bitstringc/unused-bits(^s: mbedtls-asn1-bitstringc): <> int
+  s.with-ptr(mbedtls-asn1-bitstringp/unused-bits)
+
+pub inline fun mbedtls-asn1-bitstringcb/unused-bits(^s: mbedtls-asn1-bitstringcb<s::S>): <> int
+  s.with-ptr(mbedtls-asn1-bitstringp/unused-bits)
+
+pub inline extern mbedtls-asn1-bitstring-ptrraw/set-unused-bits(s: intptr_t, unused-bits: int8): ()
+  c inline "((struct mbedtls_asn1_bitstring*)#1)->unused_bits = (unsigned char)#2"
+
+pub inline fun mbedtls-asn1-bitstringp/set-unused-bits(s: mbedtls-asn1-bitstringp, unused-bits: int): ()
+  s.mbedtls-asn1-bitstring-ptrraw/set-unused-bits(unused-bits.int8)
+
+pub inline fun mbedtls-asn1-bitstringc/set-unused-bits(^s: mbedtls-asn1-bitstringc, unused-bits: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-bitstringp/set-unused-bits(unused-bits))
+
+pub inline fun mbedtls-asn1-bitstringcb/set-unused-bits(^s: mbedtls-asn1-bitstringcb<s::S>, unused-bits: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-bitstringp/set-unused-bits(unused-bits))
+
+pub inline extern mbedtls-asn1-bitstring-ptrraw/p(s: intptr_t): c-pointer<int>
+  c inline "(intptr_t)(((struct mbedtls_asn1_bitstring*)#1)->p)"
+
+pub inline fun mbedtls-asn1-bitstringp/p(s: mbedtls-asn1-bitstringp): <> c-pointer<int>
+  s.cextern/c-pointer/ptr.mbedtls-asn1-bitstring-ptrraw/p
+
+pub inline fun mbedtls-asn1-bitstringc/p(^s: mbedtls-asn1-bitstringc): <> c-pointer<int>
+  s.with-ptr(mbedtls-asn1-bitstringp/p)
+
+pub inline fun mbedtls-asn1-bitstringcb/p(^s: mbedtls-asn1-bitstringcb<s::S>): <> c-pointer<int>
+  s.with-ptr(mbedtls-asn1-bitstringp/p)
+
+pub inline extern mbedtls-asn1-bitstring-ptrraw/set-p(s: intptr_t, p: c-pointer<int>): ()
+  c inline "((struct mbedtls_asn1_bitstring*)#1)->p = (unsigned char*)#2"
+
+pub inline fun mbedtls-asn1-bitstringp/set-p(s: mbedtls-asn1-bitstringp, p: c-pointer<int>): ()
+  s.mbedtls-asn1-bitstring-ptrraw/set-p(p)
+
+pub inline fun mbedtls-asn1-bitstringc/set-p(^s: mbedtls-asn1-bitstringc, p: c-pointer<int>): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-bitstringp/set-p(p))
+
+pub inline fun mbedtls-asn1-bitstringcb/set-p(^s: mbedtls-asn1-bitstringcb<s::S>, p: c-pointer<int>): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-bitstringp/set-p(p))
+
+// Container for a sequence of ASN.1 items
+pub value struct mbedtls-asn1-sequence
+  // < Buffer containing the given ASN.1 item.
+  buf: mbedtls-asn1-buf-c
+  // The next entry in the sequence.
+  // 
+  // The details of memory management for sequences are not documented and
+  // may change in future versions. Set this field to \p NULL when
+  // initializing a structure, and do not modify it except via Mbed TLS
+  // library functions.
+  next: mbedtls-asn1-sequence-c
+
+pub type mbedtls-asn1-sequence-c
+pub alias mbedtls-asn1-sequencep = c-pointer<mbedtls-asn1-sequence-c>
+pub alias mbedtls-asn1-sequencec = owned-c<mbedtls-asn1-sequence-c>
+pub alias mbedtls-asn1-sequencecb<s::S> = borrowed-c<s,mbedtls-asn1-sequence-c>
+pub alias mbedtls-asn1-sequenceca = owned-c<c-array<mbedtls-asn1-sequence-c>>
+
+pub extern mbedtls-asn1-sequence/size-of(c: c-null<mbedtls-asn1-sequence-c>): int32
+  c inline "sizeof(struct mbedtls_asn1_sequence)"
+
+pub fun mbedtls-asn1-sequencec(): mbedtls-asn1-sequencec
+  malloc(?size-of=mbedtls-asn1-sequence/size-of)
+
+pub fun mbedtls-asn1-sequencec-calloc(): mbedtls-asn1-sequencec
+  malloc-c(?size-of=mbedtls-asn1-sequence/size-of)
+
+pub fun mbedtls-asn1-sequencec-array(n: int): mbedtls-asn1-sequenceca
+  malloc(n.int32, ?size-of=mbedtls-asn1-sequence/size-of)
+
+pub fun mbedtls-asn1-sequencec-array-calloc(n: int): mbedtls-asn1-sequenceca
+  malloc-c(n.int32, ?size-of=mbedtls-asn1-sequence/size-of)
+
+pub inline extern mbedtls-asn1-sequence-ptrraw/next(s: intptr_t): c-pointer<mbedtls-asn1-sequence-c>
+  c inline "(intptr_t)(((struct mbedtls_asn1_sequence*)#1)->next)"
+
+pub inline fun mbedtls-asn1-sequencep/next(s: mbedtls-asn1-sequencep): <> c-pointer<mbedtls-asn1-sequence-c>
+  s.cextern/c-pointer/ptr.mbedtls-asn1-sequence-ptrraw/next
+
+pub inline fun mbedtls-asn1-sequencec/next(^s: mbedtls-asn1-sequencec): <> c-pointer<mbedtls-asn1-sequence-c>
+  s.with-ptr(mbedtls-asn1-sequencep/next)
+
+pub inline fun mbedtls-asn1-sequencecb/next(^s: mbedtls-asn1-sequencecb<s::S>): <> c-pointer<mbedtls-asn1-sequence-c>
+  s.with-ptr(mbedtls-asn1-sequencep/next)
+
+pub inline extern mbedtls-asn1-sequence-ptrraw/set-next(s: intptr_t, next: c-pointer<mbedtls-asn1-sequence-c>): ()
+  c inline "((struct mbedtls_asn1_sequence*)#1)->next = (struct mbedtls_asn1_sequence*)#2"
+
+pub inline fun mbedtls-asn1-sequencep/set-next(s: mbedtls-asn1-sequencep, next: c-pointer<mbedtls-asn1-sequence-c>): ()
+  s.mbedtls-asn1-sequence-ptrraw/set-next(next)
+
+pub inline fun mbedtls-asn1-sequencec/set-next(^s: mbedtls-asn1-sequencec, next: c-pointer<mbedtls-asn1-sequence-c>): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-sequencep/set-next(next))
+
+pub inline fun mbedtls-asn1-sequencecb/set-next(^s: mbedtls-asn1-sequencecb<s::S>, next: c-pointer<mbedtls-asn1-sequence-c>): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-sequencep/set-next(next))
+
+// Container for a sequence or list of 'named' ASN.1 data items
+pub struct mbedtls-asn1-named-data
+  // < The object identifier.
+  oid: mbedtls-asn1-buf-c
+  // < The named value.
+  val: mbedtls-asn1-buf-c
+  // The next entry in the sequence.
+  // 
+  // The details of memory management for named data sequences are not
+  // documented and may change in future versions. Set this field to \p NULL
+  // when initializing a structure, and do not modify it except via Mbed TLS
+  // library functions.
+  next: mbedtls-asn1-named-data-c
+  // Merge next item into the current one?
+  // 
+  // This field exists for the sake of Mbed TLS's X.509 certificate parsing
+  // code and may change in future versions of the library.
+  private-next-merged: int
+
+pub type mbedtls-asn1-named-data-c
+pub alias mbedtls-asn1-named-datap = c-pointer<mbedtls-asn1-named-data-c>
+pub alias mbedtls-asn1-named-datac = owned-c<mbedtls-asn1-named-data-c>
+pub alias mbedtls-asn1-named-datacb<s::S> = borrowed-c<s,mbedtls-asn1-named-data-c>
+pub alias mbedtls-asn1-named-dataca = owned-c<c-array<mbedtls-asn1-named-data-c>>
+
+pub extern mbedtls-asn1-named-data/size-of(c: c-null<mbedtls-asn1-named-data-c>): int32
+  c inline "sizeof(struct mbedtls_asn1_named_data)"
+
+pub fun mbedtls-asn1-named-datac(): mbedtls-asn1-named-datac
+  malloc(?size-of=mbedtls-asn1-named-data/size-of)
+
+pub fun mbedtls-asn1-named-datac-calloc(): mbedtls-asn1-named-datac
+  malloc-c(?size-of=mbedtls-asn1-named-data/size-of)
+
+pub fun mbedtls-asn1-named-datac-array(n: int): mbedtls-asn1-named-dataca
+  malloc(n.int32, ?size-of=mbedtls-asn1-named-data/size-of)
+
+pub fun mbedtls-asn1-named-datac-array-calloc(n: int): mbedtls-asn1-named-dataca
+  malloc-c(n.int32, ?size-of=mbedtls-asn1-named-data/size-of)
+
+pub inline extern mbedtls-asn1-named-data-ptrraw/next(s: intptr_t): c-pointer<mbedtls-asn1-named-data-c>
+  c inline "(intptr_t)(((struct mbedtls_asn1_named_data*)#1)->next)"
+
+pub inline fun mbedtls-asn1-named-datap/next(s: mbedtls-asn1-named-datap): <> c-pointer<mbedtls-asn1-named-data-c>
+  s.cextern/c-pointer/ptr.mbedtls-asn1-named-data-ptrraw/next
+
+pub inline fun mbedtls-asn1-named-datac/next(^s: mbedtls-asn1-named-datac): <> c-pointer<mbedtls-asn1-named-data-c>
+  s.with-ptr(mbedtls-asn1-named-datap/next)
+
+pub inline fun mbedtls-asn1-named-datacb/next(^s: mbedtls-asn1-named-datacb<s::S>): <> c-pointer<mbedtls-asn1-named-data-c>
+  s.with-ptr(mbedtls-asn1-named-datap/next)
+
+pub inline extern mbedtls-asn1-named-data-ptrraw/set-next(s: intptr_t, next: c-pointer<mbedtls-asn1-named-data-c>): ()
+  c inline "((struct mbedtls_asn1_named_data*)#1)->next = (struct mbedtls_asn1_named_data*)#2"
+
+pub inline fun mbedtls-asn1-named-datap/set-next(s: mbedtls-asn1-named-datap, next: c-pointer<mbedtls-asn1-named-data-c>): ()
+  s.mbedtls-asn1-named-data-ptrraw/set-next(next)
+
+pub inline fun mbedtls-asn1-named-datac/set-next(^s: mbedtls-asn1-named-datac, next: c-pointer<mbedtls-asn1-named-data-c>): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-named-datap/set-next(next))
+
+pub inline fun mbedtls-asn1-named-datacb/set-next(^s: mbedtls-asn1-named-datacb<s::S>, next: c-pointer<mbedtls-asn1-named-data-c>): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-named-datap/set-next(next))
+
+pub inline extern mbedtls-asn1-named-data-ptrraw/private-next-merged(s: intptr_t): int8
+  c inline "(unsigned char)(((struct mbedtls_asn1_named_data*)#1)->private_next_merged)"
+
+pub inline fun mbedtls-asn1-named-datap/private-next-merged(s: mbedtls-asn1-named-datap): <> int
+  s.cextern/c-pointer/ptr.mbedtls-asn1-named-data-ptrraw/private-next-merged.int
+
+pub inline fun mbedtls-asn1-named-datac/private-next-merged(^s: mbedtls-asn1-named-datac): <> int
+  s.with-ptr(mbedtls-asn1-named-datap/private-next-merged)
+
+pub inline fun mbedtls-asn1-named-datacb/private-next-merged(^s: mbedtls-asn1-named-datacb<s::S>): <> int
+  s.with-ptr(mbedtls-asn1-named-datap/private-next-merged)
+
+pub inline extern mbedtls-asn1-named-data-ptrraw/set-private-next-merged(s: intptr_t, private-next-merged: int8): ()
+  c inline "((struct mbedtls_asn1_named_data*)#1)->private_next_merged = (unsigned char)#2"
+
+pub inline fun mbedtls-asn1-named-datap/set-private-next-merged(s: mbedtls-asn1-named-datap, private-next-merged: int): ()
+  s.mbedtls-asn1-named-data-ptrraw/set-private-next-merged(private-next-merged.int8)
+
+pub inline fun mbedtls-asn1-named-datac/set-private-next-merged(^s: mbedtls-asn1-named-datac, private-next-merged: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-named-datap/set-private-next-merged(private-next-merged))
+
+pub inline fun mbedtls-asn1-named-datacb/set-private-next-merged(^s: mbedtls-asn1-named-datacb<s::S>, private-next-merged: int): ()
+  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-asn1-named-datap/set-private-next-merged(private-next-merged))
 
 pub struct mbedtls-x509-authority
   keyidentifier: koka-mbedtls-x509-buf
@@ -35538,606 +31881,6 @@ alias mbedtls-ssl-cookie-write-t = intptr_t
 // \return         The callback must return 0 if cookie is valid,
 // or a negative error code.
 alias mbedtls-ssl-cookie-check-t = intptr_t
-// Certificate Signing Request (CSR) structure.
-// 
-// Some fields of this structure are publicly readable. Do not modify
-// them except via Mbed TLS library functions: the effect of modifying
-// those fields or the data that those fields point to is unspecified.
-pub struct mbedtls-x509-csr
-  // < The raw CSR data (DER).
-  raw: koka-mbedtls-x509-buf
-  // < The raw CertificateRequestInfo body (DER).
-  cri: koka-mbedtls-x509-buf
-  // < CSR version (1=v1).
-  version: int
-  // < The raw subject data (DER).
-  subject-raw: koka-mbedtls-x509-buf
-  // < The parsed subject data (named information object).
-  subject: koka-mbedtls-x509-name
-  // < Container for the public key context.
-  pk: mbedtls-pk-context-c
-  // < Optional key usage extension value: See the values in x509.h
-  key-usage: int
-  // < Optional Netscape certificate type extension value: See the values in x509.h
-  ns-cert-type: int
-  // < Optional list of raw entries of Subject Alternative Names extension. These can be later parsed by mbedtls_x509_parse_subject_alt_name.
-  subject-alt-names: koka-mbedtls-x509-sequence
-  // < Bit string containing detected and parsed extensions
-  private-ext-types: int
-  sig-oid: koka-mbedtls-x509-buf
-  private-sig: koka-mbedtls-x509-buf
-  // < Internal representation of the MD algorithm of the signature algorithm, e.g. MBEDTLS_MD_SHA256
-  private-sig-md: int
-  // < Internal representation of the Public Key algorithm of the signature algorithm, e.g. MBEDTLS_PK_RSA
-  private-sig-pk: int
-  // < Signature options to be passed to mbedtls_pk_verify_ext(), e.g. for RSASSA-PSS
-  private-sig-opts: c-pointer<()>
-
-pub type mbedtls-x509-csr-c
-pub alias mbedtls-x509-csrp = c-pointer<mbedtls-x509-csr-c>
-pub alias mbedtls-x509-csrc = owned-c<mbedtls-x509-csr-c>
-pub alias mbedtls-x509-csrcb<s::S> = borrowed-c<s,mbedtls-x509-csr-c>
-pub alias mbedtls-x509-csrca = owned-c<c-array<mbedtls-x509-csr-c>>
-
-pub extern mbedtls-x509-csr/size-of(c: c-null<mbedtls-x509-csr-c>): int32
-  c inline "sizeof(struct mbedtls_x509_csr)"
-
-pub fun mbedtls-x509-csrc(): mbedtls-x509-csrc
-  malloc(?size-of=mbedtls-x509-csr/size-of)
-
-pub fun mbedtls-x509-csrc-calloc(): mbedtls-x509-csrc
-  malloc-c(?size-of=mbedtls-x509-csr/size-of)
-
-pub fun mbedtls-x509-csrc-array(n: int): mbedtls-x509-csrca
-  malloc(n.int32, ?size-of=mbedtls-x509-csr/size-of)
-
-pub fun mbedtls-x509-csrc-array-calloc(n: int): mbedtls-x509-csrca
-  malloc-c(n.int32, ?size-of=mbedtls-x509-csr/size-of)
-
-pub inline extern mbedtls-x509-csr-ptrraw/version(s: intptr_t): int32
-  c inline "(int)(((struct mbedtls_x509_csr*)#1)->version)"
-
-pub inline fun mbedtls-x509-csrp/version(s: mbedtls-x509-csrp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-x509-csr-ptrraw/version.int
-
-pub inline fun mbedtls-x509-csrc/version(^s: mbedtls-x509-csrc): <> int
-  s.with-ptr(mbedtls-x509-csrp/version)
-
-pub inline fun mbedtls-x509-csrcb/version(^s: mbedtls-x509-csrcb<s::S>): <> int
-  s.with-ptr(mbedtls-x509-csrp/version)
-
-pub inline extern mbedtls-x509-csr-ptrraw/set-version(s: intptr_t, version: int32): ()
-  c inline "((struct mbedtls_x509_csr*)#1)->version = (int)#2"
-
-pub inline fun mbedtls-x509-csrp/set-version(s: mbedtls-x509-csrp, version: int): ()
-  s.mbedtls-x509-csr-ptrraw/set-version(version.int32)
-
-pub inline fun mbedtls-x509-csrc/set-version(^s: mbedtls-x509-csrc, version: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509-csrp/set-version(version))
-
-pub inline fun mbedtls-x509-csrcb/set-version(^s: mbedtls-x509-csrcb<s::S>, version: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509-csrp/set-version(version))
-
-pub inline extern mbedtls-x509-csr-ptrraw/key-usage(s: intptr_t): int32
-  c inline "(unsigned int)(((struct mbedtls_x509_csr*)#1)->key_usage)"
-
-pub inline fun mbedtls-x509-csrp/key-usage(s: mbedtls-x509-csrp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-x509-csr-ptrraw/key-usage.int
-
-pub inline fun mbedtls-x509-csrc/key-usage(^s: mbedtls-x509-csrc): <> int
-  s.with-ptr(mbedtls-x509-csrp/key-usage)
-
-pub inline fun mbedtls-x509-csrcb/key-usage(^s: mbedtls-x509-csrcb<s::S>): <> int
-  s.with-ptr(mbedtls-x509-csrp/key-usage)
-
-pub inline extern mbedtls-x509-csr-ptrraw/set-key-usage(s: intptr_t, key-usage: int32): ()
-  c inline "((struct mbedtls_x509_csr*)#1)->key_usage = (unsigned int)#2"
-
-pub inline fun mbedtls-x509-csrp/set-key-usage(s: mbedtls-x509-csrp, key-usage: int): ()
-  s.mbedtls-x509-csr-ptrraw/set-key-usage(key-usage.int32)
-
-pub inline fun mbedtls-x509-csrc/set-key-usage(^s: mbedtls-x509-csrc, key-usage: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509-csrp/set-key-usage(key-usage))
-
-pub inline fun mbedtls-x509-csrcb/set-key-usage(^s: mbedtls-x509-csrcb<s::S>, key-usage: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509-csrp/set-key-usage(key-usage))
-
-pub inline extern mbedtls-x509-csr-ptrraw/ns-cert-type(s: intptr_t): int8
-  c inline "(unsigned char)(((struct mbedtls_x509_csr*)#1)->ns_cert_type)"
-
-pub inline fun mbedtls-x509-csrp/ns-cert-type(s: mbedtls-x509-csrp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-x509-csr-ptrraw/ns-cert-type.int
-
-pub inline fun mbedtls-x509-csrc/ns-cert-type(^s: mbedtls-x509-csrc): <> int
-  s.with-ptr(mbedtls-x509-csrp/ns-cert-type)
-
-pub inline fun mbedtls-x509-csrcb/ns-cert-type(^s: mbedtls-x509-csrcb<s::S>): <> int
-  s.with-ptr(mbedtls-x509-csrp/ns-cert-type)
-
-pub inline extern mbedtls-x509-csr-ptrraw/set-ns-cert-type(s: intptr_t, ns-cert-type: int8): ()
-  c inline "((struct mbedtls_x509_csr*)#1)->ns_cert_type = (unsigned char)#2"
-
-pub inline fun mbedtls-x509-csrp/set-ns-cert-type(s: mbedtls-x509-csrp, ns-cert-type: int): ()
-  s.mbedtls-x509-csr-ptrraw/set-ns-cert-type(ns-cert-type.int8)
-
-pub inline fun mbedtls-x509-csrc/set-ns-cert-type(^s: mbedtls-x509-csrc, ns-cert-type: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509-csrp/set-ns-cert-type(ns-cert-type))
-
-pub inline fun mbedtls-x509-csrcb/set-ns-cert-type(^s: mbedtls-x509-csrcb<s::S>, ns-cert-type: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509-csrp/set-ns-cert-type(ns-cert-type))
-
-pub inline extern mbedtls-x509-csr-ptrraw/private-ext-types(s: intptr_t): int32
-  c inline "(int)(((struct mbedtls_x509_csr*)#1)->private_ext_types)"
-
-pub inline fun mbedtls-x509-csrp/private-ext-types(s: mbedtls-x509-csrp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-x509-csr-ptrraw/private-ext-types.int
-
-pub inline fun mbedtls-x509-csrc/private-ext-types(^s: mbedtls-x509-csrc): <> int
-  s.with-ptr(mbedtls-x509-csrp/private-ext-types)
-
-pub inline fun mbedtls-x509-csrcb/private-ext-types(^s: mbedtls-x509-csrcb<s::S>): <> int
-  s.with-ptr(mbedtls-x509-csrp/private-ext-types)
-
-pub inline extern mbedtls-x509-csr-ptrraw/set-private-ext-types(s: intptr_t, private-ext-types: int32): ()
-  c inline "((struct mbedtls_x509_csr*)#1)->private_ext_types = (int)#2"
-
-pub inline fun mbedtls-x509-csrp/set-private-ext-types(s: mbedtls-x509-csrp, private-ext-types: int): ()
-  s.mbedtls-x509-csr-ptrraw/set-private-ext-types(private-ext-types.int32)
-
-pub inline fun mbedtls-x509-csrc/set-private-ext-types(^s: mbedtls-x509-csrc, private-ext-types: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509-csrp/set-private-ext-types(private-ext-types))
-
-pub inline fun mbedtls-x509-csrcb/set-private-ext-types(^s: mbedtls-x509-csrcb<s::S>, private-ext-types: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509-csrp/set-private-ext-types(private-ext-types))
-
-pub inline extern mbedtls-x509-csr-ptrraw/private-sig-md(s: intptr_t): int32
-  c inline "(int32_t)(((struct mbedtls_x509_csr*)#1)->private_sig_md)"
-
-pub inline fun mbedtls-x509-csrp/private-sig-md(s: mbedtls-x509-csrp): <exn> mbedtls-md-type-t
-  s.cextern/c-pointer/ptr.mbedtls-x509-csr-ptrraw/private-sig-md.int/mbedtls-md-type-t
-
-pub inline fun mbedtls-x509-csrc/private-sig-md(^s: mbedtls-x509-csrc): <exn> mbedtls-md-type-t
-  s.with-ptr(mbedtls-x509-csrp/private-sig-md)
-
-pub inline fun mbedtls-x509-csrcb/private-sig-md(^s: mbedtls-x509-csrcb<s::S>): <exn> mbedtls-md-type-t
-  s.with-ptr(mbedtls-x509-csrp/private-sig-md)
-
-pub inline extern mbedtls-x509-csr-ptrraw/set-private-sig-md(s: intptr_t, private-sig-md: int32): ()
-  c inline "((struct mbedtls_x509_csr*)#1)->private_sig_md = (int32_t)#2"
-
-pub inline fun mbedtls-x509-csrp/set-private-sig-md(s: mbedtls-x509-csrp, private-sig-md: mbedtls-md-type-t): ()
-  s.mbedtls-x509-csr-ptrraw/set-private-sig-md(private-sig-md.mbedtls-md-type-t/int)
-
-pub inline fun mbedtls-x509-csrc/set-private-sig-md(^s: mbedtls-x509-csrc, private-sig-md: mbedtls-md-type-t): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509-csrp/set-private-sig-md(private-sig-md))
-
-pub inline fun mbedtls-x509-csrcb/set-private-sig-md(^s: mbedtls-x509-csrcb<s::S>, private-sig-md: mbedtls-md-type-t): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509-csrp/set-private-sig-md(private-sig-md))
-
-pub inline extern mbedtls-x509-csr-ptrraw/private-sig-pk(s: intptr_t): int32
-  c inline "(int32_t)(((struct mbedtls_x509_csr*)#1)->private_sig_pk)"
-
-pub inline fun mbedtls-x509-csrp/private-sig-pk(s: mbedtls-x509-csrp): <exn> mbedtls-pk-type-t
-  s.cextern/c-pointer/ptr.mbedtls-x509-csr-ptrraw/private-sig-pk.int/mbedtls-pk-type-t
-
-pub inline fun mbedtls-x509-csrc/private-sig-pk(^s: mbedtls-x509-csrc): <exn> mbedtls-pk-type-t
-  s.with-ptr(mbedtls-x509-csrp/private-sig-pk)
-
-pub inline fun mbedtls-x509-csrcb/private-sig-pk(^s: mbedtls-x509-csrcb<s::S>): <exn> mbedtls-pk-type-t
-  s.with-ptr(mbedtls-x509-csrp/private-sig-pk)
-
-pub inline extern mbedtls-x509-csr-ptrraw/set-private-sig-pk(s: intptr_t, private-sig-pk: int32): ()
-  c inline "((struct mbedtls_x509_csr*)#1)->private_sig_pk = (int32_t)#2"
-
-pub inline fun mbedtls-x509-csrp/set-private-sig-pk(s: mbedtls-x509-csrp, private-sig-pk: mbedtls-pk-type-t): ()
-  s.mbedtls-x509-csr-ptrraw/set-private-sig-pk(private-sig-pk.mbedtls-pk-type-t/int)
-
-pub inline fun mbedtls-x509-csrc/set-private-sig-pk(^s: mbedtls-x509-csrc, private-sig-pk: mbedtls-pk-type-t): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509-csrp/set-private-sig-pk(private-sig-pk))
-
-pub inline fun mbedtls-x509-csrcb/set-private-sig-pk(^s: mbedtls-x509-csrcb<s::S>, private-sig-pk: mbedtls-pk-type-t): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509-csrp/set-private-sig-pk(private-sig-pk))
-
-pub inline extern mbedtls-x509-csr-ptrraw/private-sig-opts(s: intptr_t): c-pointer<()>
-  c inline "(intptr_t)(((struct mbedtls_x509_csr*)#1)->private_sig_opts)"
-
-pub inline fun mbedtls-x509-csrp/private-sig-opts(s: mbedtls-x509-csrp): <> c-pointer<()>
-  s.cextern/c-pointer/ptr.mbedtls-x509-csr-ptrraw/private-sig-opts
-
-pub inline fun mbedtls-x509-csrc/private-sig-opts(^s: mbedtls-x509-csrc): <> c-pointer<()>
-  s.with-ptr(mbedtls-x509-csrp/private-sig-opts)
-
-pub inline fun mbedtls-x509-csrcb/private-sig-opts(^s: mbedtls-x509-csrcb<s::S>): <> c-pointer<()>
-  s.with-ptr(mbedtls-x509-csrp/private-sig-opts)
-
-pub inline extern mbedtls-x509-csr-ptrraw/set-private-sig-opts(s: intptr_t, private-sig-opts: c-pointer<()>): ()
-  c inline "((struct mbedtls_x509_csr*)#1)->private_sig_opts = (void*)#2"
-
-pub inline fun mbedtls-x509-csrp/set-private-sig-opts(s: mbedtls-x509-csrp, private-sig-opts: c-pointer<()>): ()
-  s.mbedtls-x509-csr-ptrraw/set-private-sig-opts(private-sig-opts)
-
-pub inline fun mbedtls-x509-csrc/set-private-sig-opts(^s: mbedtls-x509-csrc, private-sig-opts: c-pointer<()>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509-csrp/set-private-sig-opts(private-sig-opts))
-
-pub inline fun mbedtls-x509-csrcb/set-private-sig-opts(^s: mbedtls-x509-csrcb<s::S>, private-sig-opts: c-pointer<()>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509-csrp/set-private-sig-opts(private-sig-opts))
-
-// Container for writing a CSR
-pub struct mbedtls-x509write-csr
-  private-key: mbedtls-pk-context-c
-  private-subject: mbedtls-asn1-named-data-c
-  private-md-alg: int
-  private-extensions: mbedtls-asn1-named-data-c
-
-pub type mbedtls-x509write-csr-c
-pub alias mbedtls-x509write-csrp = c-pointer<mbedtls-x509write-csr-c>
-pub alias mbedtls-x509write-csrc = owned-c<mbedtls-x509write-csr-c>
-pub alias mbedtls-x509write-csrcb<s::S> = borrowed-c<s,mbedtls-x509write-csr-c>
-pub alias mbedtls-x509write-csrca = owned-c<c-array<mbedtls-x509write-csr-c>>
-
-pub extern mbedtls-x509write-csr/size-of(c: c-null<mbedtls-x509write-csr-c>): int32
-  c inline "sizeof(struct mbedtls_x509write_csr)"
-
-pub fun mbedtls-x509write-csrc(): mbedtls-x509write-csrc
-  malloc(?size-of=mbedtls-x509write-csr/size-of)
-
-pub fun mbedtls-x509write-csrc-calloc(): mbedtls-x509write-csrc
-  malloc-c(?size-of=mbedtls-x509write-csr/size-of)
-
-pub fun mbedtls-x509write-csrc-array(n: int): mbedtls-x509write-csrca
-  malloc(n.int32, ?size-of=mbedtls-x509write-csr/size-of)
-
-pub fun mbedtls-x509write-csrc-array-calloc(n: int): mbedtls-x509write-csrca
-  malloc-c(n.int32, ?size-of=mbedtls-x509write-csr/size-of)
-
-pub inline extern mbedtls-x509write-csr-ptrraw/private-key(s: intptr_t): c-pointer<mbedtls-pk-context-c>
-  c inline "(intptr_t)(((struct mbedtls_x509write_csr*)#1)->private_key)"
-
-pub inline fun mbedtls-x509write-csrp/private-key(s: mbedtls-x509write-csrp): <> c-pointer<mbedtls-pk-context-c>
-  s.cextern/c-pointer/ptr.mbedtls-x509write-csr-ptrraw/private-key
-
-pub inline fun mbedtls-x509write-csrc/private-key(^s: mbedtls-x509write-csrc): <> c-pointer<mbedtls-pk-context-c>
-  s.with-ptr(mbedtls-x509write-csrp/private-key)
-
-pub inline fun mbedtls-x509write-csrcb/private-key(^s: mbedtls-x509write-csrcb<s::S>): <> c-pointer<mbedtls-pk-context-c>
-  s.with-ptr(mbedtls-x509write-csrp/private-key)
-
-pub inline extern mbedtls-x509write-csr-ptrraw/set-private-key(s: intptr_t, private-key: c-pointer<mbedtls-pk-context-c>): ()
-  c inline "((struct mbedtls_x509write_csr*)#1)->private_key = (struct mbedtls_pk_context*)#2"
-
-pub inline fun mbedtls-x509write-csrp/set-private-key(s: mbedtls-x509write-csrp, private-key: c-pointer<mbedtls-pk-context-c>): ()
-  s.mbedtls-x509write-csr-ptrraw/set-private-key(private-key)
-
-pub inline fun mbedtls-x509write-csrc/set-private-key(^s: mbedtls-x509write-csrc, private-key: c-pointer<mbedtls-pk-context-c>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509write-csrp/set-private-key(private-key))
-
-pub inline fun mbedtls-x509write-csrcb/set-private-key(^s: mbedtls-x509write-csrcb<s::S>, private-key: c-pointer<mbedtls-pk-context-c>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509write-csrp/set-private-key(private-key))
-
-pub inline extern mbedtls-x509write-csr-ptrraw/private-subject(s: intptr_t): c-pointer<mbedtls-asn1-named-data-c>
-  c inline "(intptr_t)(((struct mbedtls_x509write_csr*)#1)->private_subject)"
-
-pub inline fun mbedtls-x509write-csrp/private-subject(s: mbedtls-x509write-csrp): <> c-pointer<mbedtls-asn1-named-data-c>
-  s.cextern/c-pointer/ptr.mbedtls-x509write-csr-ptrraw/private-subject
-
-pub inline fun mbedtls-x509write-csrc/private-subject(^s: mbedtls-x509write-csrc): <> c-pointer<mbedtls-asn1-named-data-c>
-  s.with-ptr(mbedtls-x509write-csrp/private-subject)
-
-pub inline fun mbedtls-x509write-csrcb/private-subject(^s: mbedtls-x509write-csrcb<s::S>): <> c-pointer<mbedtls-asn1-named-data-c>
-  s.with-ptr(mbedtls-x509write-csrp/private-subject)
-
-pub inline extern mbedtls-x509write-csr-ptrraw/set-private-subject(s: intptr_t, private-subject: c-pointer<mbedtls-asn1-named-data-c>): ()
-  c inline "((struct mbedtls_x509write_csr*)#1)->private_subject = (struct mbedtls_asn1_named_data*)#2"
-
-pub inline fun mbedtls-x509write-csrp/set-private-subject(s: mbedtls-x509write-csrp, private-subject: c-pointer<mbedtls-asn1-named-data-c>): ()
-  s.mbedtls-x509write-csr-ptrraw/set-private-subject(private-subject)
-
-pub inline fun mbedtls-x509write-csrc/set-private-subject(^s: mbedtls-x509write-csrc, private-subject: c-pointer<mbedtls-asn1-named-data-c>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509write-csrp/set-private-subject(private-subject))
-
-pub inline fun mbedtls-x509write-csrcb/set-private-subject(^s: mbedtls-x509write-csrcb<s::S>, private-subject: c-pointer<mbedtls-asn1-named-data-c>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509write-csrp/set-private-subject(private-subject))
-
-pub inline extern mbedtls-x509write-csr-ptrraw/private-md-alg(s: intptr_t): int32
-  c inline "(int32_t)(((struct mbedtls_x509write_csr*)#1)->private_md_alg)"
-
-pub inline fun mbedtls-x509write-csrp/private-md-alg(s: mbedtls-x509write-csrp): <exn> mbedtls-md-type-t
-  s.cextern/c-pointer/ptr.mbedtls-x509write-csr-ptrraw/private-md-alg.int/mbedtls-md-type-t
-
-pub inline fun mbedtls-x509write-csrc/private-md-alg(^s: mbedtls-x509write-csrc): <exn> mbedtls-md-type-t
-  s.with-ptr(mbedtls-x509write-csrp/private-md-alg)
-
-pub inline fun mbedtls-x509write-csrcb/private-md-alg(^s: mbedtls-x509write-csrcb<s::S>): <exn> mbedtls-md-type-t
-  s.with-ptr(mbedtls-x509write-csrp/private-md-alg)
-
-pub inline extern mbedtls-x509write-csr-ptrraw/set-private-md-alg(s: intptr_t, private-md-alg: int32): ()
-  c inline "((struct mbedtls_x509write_csr*)#1)->private_md_alg = (int32_t)#2"
-
-pub inline fun mbedtls-x509write-csrp/set-private-md-alg(s: mbedtls-x509write-csrp, private-md-alg: mbedtls-md-type-t): ()
-  s.mbedtls-x509write-csr-ptrraw/set-private-md-alg(private-md-alg.mbedtls-md-type-t/int)
-
-pub inline fun mbedtls-x509write-csrc/set-private-md-alg(^s: mbedtls-x509write-csrc, private-md-alg: mbedtls-md-type-t): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509write-csrp/set-private-md-alg(private-md-alg))
-
-pub inline fun mbedtls-x509write-csrcb/set-private-md-alg(^s: mbedtls-x509write-csrcb<s::S>, private-md-alg: mbedtls-md-type-t): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509write-csrp/set-private-md-alg(private-md-alg))
-
-pub inline extern mbedtls-x509write-csr-ptrraw/private-extensions(s: intptr_t): c-pointer<mbedtls-asn1-named-data-c>
-  c inline "(intptr_t)(((struct mbedtls_x509write_csr*)#1)->private_extensions)"
-
-pub inline fun mbedtls-x509write-csrp/private-extensions(s: mbedtls-x509write-csrp): <> c-pointer<mbedtls-asn1-named-data-c>
-  s.cextern/c-pointer/ptr.mbedtls-x509write-csr-ptrraw/private-extensions
-
-pub inline fun mbedtls-x509write-csrc/private-extensions(^s: mbedtls-x509write-csrc): <> c-pointer<mbedtls-asn1-named-data-c>
-  s.with-ptr(mbedtls-x509write-csrp/private-extensions)
-
-pub inline fun mbedtls-x509write-csrcb/private-extensions(^s: mbedtls-x509write-csrcb<s::S>): <> c-pointer<mbedtls-asn1-named-data-c>
-  s.with-ptr(mbedtls-x509write-csrp/private-extensions)
-
-pub inline extern mbedtls-x509write-csr-ptrraw/set-private-extensions(s: intptr_t, private-extensions: c-pointer<mbedtls-asn1-named-data-c>): ()
-  c inline "((struct mbedtls_x509write_csr*)#1)->private_extensions = (struct mbedtls_asn1_named_data*)#2"
-
-pub inline fun mbedtls-x509write-csrp/set-private-extensions(s: mbedtls-x509write-csrp, private-extensions: c-pointer<mbedtls-asn1-named-data-c>): ()
-  s.mbedtls-x509write-csr-ptrraw/set-private-extensions(private-extensions)
-
-pub inline fun mbedtls-x509write-csrc/set-private-extensions(^s: mbedtls-x509write-csrc, private-extensions: c-pointer<mbedtls-asn1-named-data-c>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509write-csrp/set-private-extensions(private-extensions))
-
-pub inline fun mbedtls-x509write-csrcb/set-private-extensions(^s: mbedtls-x509write-csrcb<s::S>, private-extensions: c-pointer<mbedtls-asn1-named-data-c>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-x509write-csrp/set-private-extensions(private-extensions))
-
-// \brief          The type of certificate extension callbacks.
-// 
-// Callbacks of this type are passed to and used by the
-// mbedtls_x509_csr_parse_der_with_ext_cb() routine when
-// it encounters either an unsupported extension.
-// Future versions of the library may invoke the callback
-// in other cases, if and when the need arises.
-// 
-// \param p_ctx    An opaque context passed to the callback.
-// \param csr      The CSR being parsed.
-// \param oid      The OID of the extension.
-// \param critical Whether the extension is critical.
-// \param p        Pointer to the start of the extension value
-// (the content of the OCTET STRING).
-// \param end      End of extension value.
-// 
-// \note           The callback must fail and return a negative error code
-// if it can not parse or does not support the extension.
-// When the callback fails to parse a critical extension
-// mbedtls_x509_csr_parse_der_with_ext_cb() also fails.
-// When the callback fails to parse a non critical extension
-// mbedtls_x509_csr_parse_der_with_ext_cb() simply skips
-// the extension and continues parsing.
-// 
-// \return         \c 0 on success.
-// \return         A negative error code on failure.
-alias mbedtls-x509-csr-ext-cb-t = c-pointer<intptr_t>
-alias mbedtls-x509-csr-ext-cb-tfn = ((p_ctx : c-pointer<()>, csr : c-pointer<mbedtls-x509-csr-c>, oid : c-pointer<mbedtls-asn1-buf-c>, critical : int, p : c-pointer<int>, end : c-pointer<int>) -> int)
-// \brief          timer structure
-pub struct mbedtls-timing-hr-time
-pub type mbedtls-timing-hr-time-c
-pub alias mbedtls-timing-hr-timep = c-pointer<mbedtls-timing-hr-time-c>
-pub alias mbedtls-timing-hr-timec<s::S> = owned-c<mbedtls-timing-hr-time-c>
-pub alias mbedtls-timing-hr-timecb<s::S> = borrowed-c<s,mbedtls-timing-hr-time-c>
-pub alias mbedtls-timing-hr-timeca<s::S> = owned-c<c-array<mbedtls-timing-hr-time-c>>
-
-pub extern mbedtls-timing-hr-time/size-of(c: c-null<mbedtls-timing-hr-time-c>): int32
-  c inline "sizeof(struct mbedtls_timing_hr_time)"
-
-pub fun mbedtls-timing-hr-timec(): mbedtls-timing-hr-timec<s::S>
-  malloc(?size-of=mbedtls-timing-hr-time/size-of)
-
-pub fun mbedtls-timing-hr-timec-calloc(): mbedtls-timing-hr-timec<s::S>
-  malloc-c(?size-of=mbedtls-timing-hr-time/size-of)
-
-pub fun mbedtls-timing-hr-timec-array(n: int): mbedtls-timing-hr-timeca<s::S>
-  malloc(n.int32, ?size-of=mbedtls-timing-hr-time/size-of)
-
-pub fun mbedtls-timing-hr-timec-array-calloc(n: int): mbedtls-timing-hr-timeca<s::S>
-  malloc-c(n.int32, ?size-of=mbedtls-timing-hr-time/size-of)
-
-pub inline extern mbedtls-timing-hr-time-ptrraw/private-opaque(s: intptr_t): c-pointer<int>
-  c inline "(intptr_t)(((struct mbedtls_timing_hr_time*)#1)->private_opaque)"
-
-pub inline fun mbedtls-timing-hr-timep/private-opaque(s: mbedtls-timing-hr-timep): <> c-array<int>
-  s.cextern/c-pointer/ptr.mbedtls-timing-hr-time-ptrraw/private-opaque.cextern/ptr/carray
-
-pub inline fun mbedtls-timing-hr-timec/private-opaque(^s: mbedtls-timing-hr-timec<s::S>): <> c-array<int>
-  s.with-ptr(mbedtls-timing-hr-timep/private-opaque)
-
-pub inline fun mbedtls-timing-hr-timecb/private-opaque(^s: mbedtls-timing-hr-timecb<s::S>): <> c-array<int>
-  s.with-ptr(mbedtls-timing-hr-timep/private-opaque)
-
-pub inline extern mbedtls-timing-hr-time-ptrraw/set-private-opaque(s: intptr_t, private-opaque: c-pointer<int>): ()
-  c inline "((struct mbedtls_timing_hr_time*)#1)->private_opaque = (int64_t*)#2"
-
-pub inline fun mbedtls-timing-hr-timep/set-private-opaque(s: mbedtls-timing-hr-timep, private-opaque: c-array<int>): ()
-  s.mbedtls-timing-hr-time-ptrraw/set-private-opaque(private-opaque.cextern/carray/ptr)
-
-pub inline fun mbedtls-timing-hr-timec/set-private-opaque(^s: mbedtls-timing-hr-timec<s::S>, private-opaque: c-array<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-timing-hr-timep/set-private-opaque(private-opaque))
-
-pub inline fun mbedtls-timing-hr-timecb/set-private-opaque(^s: mbedtls-timing-hr-timecb<s::S>, private-opaque: c-array<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-timing-hr-timep/set-private-opaque(private-opaque))
-
-// \brief          Context for mbedtls_timing_set/get_delay()
-pub value struct mbedtls-timing-delay-context
-  private-timer: mbedtls-timing-hr-time-c
-  private-int-ms: int
-  private-fin-ms: int
-
-pub type mbedtls-timing-delay-context-c
-pub alias mbedtls-timing-delay-contextp = c-pointer<mbedtls-timing-delay-context-c>
-pub alias mbedtls-timing-delay-contextc = owned-c<mbedtls-timing-delay-context-c>
-pub alias mbedtls-timing-delay-contextcb<s::S> = borrowed-c<s,mbedtls-timing-delay-context-c>
-pub alias mbedtls-timing-delay-contextca = owned-c<c-array<mbedtls-timing-delay-context-c>>
-
-pub extern mbedtls-timing-delay-context/size-of(c: c-null<mbedtls-timing-delay-context-c>): int32
-  c inline "sizeof(struct mbedtls_timing_delay_context)"
-
-pub fun mbedtls-timing-delay-contextc(): mbedtls-timing-delay-contextc
-  malloc(?size-of=mbedtls-timing-delay-context/size-of)
-
-pub fun mbedtls-timing-delay-contextc-calloc(): mbedtls-timing-delay-contextc
-  malloc-c(?size-of=mbedtls-timing-delay-context/size-of)
-
-pub fun mbedtls-timing-delay-contextc-array(n: int): mbedtls-timing-delay-contextca
-  malloc(n.int32, ?size-of=mbedtls-timing-delay-context/size-of)
-
-pub fun mbedtls-timing-delay-contextc-array-calloc(n: int): mbedtls-timing-delay-contextca
-  malloc-c(n.int32, ?size-of=mbedtls-timing-delay-context/size-of)
-
-pub inline extern mbedtls-timing-delay-context-ptrraw/private-int-ms(s: intptr_t): int32
-  c inline "(int32_t)(((struct mbedtls_timing_delay_context*)#1)->private_int_ms)"
-
-pub inline fun mbedtls-timing-delay-contextp/private-int-ms(s: mbedtls-timing-delay-contextp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-timing-delay-context-ptrraw/private-int-ms.int
-
-pub inline fun mbedtls-timing-delay-contextc/private-int-ms(^s: mbedtls-timing-delay-contextc): <> int
-  s.with-ptr(mbedtls-timing-delay-contextp/private-int-ms)
-
-pub inline fun mbedtls-timing-delay-contextcb/private-int-ms(^s: mbedtls-timing-delay-contextcb<s::S>): <> int
-  s.with-ptr(mbedtls-timing-delay-contextp/private-int-ms)
-
-pub inline extern mbedtls-timing-delay-context-ptrraw/set-private-int-ms(s: intptr_t, private-int-ms: int32): ()
-  c inline "((struct mbedtls_timing_delay_context*)#1)->private_int_ms = (int32_t)#2"
-
-pub inline fun mbedtls-timing-delay-contextp/set-private-int-ms(s: mbedtls-timing-delay-contextp, private-int-ms: int): ()
-  s.mbedtls-timing-delay-context-ptrraw/set-private-int-ms(private-int-ms.int32)
-
-pub inline fun mbedtls-timing-delay-contextc/set-private-int-ms(^s: mbedtls-timing-delay-contextc, private-int-ms: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-timing-delay-contextp/set-private-int-ms(private-int-ms))
-
-pub inline fun mbedtls-timing-delay-contextcb/set-private-int-ms(^s: mbedtls-timing-delay-contextcb<s::S>, private-int-ms: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-timing-delay-contextp/set-private-int-ms(private-int-ms))
-
-pub inline extern mbedtls-timing-delay-context-ptrraw/private-fin-ms(s: intptr_t): int32
-  c inline "(int32_t)(((struct mbedtls_timing_delay_context*)#1)->private_fin_ms)"
-
-pub inline fun mbedtls-timing-delay-contextp/private-fin-ms(s: mbedtls-timing-delay-contextp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-timing-delay-context-ptrraw/private-fin-ms.int
-
-pub inline fun mbedtls-timing-delay-contextc/private-fin-ms(^s: mbedtls-timing-delay-contextc): <> int
-  s.with-ptr(mbedtls-timing-delay-contextp/private-fin-ms)
-
-pub inline fun mbedtls-timing-delay-contextcb/private-fin-ms(^s: mbedtls-timing-delay-contextcb<s::S>): <> int
-  s.with-ptr(mbedtls-timing-delay-contextp/private-fin-ms)
-
-pub inline extern mbedtls-timing-delay-context-ptrraw/set-private-fin-ms(s: intptr_t, private-fin-ms: int32): ()
-  c inline "((struct mbedtls_timing_delay_context*)#1)->private_fin_ms = (int32_t)#2"
-
-pub inline fun mbedtls-timing-delay-contextp/set-private-fin-ms(s: mbedtls-timing-delay-contextp, private-fin-ms: int): ()
-  s.mbedtls-timing-delay-context-ptrraw/set-private-fin-ms(private-fin-ms.int32)
-
-pub inline fun mbedtls-timing-delay-contextc/set-private-fin-ms(^s: mbedtls-timing-delay-contextc, private-fin-ms: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-timing-delay-contextp/set-private-fin-ms(private-fin-ms))
-
-pub inline fun mbedtls-timing-delay-contextcb/set-private-fin-ms(^s: mbedtls-timing-delay-contextcb<s::S>, private-fin-ms: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-timing-delay-contextp/set-private-fin-ms(private-fin-ms))
-
-type mbedtls-nist-kw-mode-t
-  MBEDTLS_KW_MODE_KW
-  MBEDTLS_KW_MODE_KWP
-
-pub fun mbedtls-nist-kw-mode-t/int(i: mbedtls-nist-kw-mode-t): int32
-  match i
-    MBEDTLS_KW_MODE_KW -> 0.int32
-    MBEDTLS_KW_MODE_KWP -> 1.int32
-
-pub fun int/mbedtls-nist-kw-mode-t(i: int32): exn mbedtls-nist-kw-mode-t
-  match i.int
-    0 -> MBEDTLS_KW_MODE_KW
-    1 -> MBEDTLS_KW_MODE_KWP
-
-// \brief    The key wrapping context-type definition. The key wrapping context is passed
-// to the APIs called.
-// 
-// \note     The definition of this type may change in future library versions.
-// Don't make any assumptions on this context!
-pub value struct mbedtls-nist-kw-context
-  // !< The cipher context used.
-  private-cipher-ctx: mbedtls-cipher-context-t-c
-
-pub type mbedtls-nist-kw-context-c
-pub alias mbedtls-nist-kw-contextp = c-pointer<mbedtls-nist-kw-context-c>
-pub alias mbedtls-nist-kw-contextc = owned-c<mbedtls-nist-kw-context-c>
-pub alias mbedtls-nist-kw-contextcb<s::S> = borrowed-c<s,mbedtls-nist-kw-context-c>
-pub alias mbedtls-nist-kw-contextca = owned-c<c-array<mbedtls-nist-kw-context-c>>
-
-pub extern mbedtls-nist-kw-context/size-of(c: c-null<mbedtls-nist-kw-context-c>): int32
-  c inline "sizeof(mbedtls_nist_kw_context)"
-
-pub fun mbedtls-nist-kw-contextc(): mbedtls-nist-kw-contextc
-  malloc(?size-of=mbedtls-nist-kw-context/size-of)
-
-pub fun mbedtls-nist-kw-contextc-calloc(): mbedtls-nist-kw-contextc
-  malloc-c(?size-of=mbedtls-nist-kw-context/size-of)
-
-pub fun mbedtls-nist-kw-contextc-array(n: int): mbedtls-nist-kw-contextca
-  malloc(n.int32, ?size-of=mbedtls-nist-kw-context/size-of)
-
-pub fun mbedtls-nist-kw-contextc-array-calloc(n: int): mbedtls-nist-kw-contextca
-  malloc-c(n.int32, ?size-of=mbedtls-nist-kw-context/size-of)
-
-// Wrapper type for sockets.
-// 
-// Currently backed by just a file descriptor, but might be more in the future
-// (eg two file descriptors for combined IPv4 + IPv6 support, or additional
-// structures for hand-made UDP demultiplexing).
-pub value struct mbedtls-net-context
-  // The underlying file descriptor.
-  // 
-  // This field is only guaranteed to be present on POSIX/Unix-like platforms.
-  // On other platforms, it may have a different type, have a different
-  // meaning, or be absent altogether.
-  fd: int
-
-pub type mbedtls-net-context-c
-pub alias mbedtls-net-contextp = c-pointer<mbedtls-net-context-c>
-pub alias mbedtls-net-contextc = owned-c<mbedtls-net-context-c>
-pub alias mbedtls-net-contextcb<s::S> = borrowed-c<s,mbedtls-net-context-c>
-pub alias mbedtls-net-contextca = owned-c<c-array<mbedtls-net-context-c>>
-
-pub extern mbedtls-net-context/size-of(c: c-null<mbedtls-net-context-c>): int32
-  c inline "sizeof(struct mbedtls_net_context)"
-
-pub fun mbedtls-net-contextc(): mbedtls-net-contextc
-  malloc(?size-of=mbedtls-net-context/size-of)
-
-pub fun mbedtls-net-contextc-calloc(): mbedtls-net-contextc
-  malloc-c(?size-of=mbedtls-net-context/size-of)
-
-pub fun mbedtls-net-contextc-array(n: int): mbedtls-net-contextca
-  malloc(n.int32, ?size-of=mbedtls-net-context/size-of)
-
-pub fun mbedtls-net-contextc-array-calloc(n: int): mbedtls-net-contextca
-  malloc-c(n.int32, ?size-of=mbedtls-net-context/size-of)
-
-pub inline extern mbedtls-net-context-ptrraw/fd(s: intptr_t): int32
-  c inline "(int)(((struct mbedtls_net_context*)#1)->fd)"
-
-pub inline fun mbedtls-net-contextp/fd(s: mbedtls-net-contextp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-net-context-ptrraw/fd.int
-
-pub inline fun mbedtls-net-contextc/fd(^s: mbedtls-net-contextc): <> int
-  s.with-ptr(mbedtls-net-contextp/fd)
-
-pub inline fun mbedtls-net-contextcb/fd(^s: mbedtls-net-contextcb<s::S>): <> int
-  s.with-ptr(mbedtls-net-contextp/fd)
-
-pub inline extern mbedtls-net-context-ptrraw/set-fd(s: intptr_t, fd: int32): ()
-  c inline "((struct mbedtls_net_context*)#1)->fd = (int)#2"
-
-pub inline fun mbedtls-net-contextp/set-fd(s: mbedtls-net-contextp, fd: int): ()
-  s.mbedtls-net-context-ptrraw/set-fd(fd.int32)
-
-pub inline fun mbedtls-net-contextc/set-fd(^s: mbedtls-net-contextc, fd: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-net-contextp/set-fd(fd))
-
-pub inline fun mbedtls-net-contextcb/set-fd(^s: mbedtls-net-contextcb<s::S>, fd: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-net-contextp/set-fd(fd))
-
 // \brief           Entropy source state
 pub struct mbedtls-entropy-source-state
   // < The entropy source callback
@@ -36398,273 +32141,6 @@ pub inline fun mbedtls-entropy-contextc/set-private-source(^s: mbedtls-entropy-c
 pub inline fun mbedtls-entropy-contextcb/set-private-source(^s: mbedtls-entropy-contextcb<s::S>, private-source: c-array<mbedtls-entropy-source-state-c>): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-entropy-contextp/set-private-source(private-source))
 
-// PKCS #7 types
-type mbedtls-pkcs7-type
-  MBEDTLS_PKCS7_NONE
-  MBEDTLS_PKCS7_DATA
-  MBEDTLS_PKCS7_SIGNED_DATA
-  MBEDTLS_PKCS7_ENVELOPED_DATA
-  MBEDTLS_PKCS7_SIGNED_AND_ENVELOPED_DATA
-  MBEDTLS_PKCS7_DIGESTED_DATA
-  MBEDTLS_PKCS7_ENCRYPTED_DATA
-
-pub fun mbedtls-pkcs7-type/int(i: mbedtls-pkcs7-type): int32
-  match i
-    MBEDTLS_PKCS7_NONE -> 0.int32
-    MBEDTLS_PKCS7_DATA -> 1.int32
-    MBEDTLS_PKCS7_SIGNED_DATA -> 2.int32
-    MBEDTLS_PKCS7_ENVELOPED_DATA -> 3.int32
-    MBEDTLS_PKCS7_SIGNED_AND_ENVELOPED_DATA -> 4.int32
-    MBEDTLS_PKCS7_DIGESTED_DATA -> 5.int32
-    MBEDTLS_PKCS7_ENCRYPTED_DATA -> 6.int32
-
-pub fun int/mbedtls-pkcs7-type(i: int32): exn mbedtls-pkcs7-type
-  match i.int
-    0 -> MBEDTLS_PKCS7_NONE
-    1 -> MBEDTLS_PKCS7_DATA
-    2 -> MBEDTLS_PKCS7_SIGNED_DATA
-    3 -> MBEDTLS_PKCS7_ENVELOPED_DATA
-    4 -> MBEDTLS_PKCS7_SIGNED_AND_ENVELOPED_DATA
-    5 -> MBEDTLS_PKCS7_DIGESTED_DATA
-    6 -> MBEDTLS_PKCS7_ENCRYPTED_DATA
-
-// Structure holding PKCS #7 signer info
-pub struct mbedtls-pkcs7-signer-info
-  private-version: int
-  private-serial: koka-mbedtls-x509-buf
-  private-issuer: koka-mbedtls-x509-name
-  private-issuer-raw: koka-mbedtls-x509-buf
-  private-alg-identifier: koka-mbedtls-x509-buf
-  private-sig-alg-identifier: koka-mbedtls-x509-buf
-  private-sig: koka-mbedtls-x509-buf
-  private-next: mbedtls-pkcs7-signer-info-c
-
-pub type mbedtls-pkcs7-signer-info-c
-pub alias mbedtls-pkcs7-signer-infop = c-pointer<mbedtls-pkcs7-signer-info-c>
-pub alias mbedtls-pkcs7-signer-infoc = owned-c<mbedtls-pkcs7-signer-info-c>
-pub alias mbedtls-pkcs7-signer-infocb<s::S> = borrowed-c<s,mbedtls-pkcs7-signer-info-c>
-pub alias mbedtls-pkcs7-signer-infoca = owned-c<c-array<mbedtls-pkcs7-signer-info-c>>
-
-pub extern mbedtls-pkcs7-signer-info/size-of(c: c-null<mbedtls-pkcs7-signer-info-c>): int32
-  c inline "sizeof(struct mbedtls_pkcs7_signer_info)"
-
-pub fun mbedtls-pkcs7-signer-infoc(): mbedtls-pkcs7-signer-infoc
-  malloc(?size-of=mbedtls-pkcs7-signer-info/size-of)
-
-pub fun mbedtls-pkcs7-signer-infoc-calloc(): mbedtls-pkcs7-signer-infoc
-  malloc-c(?size-of=mbedtls-pkcs7-signer-info/size-of)
-
-pub fun mbedtls-pkcs7-signer-infoc-array(n: int): mbedtls-pkcs7-signer-infoca
-  malloc(n.int32, ?size-of=mbedtls-pkcs7-signer-info/size-of)
-
-pub fun mbedtls-pkcs7-signer-infoc-array-calloc(n: int): mbedtls-pkcs7-signer-infoca
-  malloc-c(n.int32, ?size-of=mbedtls-pkcs7-signer-info/size-of)
-
-pub inline extern mbedtls-pkcs7-signer-info-ptrraw/private-version(s: intptr_t): int32
-  c inline "(int)(((struct mbedtls_pkcs7_signer_info*)#1)->private_version)"
-
-pub inline fun mbedtls-pkcs7-signer-infop/private-version(s: mbedtls-pkcs7-signer-infop): <> int
-  s.cextern/c-pointer/ptr.mbedtls-pkcs7-signer-info-ptrraw/private-version.int
-
-pub inline fun mbedtls-pkcs7-signer-infoc/private-version(^s: mbedtls-pkcs7-signer-infoc): <> int
-  s.with-ptr(mbedtls-pkcs7-signer-infop/private-version)
-
-pub inline fun mbedtls-pkcs7-signer-infocb/private-version(^s: mbedtls-pkcs7-signer-infocb<s::S>): <> int
-  s.with-ptr(mbedtls-pkcs7-signer-infop/private-version)
-
-pub inline extern mbedtls-pkcs7-signer-info-ptrraw/set-private-version(s: intptr_t, private-version: int32): ()
-  c inline "((struct mbedtls_pkcs7_signer_info*)#1)->private_version = (int)#2"
-
-pub inline fun mbedtls-pkcs7-signer-infop/set-private-version(s: mbedtls-pkcs7-signer-infop, private-version: int): ()
-  s.mbedtls-pkcs7-signer-info-ptrraw/set-private-version(private-version.int32)
-
-pub inline fun mbedtls-pkcs7-signer-infoc/set-private-version(^s: mbedtls-pkcs7-signer-infoc, private-version: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-pkcs7-signer-infop/set-private-version(private-version))
-
-pub inline fun mbedtls-pkcs7-signer-infocb/set-private-version(^s: mbedtls-pkcs7-signer-infocb<s::S>, private-version: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-pkcs7-signer-infop/set-private-version(private-version))
-
-pub inline extern mbedtls-pkcs7-signer-info-ptrraw/private-next(s: intptr_t): c-pointer<mbedtls-pkcs7-signer-info-c>
-  c inline "(intptr_t)(((struct mbedtls_pkcs7_signer_info*)#1)->private_next)"
-
-pub inline fun mbedtls-pkcs7-signer-infop/private-next(s: mbedtls-pkcs7-signer-infop): <> c-pointer<mbedtls-pkcs7-signer-info-c>
-  s.cextern/c-pointer/ptr.mbedtls-pkcs7-signer-info-ptrraw/private-next
-
-pub inline fun mbedtls-pkcs7-signer-infoc/private-next(^s: mbedtls-pkcs7-signer-infoc): <> c-pointer<mbedtls-pkcs7-signer-info-c>
-  s.with-ptr(mbedtls-pkcs7-signer-infop/private-next)
-
-pub inline fun mbedtls-pkcs7-signer-infocb/private-next(^s: mbedtls-pkcs7-signer-infocb<s::S>): <> c-pointer<mbedtls-pkcs7-signer-info-c>
-  s.with-ptr(mbedtls-pkcs7-signer-infop/private-next)
-
-pub inline extern mbedtls-pkcs7-signer-info-ptrraw/set-private-next(s: intptr_t, private-next: c-pointer<mbedtls-pkcs7-signer-info-c>): ()
-  c inline "((struct mbedtls_pkcs7_signer_info*)#1)->private_next = (struct mbedtls_pkcs7_signer_info*)#2"
-
-pub inline fun mbedtls-pkcs7-signer-infop/set-private-next(s: mbedtls-pkcs7-signer-infop, private-next: c-pointer<mbedtls-pkcs7-signer-info-c>): ()
-  s.mbedtls-pkcs7-signer-info-ptrraw/set-private-next(private-next)
-
-pub inline fun mbedtls-pkcs7-signer-infoc/set-private-next(^s: mbedtls-pkcs7-signer-infoc, private-next: c-pointer<mbedtls-pkcs7-signer-info-c>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-pkcs7-signer-infop/set-private-next(private-next))
-
-pub inline fun mbedtls-pkcs7-signer-infocb/set-private-next(^s: mbedtls-pkcs7-signer-infocb<s::S>, private-next: c-pointer<mbedtls-pkcs7-signer-info-c>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-pkcs7-signer-infop/set-private-next(private-next))
-
-// Structure holding the signed data section
-pub struct mbedtls-pkcs7-signed-data
-  private-version: int
-  private-digest-alg-identifiers: koka-mbedtls-pkcs7-buf
-  private-no-of-certs: int
-  private-certs: mbedtls-x509-crt-c
-  private-no-of-crls: int
-  private-crl: mbedtls-x509-crl-c
-  private-no-of-signers: int
-  private-signers: mbedtls-pkcs7-signer-info-c
-
-pub type mbedtls-pkcs7-signed-data-c
-pub alias mbedtls-pkcs7-signed-datap = c-pointer<mbedtls-pkcs7-signed-data-c>
-pub alias mbedtls-pkcs7-signed-datac = owned-c<mbedtls-pkcs7-signed-data-c>
-pub alias mbedtls-pkcs7-signed-datacb<s::S> = borrowed-c<s,mbedtls-pkcs7-signed-data-c>
-pub alias mbedtls-pkcs7-signed-dataca = owned-c<c-array<mbedtls-pkcs7-signed-data-c>>
-
-pub extern mbedtls-pkcs7-signed-data/size-of(c: c-null<mbedtls-pkcs7-signed-data-c>): int32
-  c inline "sizeof(struct mbedtls_pkcs7_signed_data)"
-
-pub fun mbedtls-pkcs7-signed-datac(): mbedtls-pkcs7-signed-datac
-  malloc(?size-of=mbedtls-pkcs7-signed-data/size-of)
-
-pub fun mbedtls-pkcs7-signed-datac-calloc(): mbedtls-pkcs7-signed-datac
-  malloc-c(?size-of=mbedtls-pkcs7-signed-data/size-of)
-
-pub fun mbedtls-pkcs7-signed-datac-array(n: int): mbedtls-pkcs7-signed-dataca
-  malloc(n.int32, ?size-of=mbedtls-pkcs7-signed-data/size-of)
-
-pub fun mbedtls-pkcs7-signed-datac-array-calloc(n: int): mbedtls-pkcs7-signed-dataca
-  malloc-c(n.int32, ?size-of=mbedtls-pkcs7-signed-data/size-of)
-
-pub inline extern mbedtls-pkcs7-signed-data-ptrraw/private-version(s: intptr_t): int32
-  c inline "(int)(((struct mbedtls_pkcs7_signed_data*)#1)->private_version)"
-
-pub inline fun mbedtls-pkcs7-signed-datap/private-version(s: mbedtls-pkcs7-signed-datap): <> int
-  s.cextern/c-pointer/ptr.mbedtls-pkcs7-signed-data-ptrraw/private-version.int
-
-pub inline fun mbedtls-pkcs7-signed-datac/private-version(^s: mbedtls-pkcs7-signed-datac): <> int
-  s.with-ptr(mbedtls-pkcs7-signed-datap/private-version)
-
-pub inline fun mbedtls-pkcs7-signed-datacb/private-version(^s: mbedtls-pkcs7-signed-datacb<s::S>): <> int
-  s.with-ptr(mbedtls-pkcs7-signed-datap/private-version)
-
-pub inline extern mbedtls-pkcs7-signed-data-ptrraw/set-private-version(s: intptr_t, private-version: int32): ()
-  c inline "((struct mbedtls_pkcs7_signed_data*)#1)->private_version = (int)#2"
-
-pub inline fun mbedtls-pkcs7-signed-datap/set-private-version(s: mbedtls-pkcs7-signed-datap, private-version: int): ()
-  s.mbedtls-pkcs7-signed-data-ptrraw/set-private-version(private-version.int32)
-
-pub inline fun mbedtls-pkcs7-signed-datac/set-private-version(^s: mbedtls-pkcs7-signed-datac, private-version: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-pkcs7-signed-datap/set-private-version(private-version))
-
-pub inline fun mbedtls-pkcs7-signed-datacb/set-private-version(^s: mbedtls-pkcs7-signed-datacb<s::S>, private-version: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-pkcs7-signed-datap/set-private-version(private-version))
-
-pub inline extern mbedtls-pkcs7-signed-data-ptrraw/private-no-of-certs(s: intptr_t): int32
-  c inline "(int)(((struct mbedtls_pkcs7_signed_data*)#1)->private_no_of_certs)"
-
-pub inline fun mbedtls-pkcs7-signed-datap/private-no-of-certs(s: mbedtls-pkcs7-signed-datap): <> int
-  s.cextern/c-pointer/ptr.mbedtls-pkcs7-signed-data-ptrraw/private-no-of-certs.int
-
-pub inline fun mbedtls-pkcs7-signed-datac/private-no-of-certs(^s: mbedtls-pkcs7-signed-datac): <> int
-  s.with-ptr(mbedtls-pkcs7-signed-datap/private-no-of-certs)
-
-pub inline fun mbedtls-pkcs7-signed-datacb/private-no-of-certs(^s: mbedtls-pkcs7-signed-datacb<s::S>): <> int
-  s.with-ptr(mbedtls-pkcs7-signed-datap/private-no-of-certs)
-
-pub inline extern mbedtls-pkcs7-signed-data-ptrraw/set-private-no-of-certs(s: intptr_t, private-no-of-certs: int32): ()
-  c inline "((struct mbedtls_pkcs7_signed_data*)#1)->private_no_of_certs = (int)#2"
-
-pub inline fun mbedtls-pkcs7-signed-datap/set-private-no-of-certs(s: mbedtls-pkcs7-signed-datap, private-no-of-certs: int): ()
-  s.mbedtls-pkcs7-signed-data-ptrraw/set-private-no-of-certs(private-no-of-certs.int32)
-
-pub inline fun mbedtls-pkcs7-signed-datac/set-private-no-of-certs(^s: mbedtls-pkcs7-signed-datac, private-no-of-certs: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-pkcs7-signed-datap/set-private-no-of-certs(private-no-of-certs))
-
-pub inline fun mbedtls-pkcs7-signed-datacb/set-private-no-of-certs(^s: mbedtls-pkcs7-signed-datacb<s::S>, private-no-of-certs: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-pkcs7-signed-datap/set-private-no-of-certs(private-no-of-certs))
-
-pub inline extern mbedtls-pkcs7-signed-data-ptrraw/private-no-of-crls(s: intptr_t): int32
-  c inline "(int)(((struct mbedtls_pkcs7_signed_data*)#1)->private_no_of_crls)"
-
-pub inline fun mbedtls-pkcs7-signed-datap/private-no-of-crls(s: mbedtls-pkcs7-signed-datap): <> int
-  s.cextern/c-pointer/ptr.mbedtls-pkcs7-signed-data-ptrraw/private-no-of-crls.int
-
-pub inline fun mbedtls-pkcs7-signed-datac/private-no-of-crls(^s: mbedtls-pkcs7-signed-datac): <> int
-  s.with-ptr(mbedtls-pkcs7-signed-datap/private-no-of-crls)
-
-pub inline fun mbedtls-pkcs7-signed-datacb/private-no-of-crls(^s: mbedtls-pkcs7-signed-datacb<s::S>): <> int
-  s.with-ptr(mbedtls-pkcs7-signed-datap/private-no-of-crls)
-
-pub inline extern mbedtls-pkcs7-signed-data-ptrraw/set-private-no-of-crls(s: intptr_t, private-no-of-crls: int32): ()
-  c inline "((struct mbedtls_pkcs7_signed_data*)#1)->private_no_of_crls = (int)#2"
-
-pub inline fun mbedtls-pkcs7-signed-datap/set-private-no-of-crls(s: mbedtls-pkcs7-signed-datap, private-no-of-crls: int): ()
-  s.mbedtls-pkcs7-signed-data-ptrraw/set-private-no-of-crls(private-no-of-crls.int32)
-
-pub inline fun mbedtls-pkcs7-signed-datac/set-private-no-of-crls(^s: mbedtls-pkcs7-signed-datac, private-no-of-crls: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-pkcs7-signed-datap/set-private-no-of-crls(private-no-of-crls))
-
-pub inline fun mbedtls-pkcs7-signed-datacb/set-private-no-of-crls(^s: mbedtls-pkcs7-signed-datacb<s::S>, private-no-of-crls: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-pkcs7-signed-datap/set-private-no-of-crls(private-no-of-crls))
-
-pub inline extern mbedtls-pkcs7-signed-data-ptrraw/private-no-of-signers(s: intptr_t): int32
-  c inline "(int)(((struct mbedtls_pkcs7_signed_data*)#1)->private_no_of_signers)"
-
-pub inline fun mbedtls-pkcs7-signed-datap/private-no-of-signers(s: mbedtls-pkcs7-signed-datap): <> int
-  s.cextern/c-pointer/ptr.mbedtls-pkcs7-signed-data-ptrraw/private-no-of-signers.int
-
-pub inline fun mbedtls-pkcs7-signed-datac/private-no-of-signers(^s: mbedtls-pkcs7-signed-datac): <> int
-  s.with-ptr(mbedtls-pkcs7-signed-datap/private-no-of-signers)
-
-pub inline fun mbedtls-pkcs7-signed-datacb/private-no-of-signers(^s: mbedtls-pkcs7-signed-datacb<s::S>): <> int
-  s.with-ptr(mbedtls-pkcs7-signed-datap/private-no-of-signers)
-
-pub inline extern mbedtls-pkcs7-signed-data-ptrraw/set-private-no-of-signers(s: intptr_t, private-no-of-signers: int32): ()
-  c inline "((struct mbedtls_pkcs7_signed_data*)#1)->private_no_of_signers = (int)#2"
-
-pub inline fun mbedtls-pkcs7-signed-datap/set-private-no-of-signers(s: mbedtls-pkcs7-signed-datap, private-no-of-signers: int): ()
-  s.mbedtls-pkcs7-signed-data-ptrraw/set-private-no-of-signers(private-no-of-signers.int32)
-
-pub inline fun mbedtls-pkcs7-signed-datac/set-private-no-of-signers(^s: mbedtls-pkcs7-signed-datac, private-no-of-signers: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-pkcs7-signed-datap/set-private-no-of-signers(private-no-of-signers))
-
-pub inline fun mbedtls-pkcs7-signed-datacb/set-private-no-of-signers(^s: mbedtls-pkcs7-signed-datacb<s::S>, private-no-of-signers: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-pkcs7-signed-datap/set-private-no-of-signers(private-no-of-signers))
-
-// Type-length-value structure that allows for ASN.1 using DER.
-alias mbedtls-pkcs7-buf = mbedtls-asn1-buf-c
-alias koka-mbedtls-pkcs7-buf = mbedtls-asn1-buf
-// Structure holding PKCS #7 structure, only signed data for now
-pub value struct mbedtls-pkcs7
-  private-raw: koka-mbedtls-pkcs7-buf
-  private-signed-data: mbedtls-pkcs7-signed-data-c
-
-pub type mbedtls-pkcs7-c
-pub alias mbedtls-pkcs7p = c-pointer<mbedtls-pkcs7-c>
-pub alias mbedtls-pkcs7c = owned-c<mbedtls-pkcs7-c>
-pub alias mbedtls-pkcs7cb<s::S> = borrowed-c<s,mbedtls-pkcs7-c>
-pub alias mbedtls-pkcs7ca = owned-c<c-array<mbedtls-pkcs7-c>>
-
-pub extern mbedtls-pkcs7/size-of(c: c-null<mbedtls-pkcs7-c>): int32
-  c inline "sizeof(struct mbedtls_pkcs7)"
-
-pub fun mbedtls-pkcs7c(): mbedtls-pkcs7c
-  malloc(?size-of=mbedtls-pkcs7/size-of)
-
-pub fun mbedtls-pkcs7c-calloc(): mbedtls-pkcs7c
-  malloc-c(?size-of=mbedtls-pkcs7/size-of)
-
-pub fun mbedtls-pkcs7c-array(n: int): mbedtls-pkcs7ca
-  malloc(n.int32, ?size-of=mbedtls-pkcs7/size-of)
-
-pub fun mbedtls-pkcs7c-array-calloc(n: int): mbedtls-pkcs7ca
-  malloc-c(n.int32, ?size-of=mbedtls-pkcs7/size-of)
-
 // \brief The AES context-type definition.
 pub struct mbedtls-aes-context
 pub type mbedtls-aes-context-c
@@ -36789,298 +32265,6 @@ pub fun mbedtls-aes-xts-contextc-array(n: int): mbedtls-aes-xts-contextca
 
 pub fun mbedtls-aes-xts-contextc-array-calloc(n: int): mbedtls-aes-xts-contextca
   malloc-c(n.int32, ?size-of=mbedtls-aes-xts-context/size-of)
-
-// \brief The ARIA context-type definition.
-pub struct mbedtls-aria-context
-pub type mbedtls-aria-context-c
-pub alias mbedtls-aria-contextp = c-pointer<mbedtls-aria-context-c>
-pub alias mbedtls-aria-contextc<s::S> = owned-c<mbedtls-aria-context-c>
-pub alias mbedtls-aria-contextcb<s::S> = borrowed-c<s,mbedtls-aria-context-c>
-pub alias mbedtls-aria-contextca<s::S> = owned-c<c-array<mbedtls-aria-context-c>>
-
-pub extern mbedtls-aria-context/size-of(c: c-null<mbedtls-aria-context-c>): int32
-  c inline "sizeof(struct mbedtls_aria_context)"
-
-pub fun mbedtls-aria-contextc(): mbedtls-aria-contextc<s::S>
-  malloc(?size-of=mbedtls-aria-context/size-of)
-
-pub fun mbedtls-aria-contextc-calloc(): mbedtls-aria-contextc<s::S>
-  malloc-c(?size-of=mbedtls-aria-context/size-of)
-
-pub fun mbedtls-aria-contextc-array(n: int): mbedtls-aria-contextca<s::S>
-  malloc(n.int32, ?size-of=mbedtls-aria-context/size-of)
-
-pub fun mbedtls-aria-contextc-array-calloc(n: int): mbedtls-aria-contextca<s::S>
-  malloc-c(n.int32, ?size-of=mbedtls-aria-context/size-of)
-
-pub inline extern mbedtls-aria-context-ptrraw/private-nr(s: intptr_t): int8
-  c inline "(unsigned char)(((struct mbedtls_aria_context*)#1)->private_nr)"
-
-pub inline fun mbedtls-aria-contextp/private-nr(s: mbedtls-aria-contextp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-aria-context-ptrraw/private-nr.int
-
-pub inline fun mbedtls-aria-contextc/private-nr(^s: mbedtls-aria-contextc<s::S>): <> int
-  s.with-ptr(mbedtls-aria-contextp/private-nr)
-
-pub inline fun mbedtls-aria-contextcb/private-nr(^s: mbedtls-aria-contextcb<s::S>): <> int
-  s.with-ptr(mbedtls-aria-contextp/private-nr)
-
-pub inline extern mbedtls-aria-context-ptrraw/set-private-nr(s: intptr_t, private-nr: int8): ()
-  c inline "((struct mbedtls_aria_context*)#1)->private_nr = (unsigned char)#2"
-
-pub inline fun mbedtls-aria-contextp/set-private-nr(s: mbedtls-aria-contextp, private-nr: int): ()
-  s.mbedtls-aria-context-ptrraw/set-private-nr(private-nr.int8)
-
-pub inline fun mbedtls-aria-contextc/set-private-nr(^s: mbedtls-aria-contextc<s::S>, private-nr: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-aria-contextp/set-private-nr(private-nr))
-
-pub inline fun mbedtls-aria-contextcb/set-private-nr(^s: mbedtls-aria-contextcb<s::S>, private-nr: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-aria-contextp/set-private-nr(private-nr))
-
-pub inline extern mbedtls-aria-context-ptrraw/private-rk(s: intptr_t): c-pointer<c-array<int>>
-  c inline "(intptr_t)(((struct mbedtls_aria_context*)#1)->private_rk)"
-
-pub inline fun mbedtls-aria-contextp/private-rk(s: mbedtls-aria-contextp): <> c-array<c-array<int>>
-  s.cextern/c-pointer/ptr.mbedtls-aria-context-ptrraw/private-rk.cextern/ptr/carray
-
-pub inline fun mbedtls-aria-contextc/private-rk(^s: mbedtls-aria-contextc<s::S>): <> c-array<c-array<int>>
-  s.with-ptr(mbedtls-aria-contextp/private-rk)
-
-pub inline fun mbedtls-aria-contextcb/private-rk(^s: mbedtls-aria-contextcb<s::S>): <> c-array<c-array<int>>
-  s.with-ptr(mbedtls-aria-contextp/private-rk)
-
-pub inline extern mbedtls-aria-context-ptrraw/set-private-rk(s: intptr_t, private-rk: c-pointer<c-array<int>>): ()
-  c inline "((struct mbedtls_aria_context*)#1)->private_rk = (int32_t**)#2"
-
-pub inline fun mbedtls-aria-contextp/set-private-rk(s: mbedtls-aria-contextp, private-rk: c-array<c-array<int>>): ()
-  s.mbedtls-aria-context-ptrraw/set-private-rk(private-rk.cextern/carray/ptr)
-
-pub inline fun mbedtls-aria-contextc/set-private-rk(^s: mbedtls-aria-contextc<s::S>, private-rk: c-array<c-array<int>>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-aria-contextp/set-private-rk(private-rk))
-
-pub inline fun mbedtls-aria-contextcb/set-private-rk(^s: mbedtls-aria-contextcb<s::S>, private-rk: c-array<c-array<int>>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-aria-contextp/set-private-rk(private-rk))
-
-// \brief          CAMELLIA context structure
-pub struct mbedtls-camellia-context
-pub type mbedtls-camellia-context-c
-pub alias mbedtls-camellia-contextp = c-pointer<mbedtls-camellia-context-c>
-pub alias mbedtls-camellia-contextc<s::S> = owned-c<mbedtls-camellia-context-c>
-pub alias mbedtls-camellia-contextcb<s::S> = borrowed-c<s,mbedtls-camellia-context-c>
-pub alias mbedtls-camellia-contextca<s::S> = owned-c<c-array<mbedtls-camellia-context-c>>
-
-pub extern mbedtls-camellia-context/size-of(c: c-null<mbedtls-camellia-context-c>): int32
-  c inline "sizeof(struct mbedtls_camellia_context)"
-
-pub fun mbedtls-camellia-contextc(): mbedtls-camellia-contextc<s::S>
-  malloc(?size-of=mbedtls-camellia-context/size-of)
-
-pub fun mbedtls-camellia-contextc-calloc(): mbedtls-camellia-contextc<s::S>
-  malloc-c(?size-of=mbedtls-camellia-context/size-of)
-
-pub fun mbedtls-camellia-contextc-array(n: int): mbedtls-camellia-contextca<s::S>
-  malloc(n.int32, ?size-of=mbedtls-camellia-context/size-of)
-
-pub fun mbedtls-camellia-contextc-array-calloc(n: int): mbedtls-camellia-contextca<s::S>
-  malloc-c(n.int32, ?size-of=mbedtls-camellia-context/size-of)
-
-pub inline extern mbedtls-camellia-context-ptrraw/private-nr(s: intptr_t): int32
-  c inline "(int)(((struct mbedtls_camellia_context*)#1)->private_nr)"
-
-pub inline fun mbedtls-camellia-contextp/private-nr(s: mbedtls-camellia-contextp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-camellia-context-ptrraw/private-nr.int
-
-pub inline fun mbedtls-camellia-contextc/private-nr(^s: mbedtls-camellia-contextc<s::S>): <> int
-  s.with-ptr(mbedtls-camellia-contextp/private-nr)
-
-pub inline fun mbedtls-camellia-contextcb/private-nr(^s: mbedtls-camellia-contextcb<s::S>): <> int
-  s.with-ptr(mbedtls-camellia-contextp/private-nr)
-
-pub inline extern mbedtls-camellia-context-ptrraw/set-private-nr(s: intptr_t, private-nr: int32): ()
-  c inline "((struct mbedtls_camellia_context*)#1)->private_nr = (int)#2"
-
-pub inline fun mbedtls-camellia-contextp/set-private-nr(s: mbedtls-camellia-contextp, private-nr: int): ()
-  s.mbedtls-camellia-context-ptrraw/set-private-nr(private-nr.int32)
-
-pub inline fun mbedtls-camellia-contextc/set-private-nr(^s: mbedtls-camellia-contextc<s::S>, private-nr: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-camellia-contextp/set-private-nr(private-nr))
-
-pub inline fun mbedtls-camellia-contextcb/set-private-nr(^s: mbedtls-camellia-contextcb<s::S>, private-nr: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-camellia-contextp/set-private-nr(private-nr))
-
-pub inline extern mbedtls-camellia-context-ptrraw/private-rk(s: intptr_t): c-pointer<int>
-  c inline "(intptr_t)(((struct mbedtls_camellia_context*)#1)->private_rk)"
-
-pub inline fun mbedtls-camellia-contextp/private-rk(s: mbedtls-camellia-contextp): <> c-array<int>
-  s.cextern/c-pointer/ptr.mbedtls-camellia-context-ptrraw/private-rk.cextern/ptr/carray
-
-pub inline fun mbedtls-camellia-contextc/private-rk(^s: mbedtls-camellia-contextc<s::S>): <> c-array<int>
-  s.with-ptr(mbedtls-camellia-contextp/private-rk)
-
-pub inline fun mbedtls-camellia-contextcb/private-rk(^s: mbedtls-camellia-contextcb<s::S>): <> c-array<int>
-  s.with-ptr(mbedtls-camellia-contextp/private-rk)
-
-pub inline extern mbedtls-camellia-context-ptrraw/set-private-rk(s: intptr_t, private-rk: c-pointer<int>): ()
-  c inline "((struct mbedtls_camellia_context*)#1)->private_rk = (int32_t*)#2"
-
-pub inline fun mbedtls-camellia-contextp/set-private-rk(s: mbedtls-camellia-contextp, private-rk: c-array<int>): ()
-  s.mbedtls-camellia-context-ptrraw/set-private-rk(private-rk.cextern/carray/ptr)
-
-pub inline fun mbedtls-camellia-contextc/set-private-rk(^s: mbedtls-camellia-contextc<s::S>, private-rk: c-array<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-camellia-contextp/set-private-rk(private-rk))
-
-pub inline fun mbedtls-camellia-contextcb/set-private-rk(^s: mbedtls-camellia-contextcb<s::S>, private-rk: c-array<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-camellia-contextp/set-private-rk(private-rk))
-
-type mbedtls-block-cipher-id-t
-  // < Unset.
-  MBEDTLS_BLOCK_CIPHER_ID_NONE
-  // < The AES cipher.
-  MBEDTLS_BLOCK_CIPHER_ID_AES
-  // < The Camellia cipher.
-  MBEDTLS_BLOCK_CIPHER_ID_CAMELLIA
-  // < The Aria cipher.
-  MBEDTLS_BLOCK_CIPHER_ID_ARIA
-
-pub fun mbedtls-block-cipher-id-t/int(i: mbedtls-block-cipher-id-t): int32
-  match i
-    MBEDTLS_BLOCK_CIPHER_ID_NONE -> 0.int32
-    MBEDTLS_BLOCK_CIPHER_ID_AES -> 1.int32
-    MBEDTLS_BLOCK_CIPHER_ID_CAMELLIA -> 2.int32
-    MBEDTLS_BLOCK_CIPHER_ID_ARIA -> 3.int32
-
-pub fun int/mbedtls-block-cipher-id-t(i: int32): exn mbedtls-block-cipher-id-t
-  match i.int
-    0 -> MBEDTLS_BLOCK_CIPHER_ID_NONE
-    1 -> MBEDTLS_BLOCK_CIPHER_ID_AES
-    2 -> MBEDTLS_BLOCK_CIPHER_ID_CAMELLIA
-    3 -> MBEDTLS_BLOCK_CIPHER_ID_ARIA
-
-// Used internally to indicate whether a context uses legacy or PSA.
-// 
-// Internal use only.
-type mbedtls-block-cipher-engine-t
-  MBEDTLS_BLOCK_CIPHER_ENGINE_LEGACY
-  MBEDTLS_BLOCK_CIPHER_ENGINE_PSA
-
-pub fun mbedtls-block-cipher-engine-t/int(i: mbedtls-block-cipher-engine-t): int32
-  match i
-    MBEDTLS_BLOCK_CIPHER_ENGINE_LEGACY -> 0.int32
-    MBEDTLS_BLOCK_CIPHER_ENGINE_PSA -> 1.int32
-
-pub fun int/mbedtls-block-cipher-engine-t(i: int32): exn mbedtls-block-cipher-engine-t
-  match i.int
-    0 -> MBEDTLS_BLOCK_CIPHER_ENGINE_LEGACY
-    1 -> MBEDTLS_BLOCK_CIPHER_ENGINE_PSA
-
-pub value struct mbedtls-block-cipher-context-t
-  private-id: int
-  private-ctx: unnamed-union11-c
-
-pub type mbedtls-block-cipher-context-t-c
-pub alias mbedtls-block-cipher-context-tp = c-pointer<mbedtls-block-cipher-context-t-c>
-pub alias mbedtls-block-cipher-context-tc = owned-c<mbedtls-block-cipher-context-t-c>
-pub alias mbedtls-block-cipher-context-tcb<s::S> = borrowed-c<s,mbedtls-block-cipher-context-t-c>
-pub alias mbedtls-block-cipher-context-tca = owned-c<c-array<mbedtls-block-cipher-context-t-c>>
-
-pub extern mbedtls-block-cipher-context-t/size-of(c: c-null<mbedtls-block-cipher-context-t-c>): int32
-  c inline "sizeof(mbedtls_block_cipher_context_t)"
-
-pub fun mbedtls-block-cipher-context-tc(): mbedtls-block-cipher-context-tc
-  malloc(?size-of=mbedtls-block-cipher-context-t/size-of)
-
-pub fun mbedtls-block-cipher-context-tc-calloc(): mbedtls-block-cipher-context-tc
-  malloc-c(?size-of=mbedtls-block-cipher-context-t/size-of)
-
-pub fun mbedtls-block-cipher-context-tc-array(n: int): mbedtls-block-cipher-context-tca
-  malloc(n.int32, ?size-of=mbedtls-block-cipher-context-t/size-of)
-
-pub fun mbedtls-block-cipher-context-tc-array-calloc(n: int): mbedtls-block-cipher-context-tca
-  malloc-c(n.int32, ?size-of=mbedtls-block-cipher-context-t/size-of)
-
-pub inline extern mbedtls-block-cipher-context-t-ptrraw/private-id(s: intptr_t): int32
-  c inline "(int32_t)(((mbedtls_block_cipher_context_t*)#1)->private_id)"
-
-pub inline fun mbedtls-block-cipher-context-tp/private-id(s: mbedtls-block-cipher-context-tp): <exn> mbedtls-block-cipher-id-t
-  s.cextern/c-pointer/ptr.mbedtls-block-cipher-context-t-ptrraw/private-id.int/mbedtls-block-cipher-id-t
-
-pub inline fun mbedtls-block-cipher-context-tc/private-id(^s: mbedtls-block-cipher-context-tc): <exn> mbedtls-block-cipher-id-t
-  s.with-ptr(mbedtls-block-cipher-context-tp/private-id)
-
-pub inline fun mbedtls-block-cipher-context-tcb/private-id(^s: mbedtls-block-cipher-context-tcb<s::S>): <exn> mbedtls-block-cipher-id-t
-  s.with-ptr(mbedtls-block-cipher-context-tp/private-id)
-
-pub inline extern mbedtls-block-cipher-context-t-ptrraw/set-private-id(s: intptr_t, private-id: int32): ()
-  c inline "((mbedtls_block_cipher_context_t*)#1)->private_id = (int32_t)#2"
-
-pub inline fun mbedtls-block-cipher-context-tp/set-private-id(s: mbedtls-block-cipher-context-tp, private-id: mbedtls-block-cipher-id-t): ()
-  s.mbedtls-block-cipher-context-t-ptrraw/set-private-id(private-id.mbedtls-block-cipher-id-t/int)
-
-pub inline fun mbedtls-block-cipher-context-tc/set-private-id(^s: mbedtls-block-cipher-context-tc, private-id: mbedtls-block-cipher-id-t): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-block-cipher-context-tp/set-private-id(private-id))
-
-pub inline fun mbedtls-block-cipher-context-tcb/set-private-id(^s: mbedtls-block-cipher-context-tcb<s::S>, private-id: mbedtls-block-cipher-id-t): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-block-cipher-context-tp/set-private-id(private-id))
-
-pub struct unnamed-union11
-pub type unnamed-union11-c
-pub alias unnamed-union11p = c-pointer<unnamed-union11-c>
-pub alias unnamed-union11c = owned-c<unnamed-union11-c>
-pub alias unnamed-union11cb<s::S> = borrowed-c<s,unnamed-union11-c>
-pub alias unnamed-union11ca = owned-c<c-array<unnamed-union11-c>>
-
-// \brief          Context for the default cookie functions.
-pub value struct mbedtls-ssl-cookie-ctx
-  // !< context for the HMAC portion
-  private-hmac-ctx: mbedtls-md-context-t-c
-  // !< timeout delay, in seconds if HAVE_TIME,
-  // or in number of tickets issued
-  private-timeout: int
-
-pub type mbedtls-ssl-cookie-ctx-c
-pub alias mbedtls-ssl-cookie-ctxp = c-pointer<mbedtls-ssl-cookie-ctx-c>
-pub alias mbedtls-ssl-cookie-ctxc = owned-c<mbedtls-ssl-cookie-ctx-c>
-pub alias mbedtls-ssl-cookie-ctxcb<s::S> = borrowed-c<s,mbedtls-ssl-cookie-ctx-c>
-pub alias mbedtls-ssl-cookie-ctxca = owned-c<c-array<mbedtls-ssl-cookie-ctx-c>>
-
-pub extern mbedtls-ssl-cookie-ctx/size-of(c: c-null<mbedtls-ssl-cookie-ctx-c>): int32
-  c inline "sizeof(struct mbedtls_ssl_cookie_ctx)"
-
-pub fun mbedtls-ssl-cookie-ctxc(): mbedtls-ssl-cookie-ctxc
-  malloc(?size-of=mbedtls-ssl-cookie-ctx/size-of)
-
-pub fun mbedtls-ssl-cookie-ctxc-calloc(): mbedtls-ssl-cookie-ctxc
-  malloc-c(?size-of=mbedtls-ssl-cookie-ctx/size-of)
-
-pub fun mbedtls-ssl-cookie-ctxc-array(n: int): mbedtls-ssl-cookie-ctxca
-  malloc(n.int32, ?size-of=mbedtls-ssl-cookie-ctx/size-of)
-
-pub fun mbedtls-ssl-cookie-ctxc-array-calloc(n: int): mbedtls-ssl-cookie-ctxca
-  malloc-c(n.int32, ?size-of=mbedtls-ssl-cookie-ctx/size-of)
-
-pub inline extern mbedtls-ssl-cookie-ctx-ptrraw/private-timeout(s: intptr_t): int64
-  c inline "(unsigned long)(((struct mbedtls_ssl_cookie_ctx*)#1)->private_timeout)"
-
-pub inline fun mbedtls-ssl-cookie-ctxp/private-timeout(s: mbedtls-ssl-cookie-ctxp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-ssl-cookie-ctx-ptrraw/private-timeout.int
-
-pub inline fun mbedtls-ssl-cookie-ctxc/private-timeout(^s: mbedtls-ssl-cookie-ctxc): <> int
-  s.with-ptr(mbedtls-ssl-cookie-ctxp/private-timeout)
-
-pub inline fun mbedtls-ssl-cookie-ctxcb/private-timeout(^s: mbedtls-ssl-cookie-ctxcb<s::S>): <> int
-  s.with-ptr(mbedtls-ssl-cookie-ctxp/private-timeout)
-
-pub inline extern mbedtls-ssl-cookie-ctx-ptrraw/set-private-timeout(s: intptr_t, private-timeout: int64): ()
-  c inline "((struct mbedtls_ssl_cookie_ctx*)#1)->private_timeout = (unsigned long)#2"
-
-pub inline fun mbedtls-ssl-cookie-ctxp/set-private-timeout(s: mbedtls-ssl-cookie-ctxp, private-timeout: int): ()
-  s.mbedtls-ssl-cookie-ctx-ptrraw/set-private-timeout(private-timeout.int64)
-
-pub inline fun mbedtls-ssl-cookie-ctxc/set-private-timeout(^s: mbedtls-ssl-cookie-ctxc, private-timeout: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-cookie-ctxp/set-private-timeout(private-timeout))
-
-pub inline fun mbedtls-ssl-cookie-ctxcb/set-private-timeout(^s: mbedtls-ssl-cookie-ctxcb<s::S>, private-timeout: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-cookie-ctxp/set-private-timeout(private-timeout))
 
 // \brief          The CTR_DRBG context structure.
 pub struct mbedtls-ctr-drbg-context
@@ -37272,1274 +32456,6 @@ pub inline fun mbedtls-ctr-drbg-contextc/set-private-p-entropy(^s: mbedtls-ctr-d
 
 pub inline fun mbedtls-ctr-drbg-contextcb/set-private-p-entropy(^s: mbedtls-ctr-drbg-contextcb<s::S>, private-p-entropy: c-pointer<()>): ()
   s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ctr-drbg-contextp/set-private-p-entropy(private-p-entropy))
-
-// \brief          DES context structure
-// 
-// \warning        DES/3DES are considered weak ciphers and their use constitutes a
-// security risk. We recommend considering stronger ciphers
-// instead.
-pub struct mbedtls-des-context
-pub type mbedtls-des-context-c
-pub alias mbedtls-des-contextp = c-pointer<mbedtls-des-context-c>
-pub alias mbedtls-des-contextc<s::S> = owned-c<mbedtls-des-context-c>
-pub alias mbedtls-des-contextcb<s::S> = borrowed-c<s,mbedtls-des-context-c>
-pub alias mbedtls-des-contextca<s::S> = owned-c<c-array<mbedtls-des-context-c>>
-
-pub extern mbedtls-des-context/size-of(c: c-null<mbedtls-des-context-c>): int32
-  c inline "sizeof(struct mbedtls_des_context)"
-
-pub fun mbedtls-des-contextc(): mbedtls-des-contextc<s::S>
-  malloc(?size-of=mbedtls-des-context/size-of)
-
-pub fun mbedtls-des-contextc-calloc(): mbedtls-des-contextc<s::S>
-  malloc-c(?size-of=mbedtls-des-context/size-of)
-
-pub fun mbedtls-des-contextc-array(n: int): mbedtls-des-contextca<s::S>
-  malloc(n.int32, ?size-of=mbedtls-des-context/size-of)
-
-pub fun mbedtls-des-contextc-array-calloc(n: int): mbedtls-des-contextca<s::S>
-  malloc-c(n.int32, ?size-of=mbedtls-des-context/size-of)
-
-pub inline extern mbedtls-des-context-ptrraw/private-sk(s: intptr_t): c-pointer<int>
-  c inline "(intptr_t)(((struct mbedtls_des_context*)#1)->private_sk)"
-
-pub inline fun mbedtls-des-contextp/private-sk(s: mbedtls-des-contextp): <> c-array<int>
-  s.cextern/c-pointer/ptr.mbedtls-des-context-ptrraw/private-sk.cextern/ptr/carray
-
-pub inline fun mbedtls-des-contextc/private-sk(^s: mbedtls-des-contextc<s::S>): <> c-array<int>
-  s.with-ptr(mbedtls-des-contextp/private-sk)
-
-pub inline fun mbedtls-des-contextcb/private-sk(^s: mbedtls-des-contextcb<s::S>): <> c-array<int>
-  s.with-ptr(mbedtls-des-contextp/private-sk)
-
-pub inline extern mbedtls-des-context-ptrraw/set-private-sk(s: intptr_t, private-sk: c-pointer<int>): ()
-  c inline "((struct mbedtls_des_context*)#1)->private_sk = (int32_t*)#2"
-
-pub inline fun mbedtls-des-contextp/set-private-sk(s: mbedtls-des-contextp, private-sk: c-array<int>): ()
-  s.mbedtls-des-context-ptrraw/set-private-sk(private-sk.cextern/carray/ptr)
-
-pub inline fun mbedtls-des-contextc/set-private-sk(^s: mbedtls-des-contextc<s::S>, private-sk: c-array<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-des-contextp/set-private-sk(private-sk))
-
-pub inline fun mbedtls-des-contextcb/set-private-sk(^s: mbedtls-des-contextcb<s::S>, private-sk: c-array<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-des-contextp/set-private-sk(private-sk))
-
-// \brief          Triple-DES context structure
-// 
-// \warning        DES/3DES are considered weak ciphers and their use constitutes a
-// security risk. We recommend considering stronger ciphers
-// instead.
-pub struct mbedtls-des3-context
-pub type mbedtls-des3-context-c
-pub alias mbedtls-des3-contextp = c-pointer<mbedtls-des3-context-c>
-pub alias mbedtls-des3-contextc<s::S> = owned-c<mbedtls-des3-context-c>
-pub alias mbedtls-des3-contextcb<s::S> = borrowed-c<s,mbedtls-des3-context-c>
-pub alias mbedtls-des3-contextca<s::S> = owned-c<c-array<mbedtls-des3-context-c>>
-
-pub extern mbedtls-des3-context/size-of(c: c-null<mbedtls-des3-context-c>): int32
-  c inline "sizeof(struct mbedtls_des3_context)"
-
-pub fun mbedtls-des3-contextc(): mbedtls-des3-contextc<s::S>
-  malloc(?size-of=mbedtls-des3-context/size-of)
-
-pub fun mbedtls-des3-contextc-calloc(): mbedtls-des3-contextc<s::S>
-  malloc-c(?size-of=mbedtls-des3-context/size-of)
-
-pub fun mbedtls-des3-contextc-array(n: int): mbedtls-des3-contextca<s::S>
-  malloc(n.int32, ?size-of=mbedtls-des3-context/size-of)
-
-pub fun mbedtls-des3-contextc-array-calloc(n: int): mbedtls-des3-contextca<s::S>
-  malloc-c(n.int32, ?size-of=mbedtls-des3-context/size-of)
-
-pub inline extern mbedtls-des3-context-ptrraw/private-sk(s: intptr_t): c-pointer<int>
-  c inline "(intptr_t)(((struct mbedtls_des3_context*)#1)->private_sk)"
-
-pub inline fun mbedtls-des3-contextp/private-sk(s: mbedtls-des3-contextp): <> c-array<int>
-  s.cextern/c-pointer/ptr.mbedtls-des3-context-ptrraw/private-sk.cextern/ptr/carray
-
-pub inline fun mbedtls-des3-contextc/private-sk(^s: mbedtls-des3-contextc<s::S>): <> c-array<int>
-  s.with-ptr(mbedtls-des3-contextp/private-sk)
-
-pub inline fun mbedtls-des3-contextcb/private-sk(^s: mbedtls-des3-contextcb<s::S>): <> c-array<int>
-  s.with-ptr(mbedtls-des3-contextp/private-sk)
-
-pub inline extern mbedtls-des3-context-ptrraw/set-private-sk(s: intptr_t, private-sk: c-pointer<int>): ()
-  c inline "((struct mbedtls_des3_context*)#1)->private_sk = (int32_t*)#2"
-
-pub inline fun mbedtls-des3-contextp/set-private-sk(s: mbedtls-des3-contextp, private-sk: c-array<int>): ()
-  s.mbedtls-des3-context-ptrraw/set-private-sk(private-sk.cextern/carray/ptr)
-
-pub inline fun mbedtls-des3-contextc/set-private-sk(^s: mbedtls-des3-contextc<s::S>, private-sk: c-array<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-des3-contextp/set-private-sk(private-sk))
-
-pub inline fun mbedtls-des3-contextcb/set-private-sk(^s: mbedtls-des3-contextcb<s::S>, private-sk: c-array<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-des3-contextp/set-private-sk(private-sk))
-
-// The type of PSA elliptic curve family identifiers.
-// 
-// Values of this type are generally constructed by macros called
-// `PSA_ECC_FAMILY_xxx`.
-// 
-// The curve identifier is required to create an ECC key using the
-// PSA_KEY_TYPE_ECC_KEY_PAIR() or PSA_KEY_TYPE_ECC_PUBLIC_KEY()
-// macros.
-// 
-// Values defined by this standard will never be in the range 0x80-0xff.
-// Vendors who define additional families must use an encoding in this range.
-// 
-// \note Values of this type are encoded in the persistent key store.
-// Any changes to existing values will require bumping the storage
-// format version and providing a translation when reading the old
-// format.
-alias psa-ecc-family-t = int
-// HMAC_DRBG context.
-pub struct mbedtls-hmac-drbg-context
-pub type mbedtls-hmac-drbg-context-c
-pub alias mbedtls-hmac-drbg-contextp = c-pointer<mbedtls-hmac-drbg-context-c>
-pub alias mbedtls-hmac-drbg-contextc<s::S> = owned-c<mbedtls-hmac-drbg-context-c>
-pub alias mbedtls-hmac-drbg-contextcb<s::S> = borrowed-c<s,mbedtls-hmac-drbg-context-c>
-pub alias mbedtls-hmac-drbg-contextca<s::S> = owned-c<c-array<mbedtls-hmac-drbg-context-c>>
-
-pub extern mbedtls-hmac-drbg-context/size-of(c: c-null<mbedtls-hmac-drbg-context-c>): int32
-  c inline "sizeof(struct mbedtls_hmac_drbg_context)"
-
-pub fun mbedtls-hmac-drbg-contextc(): mbedtls-hmac-drbg-contextc<s::S>
-  malloc(?size-of=mbedtls-hmac-drbg-context/size-of)
-
-pub fun mbedtls-hmac-drbg-contextc-calloc(): mbedtls-hmac-drbg-contextc<s::S>
-  malloc-c(?size-of=mbedtls-hmac-drbg-context/size-of)
-
-pub fun mbedtls-hmac-drbg-contextc-array(n: int): mbedtls-hmac-drbg-contextca<s::S>
-  malloc(n.int32, ?size-of=mbedtls-hmac-drbg-context/size-of)
-
-pub fun mbedtls-hmac-drbg-contextc-array-calloc(n: int): mbedtls-hmac-drbg-contextca<s::S>
-  malloc-c(n.int32, ?size-of=mbedtls-hmac-drbg-context/size-of)
-
-pub inline extern mbedtls-hmac-drbg-context-ptrraw/private-v(s: intptr_t): c-pointer<int>
-  c inline "(intptr_t)(((struct mbedtls_hmac_drbg_context*)#1)->private_V)"
-
-pub inline fun mbedtls-hmac-drbg-contextp/private-v(s: mbedtls-hmac-drbg-contextp): <> c-array<int>
-  s.cextern/c-pointer/ptr.mbedtls-hmac-drbg-context-ptrraw/private-v.cextern/ptr/carray
-
-pub inline fun mbedtls-hmac-drbg-contextc/private-v(^s: mbedtls-hmac-drbg-contextc<s::S>): <> c-array<int>
-  s.with-ptr(mbedtls-hmac-drbg-contextp/private-v)
-
-pub inline fun mbedtls-hmac-drbg-contextcb/private-v(^s: mbedtls-hmac-drbg-contextcb<s::S>): <> c-array<int>
-  s.with-ptr(mbedtls-hmac-drbg-contextp/private-v)
-
-pub inline extern mbedtls-hmac-drbg-context-ptrraw/set-private-v(s: intptr_t, private-v: c-pointer<int>): ()
-  c inline "((struct mbedtls_hmac_drbg_context*)#1)->private_V = (unsigned char*)#2"
-
-pub inline fun mbedtls-hmac-drbg-contextp/set-private-v(s: mbedtls-hmac-drbg-contextp, private-v: c-array<int>): ()
-  s.mbedtls-hmac-drbg-context-ptrraw/set-private-v(private-v.cextern/carray/ptr)
-
-pub inline fun mbedtls-hmac-drbg-contextc/set-private-v(^s: mbedtls-hmac-drbg-contextc<s::S>, private-v: c-array<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-hmac-drbg-contextp/set-private-v(private-v))
-
-pub inline fun mbedtls-hmac-drbg-contextcb/set-private-v(^s: mbedtls-hmac-drbg-contextcb<s::S>, private-v: c-array<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-hmac-drbg-contextp/set-private-v(private-v))
-
-pub inline extern mbedtls-hmac-drbg-context-ptrraw/private-reseed-counter(s: intptr_t): int32
-  c inline "(int)(((struct mbedtls_hmac_drbg_context*)#1)->private_reseed_counter)"
-
-pub inline fun mbedtls-hmac-drbg-contextp/private-reseed-counter(s: mbedtls-hmac-drbg-contextp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-hmac-drbg-context-ptrraw/private-reseed-counter.int
-
-pub inline fun mbedtls-hmac-drbg-contextc/private-reseed-counter(^s: mbedtls-hmac-drbg-contextc<s::S>): <> int
-  s.with-ptr(mbedtls-hmac-drbg-contextp/private-reseed-counter)
-
-pub inline fun mbedtls-hmac-drbg-contextcb/private-reseed-counter(^s: mbedtls-hmac-drbg-contextcb<s::S>): <> int
-  s.with-ptr(mbedtls-hmac-drbg-contextp/private-reseed-counter)
-
-pub inline extern mbedtls-hmac-drbg-context-ptrraw/set-private-reseed-counter(s: intptr_t, private-reseed-counter: int32): ()
-  c inline "((struct mbedtls_hmac_drbg_context*)#1)->private_reseed_counter = (int)#2"
-
-pub inline fun mbedtls-hmac-drbg-contextp/set-private-reseed-counter(s: mbedtls-hmac-drbg-contextp, private-reseed-counter: int): ()
-  s.mbedtls-hmac-drbg-context-ptrraw/set-private-reseed-counter(private-reseed-counter.int32)
-
-pub inline fun mbedtls-hmac-drbg-contextc/set-private-reseed-counter(^s: mbedtls-hmac-drbg-contextc<s::S>, private-reseed-counter: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-hmac-drbg-contextp/set-private-reseed-counter(private-reseed-counter))
-
-pub inline fun mbedtls-hmac-drbg-contextcb/set-private-reseed-counter(^s: mbedtls-hmac-drbg-contextcb<s::S>, private-reseed-counter: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-hmac-drbg-contextp/set-private-reseed-counter(private-reseed-counter))
-
-pub inline extern mbedtls-hmac-drbg-context-ptrraw/private-entropy-len(s: intptr_t): ssize_t
-  c inline "(size_t)(((struct mbedtls_hmac_drbg_context*)#1)->private_entropy_len)"
-
-pub inline fun mbedtls-hmac-drbg-contextp/private-entropy-len(s: mbedtls-hmac-drbg-contextp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-hmac-drbg-context-ptrraw/private-entropy-len.int
-
-pub inline fun mbedtls-hmac-drbg-contextc/private-entropy-len(^s: mbedtls-hmac-drbg-contextc<s::S>): <> int
-  s.with-ptr(mbedtls-hmac-drbg-contextp/private-entropy-len)
-
-pub inline fun mbedtls-hmac-drbg-contextcb/private-entropy-len(^s: mbedtls-hmac-drbg-contextcb<s::S>): <> int
-  s.with-ptr(mbedtls-hmac-drbg-contextp/private-entropy-len)
-
-pub inline extern mbedtls-hmac-drbg-context-ptrraw/set-private-entropy-len(s: intptr_t, private-entropy-len: ssize_t): ()
-  c inline "((struct mbedtls_hmac_drbg_context*)#1)->private_entropy_len = (size_t)#2"
-
-pub inline fun mbedtls-hmac-drbg-contextp/set-private-entropy-len(s: mbedtls-hmac-drbg-contextp, private-entropy-len: int): ()
-  s.mbedtls-hmac-drbg-context-ptrraw/set-private-entropy-len(private-entropy-len.ssize_t)
-
-pub inline fun mbedtls-hmac-drbg-contextc/set-private-entropy-len(^s: mbedtls-hmac-drbg-contextc<s::S>, private-entropy-len: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-hmac-drbg-contextp/set-private-entropy-len(private-entropy-len))
-
-pub inline fun mbedtls-hmac-drbg-contextcb/set-private-entropy-len(^s: mbedtls-hmac-drbg-contextcb<s::S>, private-entropy-len: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-hmac-drbg-contextp/set-private-entropy-len(private-entropy-len))
-
-pub inline extern mbedtls-hmac-drbg-context-ptrraw/private-prediction-resistance(s: intptr_t): int32
-  c inline "(int)(((struct mbedtls_hmac_drbg_context*)#1)->private_prediction_resistance)"
-
-pub inline fun mbedtls-hmac-drbg-contextp/private-prediction-resistance(s: mbedtls-hmac-drbg-contextp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-hmac-drbg-context-ptrraw/private-prediction-resistance.int
-
-pub inline fun mbedtls-hmac-drbg-contextc/private-prediction-resistance(^s: mbedtls-hmac-drbg-contextc<s::S>): <> int
-  s.with-ptr(mbedtls-hmac-drbg-contextp/private-prediction-resistance)
-
-pub inline fun mbedtls-hmac-drbg-contextcb/private-prediction-resistance(^s: mbedtls-hmac-drbg-contextcb<s::S>): <> int
-  s.with-ptr(mbedtls-hmac-drbg-contextp/private-prediction-resistance)
-
-pub inline extern mbedtls-hmac-drbg-context-ptrraw/set-private-prediction-resistance(s: intptr_t, private-prediction-resistance: int32): ()
-  c inline "((struct mbedtls_hmac_drbg_context*)#1)->private_prediction_resistance = (int)#2"
-
-pub inline fun mbedtls-hmac-drbg-contextp/set-private-prediction-resistance(s: mbedtls-hmac-drbg-contextp, private-prediction-resistance: int): ()
-  s.mbedtls-hmac-drbg-context-ptrraw/set-private-prediction-resistance(private-prediction-resistance.int32)
-
-pub inline fun mbedtls-hmac-drbg-contextc/set-private-prediction-resistance(^s: mbedtls-hmac-drbg-contextc<s::S>, private-prediction-resistance: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-hmac-drbg-contextp/set-private-prediction-resistance(private-prediction-resistance))
-
-pub inline fun mbedtls-hmac-drbg-contextcb/set-private-prediction-resistance(^s: mbedtls-hmac-drbg-contextcb<s::S>, private-prediction-resistance: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-hmac-drbg-contextp/set-private-prediction-resistance(private-prediction-resistance))
-
-pub inline extern mbedtls-hmac-drbg-context-ptrraw/private-reseed-interval(s: intptr_t): int32
-  c inline "(int)(((struct mbedtls_hmac_drbg_context*)#1)->private_reseed_interval)"
-
-pub inline fun mbedtls-hmac-drbg-contextp/private-reseed-interval(s: mbedtls-hmac-drbg-contextp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-hmac-drbg-context-ptrraw/private-reseed-interval.int
-
-pub inline fun mbedtls-hmac-drbg-contextc/private-reseed-interval(^s: mbedtls-hmac-drbg-contextc<s::S>): <> int
-  s.with-ptr(mbedtls-hmac-drbg-contextp/private-reseed-interval)
-
-pub inline fun mbedtls-hmac-drbg-contextcb/private-reseed-interval(^s: mbedtls-hmac-drbg-contextcb<s::S>): <> int
-  s.with-ptr(mbedtls-hmac-drbg-contextp/private-reseed-interval)
-
-pub inline extern mbedtls-hmac-drbg-context-ptrraw/set-private-reseed-interval(s: intptr_t, private-reseed-interval: int32): ()
-  c inline "((struct mbedtls_hmac_drbg_context*)#1)->private_reseed_interval = (int)#2"
-
-pub inline fun mbedtls-hmac-drbg-contextp/set-private-reseed-interval(s: mbedtls-hmac-drbg-contextp, private-reseed-interval: int): ()
-  s.mbedtls-hmac-drbg-context-ptrraw/set-private-reseed-interval(private-reseed-interval.int32)
-
-pub inline fun mbedtls-hmac-drbg-contextc/set-private-reseed-interval(^s: mbedtls-hmac-drbg-contextc<s::S>, private-reseed-interval: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-hmac-drbg-contextp/set-private-reseed-interval(private-reseed-interval))
-
-pub inline fun mbedtls-hmac-drbg-contextcb/set-private-reseed-interval(^s: mbedtls-hmac-drbg-contextcb<s::S>, private-reseed-interval: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-hmac-drbg-contextp/set-private-reseed-interval(private-reseed-interval))
-
-pub inline extern mbedtls-hmac-drbg-context-ptrraw/private-f-entropy(s: intptr_t): c-pointer<intptr_t>
-  c inline "(intptr_t)(((struct mbedtls_hmac_drbg_context*)#1)->private_f_entropy)"
-
-pub inline fun mbedtls-hmac-drbg-contextp/private-f-entropy(s: mbedtls-hmac-drbg-contextp): <> c-pointer<intptr_t>
-  s.cextern/c-pointer/ptr.mbedtls-hmac-drbg-context-ptrraw/private-f-entropy
-
-pub inline fun mbedtls-hmac-drbg-contextc/private-f-entropy(^s: mbedtls-hmac-drbg-contextc<s::S>): <> c-pointer<intptr_t>
-  s.with-ptr(mbedtls-hmac-drbg-contextp/private-f-entropy)
-
-pub inline fun mbedtls-hmac-drbg-contextcb/private-f-entropy(^s: mbedtls-hmac-drbg-contextcb<s::S>): <> c-pointer<intptr_t>
-  s.with-ptr(mbedtls-hmac-drbg-contextp/private-f-entropy)
-
-pub inline extern mbedtls-hmac-drbg-context-ptrraw/set-private-f-entropy(s: intptr_t, private-f-entropy: c-pointer<intptr_t>): ()
-  c inline "((struct mbedtls_hmac_drbg_context*)#1)->private_f_entropy = (int (*)(void*, unsigned char*, size_t))#2"
-
-pub inline fun mbedtls-hmac-drbg-contextp/set-private-f-entropy(s: mbedtls-hmac-drbg-contextp, private-f-entropy: c-pointer<intptr_t>): ()
-  s.mbedtls-hmac-drbg-context-ptrraw/set-private-f-entropy(private-f-entropy)
-
-pub inline fun mbedtls-hmac-drbg-contextc/set-private-f-entropy(^s: mbedtls-hmac-drbg-contextc<s::S>, private-f-entropy: c-pointer<intptr_t>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-hmac-drbg-contextp/set-private-f-entropy(private-f-entropy))
-
-pub inline fun mbedtls-hmac-drbg-contextcb/set-private-f-entropy(^s: mbedtls-hmac-drbg-contextcb<s::S>, private-f-entropy: c-pointer<intptr_t>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-hmac-drbg-contextp/set-private-f-entropy(private-f-entropy))
-
-pub inline extern mbedtls-hmac-drbg-context-ptrraw/private-p-entropy(s: intptr_t): c-pointer<()>
-  c inline "(intptr_t)(((struct mbedtls_hmac_drbg_context*)#1)->private_p_entropy)"
-
-pub inline fun mbedtls-hmac-drbg-contextp/private-p-entropy(s: mbedtls-hmac-drbg-contextp): <> c-pointer<()>
-  s.cextern/c-pointer/ptr.mbedtls-hmac-drbg-context-ptrraw/private-p-entropy
-
-pub inline fun mbedtls-hmac-drbg-contextc/private-p-entropy(^s: mbedtls-hmac-drbg-contextc<s::S>): <> c-pointer<()>
-  s.with-ptr(mbedtls-hmac-drbg-contextp/private-p-entropy)
-
-pub inline fun mbedtls-hmac-drbg-contextcb/private-p-entropy(^s: mbedtls-hmac-drbg-contextcb<s::S>): <> c-pointer<()>
-  s.with-ptr(mbedtls-hmac-drbg-contextp/private-p-entropy)
-
-pub inline extern mbedtls-hmac-drbg-context-ptrraw/set-private-p-entropy(s: intptr_t, private-p-entropy: c-pointer<()>): ()
-  c inline "((struct mbedtls_hmac_drbg_context*)#1)->private_p_entropy = (void*)#2"
-
-pub inline fun mbedtls-hmac-drbg-contextp/set-private-p-entropy(s: mbedtls-hmac-drbg-contextp, private-p-entropy: c-pointer<()>): ()
-  s.mbedtls-hmac-drbg-context-ptrraw/set-private-p-entropy(private-p-entropy)
-
-pub inline fun mbedtls-hmac-drbg-contextc/set-private-p-entropy(^s: mbedtls-hmac-drbg-contextc<s::S>, private-p-entropy: c-pointer<()>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-hmac-drbg-contextp/set-private-p-entropy(private-p-entropy))
-
-pub inline fun mbedtls-hmac-drbg-contextcb/set-private-p-entropy(^s: mbedtls-hmac-drbg-contextcb<s::S>, private-p-entropy: c-pointer<()>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-hmac-drbg-contextp/set-private-p-entropy(private-p-entropy))
-
-// \brief   Information for session ticket protection
-pub struct mbedtls-ssl-ticket-key
-pub type mbedtls-ssl-ticket-key-c
-pub alias mbedtls-ssl-ticket-keyp = c-pointer<mbedtls-ssl-ticket-key-c>
-pub alias mbedtls-ssl-ticket-keyc<s::S> = owned-c<mbedtls-ssl-ticket-key-c>
-pub alias mbedtls-ssl-ticket-keycb<s::S> = borrowed-c<s,mbedtls-ssl-ticket-key-c>
-pub alias mbedtls-ssl-ticket-keyca<s::S> = owned-c<c-array<mbedtls-ssl-ticket-key-c>>
-
-pub extern mbedtls-ssl-ticket-key/size-of(c: c-null<mbedtls-ssl-ticket-key-c>): int32
-  c inline "sizeof(struct mbedtls_ssl_ticket_key)"
-
-pub fun mbedtls-ssl-ticket-keyc(): mbedtls-ssl-ticket-keyc<s::S>
-  malloc(?size-of=mbedtls-ssl-ticket-key/size-of)
-
-pub fun mbedtls-ssl-ticket-keyc-calloc(): mbedtls-ssl-ticket-keyc<s::S>
-  malloc-c(?size-of=mbedtls-ssl-ticket-key/size-of)
-
-pub fun mbedtls-ssl-ticket-keyc-array(n: int): mbedtls-ssl-ticket-keyca<s::S>
-  malloc(n.int32, ?size-of=mbedtls-ssl-ticket-key/size-of)
-
-pub fun mbedtls-ssl-ticket-keyc-array-calloc(n: int): mbedtls-ssl-ticket-keyca<s::S>
-  malloc-c(n.int32, ?size-of=mbedtls-ssl-ticket-key/size-of)
-
-pub inline extern mbedtls-ssl-ticket-key-ptrraw/private-name(s: intptr_t): c-pointer<int>
-  c inline "(intptr_t)(((struct mbedtls_ssl_ticket_key*)#1)->private_name)"
-
-pub inline fun mbedtls-ssl-ticket-keyp/private-name(s: mbedtls-ssl-ticket-keyp): <> c-array<int>
-  s.cextern/c-pointer/ptr.mbedtls-ssl-ticket-key-ptrraw/private-name.cextern/ptr/carray
-
-pub inline fun mbedtls-ssl-ticket-keyc/private-name(^s: mbedtls-ssl-ticket-keyc<s::S>): <> c-array<int>
-  s.with-ptr(mbedtls-ssl-ticket-keyp/private-name)
-
-pub inline fun mbedtls-ssl-ticket-keycb/private-name(^s: mbedtls-ssl-ticket-keycb<s::S>): <> c-array<int>
-  s.with-ptr(mbedtls-ssl-ticket-keyp/private-name)
-
-pub inline extern mbedtls-ssl-ticket-key-ptrraw/set-private-name(s: intptr_t, private-name: c-pointer<int>): ()
-  c inline "((struct mbedtls_ssl_ticket_key*)#1)->private_name = (unsigned char*)#2"
-
-pub inline fun mbedtls-ssl-ticket-keyp/set-private-name(s: mbedtls-ssl-ticket-keyp, private-name: c-array<int>): ()
-  s.mbedtls-ssl-ticket-key-ptrraw/set-private-name(private-name.cextern/carray/ptr)
-
-pub inline fun mbedtls-ssl-ticket-keyc/set-private-name(^s: mbedtls-ssl-ticket-keyc<s::S>, private-name: c-array<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-ticket-keyp/set-private-name(private-name))
-
-pub inline fun mbedtls-ssl-ticket-keycb/set-private-name(^s: mbedtls-ssl-ticket-keycb<s::S>, private-name: c-array<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-ticket-keyp/set-private-name(private-name))
-
-pub inline extern mbedtls-ssl-ticket-key-ptrraw/private-generation-time(s: intptr_t): int64
-  c inline "(mbedtls_time_t)(((struct mbedtls_ssl_ticket_key*)#1)->private_generation_time)"
-
-pub inline fun mbedtls-ssl-ticket-keyp/private-generation-time(s: mbedtls-ssl-ticket-keyp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-ssl-ticket-key-ptrraw/private-generation-time.int
-
-pub inline fun mbedtls-ssl-ticket-keyc/private-generation-time(^s: mbedtls-ssl-ticket-keyc<s::S>): <> int
-  s.with-ptr(mbedtls-ssl-ticket-keyp/private-generation-time)
-
-pub inline fun mbedtls-ssl-ticket-keycb/private-generation-time(^s: mbedtls-ssl-ticket-keycb<s::S>): <> int
-  s.with-ptr(mbedtls-ssl-ticket-keyp/private-generation-time)
-
-pub inline extern mbedtls-ssl-ticket-key-ptrraw/set-private-generation-time(s: intptr_t, private-generation-time: int64): ()
-  c inline "((struct mbedtls_ssl_ticket_key*)#1)->private_generation_time = (mbedtls_time_t)#2"
-
-pub inline fun mbedtls-ssl-ticket-keyp/set-private-generation-time(s: mbedtls-ssl-ticket-keyp, private-generation-time: int): ()
-  s.mbedtls-ssl-ticket-key-ptrraw/set-private-generation-time(private-generation-time.int64)
-
-pub inline fun mbedtls-ssl-ticket-keyc/set-private-generation-time(^s: mbedtls-ssl-ticket-keyc<s::S>, private-generation-time: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-ticket-keyp/set-private-generation-time(private-generation-time))
-
-pub inline fun mbedtls-ssl-ticket-keycb/set-private-generation-time(^s: mbedtls-ssl-ticket-keycb<s::S>, private-generation-time: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-ticket-keyp/set-private-generation-time(private-generation-time))
-
-pub inline extern mbedtls-ssl-ticket-key-ptrraw/private-lifetime(s: intptr_t): int32
-  c inline "(int32_t)(((struct mbedtls_ssl_ticket_key*)#1)->private_lifetime)"
-
-pub inline fun mbedtls-ssl-ticket-keyp/private-lifetime(s: mbedtls-ssl-ticket-keyp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-ssl-ticket-key-ptrraw/private-lifetime.int
-
-pub inline fun mbedtls-ssl-ticket-keyc/private-lifetime(^s: mbedtls-ssl-ticket-keyc<s::S>): <> int
-  s.with-ptr(mbedtls-ssl-ticket-keyp/private-lifetime)
-
-pub inline fun mbedtls-ssl-ticket-keycb/private-lifetime(^s: mbedtls-ssl-ticket-keycb<s::S>): <> int
-  s.with-ptr(mbedtls-ssl-ticket-keyp/private-lifetime)
-
-pub inline extern mbedtls-ssl-ticket-key-ptrraw/set-private-lifetime(s: intptr_t, private-lifetime: int32): ()
-  c inline "((struct mbedtls_ssl_ticket_key*)#1)->private_lifetime = (int32_t)#2"
-
-pub inline fun mbedtls-ssl-ticket-keyp/set-private-lifetime(s: mbedtls-ssl-ticket-keyp, private-lifetime: int): ()
-  s.mbedtls-ssl-ticket-key-ptrraw/set-private-lifetime(private-lifetime.int32)
-
-pub inline fun mbedtls-ssl-ticket-keyc/set-private-lifetime(^s: mbedtls-ssl-ticket-keyc<s::S>, private-lifetime: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-ticket-keyp/set-private-lifetime(private-lifetime))
-
-pub inline fun mbedtls-ssl-ticket-keycb/set-private-lifetime(^s: mbedtls-ssl-ticket-keycb<s::S>, private-lifetime: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-ticket-keyp/set-private-lifetime(private-lifetime))
-
-// \brief   Context for session ticket handling functions
-pub struct mbedtls-ssl-ticket-context
-pub type mbedtls-ssl-ticket-context-c
-pub alias mbedtls-ssl-ticket-contextp = c-pointer<mbedtls-ssl-ticket-context-c>
-pub alias mbedtls-ssl-ticket-contextc<s::S> = owned-c<mbedtls-ssl-ticket-context-c>
-pub alias mbedtls-ssl-ticket-contextcb<s::S> = borrowed-c<s,mbedtls-ssl-ticket-context-c>
-pub alias mbedtls-ssl-ticket-contextca<s::S> = owned-c<c-array<mbedtls-ssl-ticket-context-c>>
-
-pub extern mbedtls-ssl-ticket-context/size-of(c: c-null<mbedtls-ssl-ticket-context-c>): int32
-  c inline "sizeof(struct mbedtls_ssl_ticket_context)"
-
-pub fun mbedtls-ssl-ticket-contextc(): mbedtls-ssl-ticket-contextc<s::S>
-  malloc(?size-of=mbedtls-ssl-ticket-context/size-of)
-
-pub fun mbedtls-ssl-ticket-contextc-calloc(): mbedtls-ssl-ticket-contextc<s::S>
-  malloc-c(?size-of=mbedtls-ssl-ticket-context/size-of)
-
-pub fun mbedtls-ssl-ticket-contextc-array(n: int): mbedtls-ssl-ticket-contextca<s::S>
-  malloc(n.int32, ?size-of=mbedtls-ssl-ticket-context/size-of)
-
-pub fun mbedtls-ssl-ticket-contextc-array-calloc(n: int): mbedtls-ssl-ticket-contextca<s::S>
-  malloc-c(n.int32, ?size-of=mbedtls-ssl-ticket-context/size-of)
-
-pub inline extern mbedtls-ssl-ticket-context-ptrraw/private-keys(s: intptr_t): c-pointer<mbedtls-ssl-ticket-key-c>
-  c inline "(intptr_t)(((struct mbedtls_ssl_ticket_context*)#1)->private_keys)"
-
-pub inline fun mbedtls-ssl-ticket-contextp/private-keys(s: mbedtls-ssl-ticket-contextp): <> c-array<mbedtls-ssl-ticket-key-c>
-  s.cextern/c-pointer/ptr.mbedtls-ssl-ticket-context-ptrraw/private-keys.cextern/ptr/carray
-
-pub inline fun mbedtls-ssl-ticket-contextc/private-keys(^s: mbedtls-ssl-ticket-contextc<s::S>): <> c-array<mbedtls-ssl-ticket-key-c>
-  s.with-ptr(mbedtls-ssl-ticket-contextp/private-keys)
-
-pub inline fun mbedtls-ssl-ticket-contextcb/private-keys(^s: mbedtls-ssl-ticket-contextcb<s::S>): <> c-array<mbedtls-ssl-ticket-key-c>
-  s.with-ptr(mbedtls-ssl-ticket-contextp/private-keys)
-
-pub inline extern mbedtls-ssl-ticket-context-ptrraw/set-private-keys(s: intptr_t, private-keys: c-pointer<mbedtls-ssl-ticket-key-c>): ()
-  c inline "((struct mbedtls_ssl_ticket_context*)#1)->private_keys = (struct mbedtls_ssl_ticket_key*)#2"
-
-pub inline fun mbedtls-ssl-ticket-contextp/set-private-keys(s: mbedtls-ssl-ticket-contextp, private-keys: c-array<mbedtls-ssl-ticket-key-c>): ()
-  s.mbedtls-ssl-ticket-context-ptrraw/set-private-keys(private-keys.cextern/carray/ptr)
-
-pub inline fun mbedtls-ssl-ticket-contextc/set-private-keys(^s: mbedtls-ssl-ticket-contextc<s::S>, private-keys: c-array<mbedtls-ssl-ticket-key-c>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-ticket-contextp/set-private-keys(private-keys))
-
-pub inline fun mbedtls-ssl-ticket-contextcb/set-private-keys(^s: mbedtls-ssl-ticket-contextcb<s::S>, private-keys: c-array<mbedtls-ssl-ticket-key-c>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-ticket-contextp/set-private-keys(private-keys))
-
-pub inline extern mbedtls-ssl-ticket-context-ptrraw/private-active(s: intptr_t): int8
-  c inline "(unsigned char)(((struct mbedtls_ssl_ticket_context*)#1)->private_active)"
-
-pub inline fun mbedtls-ssl-ticket-contextp/private-active(s: mbedtls-ssl-ticket-contextp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-ssl-ticket-context-ptrraw/private-active.int
-
-pub inline fun mbedtls-ssl-ticket-contextc/private-active(^s: mbedtls-ssl-ticket-contextc<s::S>): <> int
-  s.with-ptr(mbedtls-ssl-ticket-contextp/private-active)
-
-pub inline fun mbedtls-ssl-ticket-contextcb/private-active(^s: mbedtls-ssl-ticket-contextcb<s::S>): <> int
-  s.with-ptr(mbedtls-ssl-ticket-contextp/private-active)
-
-pub inline extern mbedtls-ssl-ticket-context-ptrraw/set-private-active(s: intptr_t, private-active: int8): ()
-  c inline "((struct mbedtls_ssl_ticket_context*)#1)->private_active = (unsigned char)#2"
-
-pub inline fun mbedtls-ssl-ticket-contextp/set-private-active(s: mbedtls-ssl-ticket-contextp, private-active: int): ()
-  s.mbedtls-ssl-ticket-context-ptrraw/set-private-active(private-active.int8)
-
-pub inline fun mbedtls-ssl-ticket-contextc/set-private-active(^s: mbedtls-ssl-ticket-contextc<s::S>, private-active: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-ticket-contextp/set-private-active(private-active))
-
-pub inline fun mbedtls-ssl-ticket-contextcb/set-private-active(^s: mbedtls-ssl-ticket-contextcb<s::S>, private-active: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-ticket-contextp/set-private-active(private-active))
-
-pub inline extern mbedtls-ssl-ticket-context-ptrraw/private-ticket-lifetime(s: intptr_t): int32
-  c inline "(int32_t)(((struct mbedtls_ssl_ticket_context*)#1)->private_ticket_lifetime)"
-
-pub inline fun mbedtls-ssl-ticket-contextp/private-ticket-lifetime(s: mbedtls-ssl-ticket-contextp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-ssl-ticket-context-ptrraw/private-ticket-lifetime.int
-
-pub inline fun mbedtls-ssl-ticket-contextc/private-ticket-lifetime(^s: mbedtls-ssl-ticket-contextc<s::S>): <> int
-  s.with-ptr(mbedtls-ssl-ticket-contextp/private-ticket-lifetime)
-
-pub inline fun mbedtls-ssl-ticket-contextcb/private-ticket-lifetime(^s: mbedtls-ssl-ticket-contextcb<s::S>): <> int
-  s.with-ptr(mbedtls-ssl-ticket-contextp/private-ticket-lifetime)
-
-pub inline extern mbedtls-ssl-ticket-context-ptrraw/set-private-ticket-lifetime(s: intptr_t, private-ticket-lifetime: int32): ()
-  c inline "((struct mbedtls_ssl_ticket_context*)#1)->private_ticket_lifetime = (int32_t)#2"
-
-pub inline fun mbedtls-ssl-ticket-contextp/set-private-ticket-lifetime(s: mbedtls-ssl-ticket-contextp, private-ticket-lifetime: int): ()
-  s.mbedtls-ssl-ticket-context-ptrraw/set-private-ticket-lifetime(private-ticket-lifetime.int32)
-
-pub inline fun mbedtls-ssl-ticket-contextc/set-private-ticket-lifetime(^s: mbedtls-ssl-ticket-contextc<s::S>, private-ticket-lifetime: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-ticket-contextp/set-private-ticket-lifetime(private-ticket-lifetime))
-
-pub inline fun mbedtls-ssl-ticket-contextcb/set-private-ticket-lifetime(^s: mbedtls-ssl-ticket-contextcb<s::S>, private-ticket-lifetime: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-ticket-contextp/set-private-ticket-lifetime(private-ticket-lifetime))
-
-pub inline extern mbedtls-ssl-ticket-context-ptrraw/private-f-rng(s: intptr_t): c-pointer<intptr_t>
-  c inline "(intptr_t)(((struct mbedtls_ssl_ticket_context*)#1)->private_f_rng)"
-
-pub inline fun mbedtls-ssl-ticket-contextp/private-f-rng(s: mbedtls-ssl-ticket-contextp): <> c-pointer<intptr_t>
-  s.cextern/c-pointer/ptr.mbedtls-ssl-ticket-context-ptrraw/private-f-rng
-
-pub inline fun mbedtls-ssl-ticket-contextc/private-f-rng(^s: mbedtls-ssl-ticket-contextc<s::S>): <> c-pointer<intptr_t>
-  s.with-ptr(mbedtls-ssl-ticket-contextp/private-f-rng)
-
-pub inline fun mbedtls-ssl-ticket-contextcb/private-f-rng(^s: mbedtls-ssl-ticket-contextcb<s::S>): <> c-pointer<intptr_t>
-  s.with-ptr(mbedtls-ssl-ticket-contextp/private-f-rng)
-
-pub inline extern mbedtls-ssl-ticket-context-ptrraw/set-private-f-rng(s: intptr_t, private-f-rng: c-pointer<intptr_t>): ()
-  c inline "((struct mbedtls_ssl_ticket_context*)#1)->private_f_rng = (int (*)(void*, unsigned char*, size_t))#2"
-
-pub inline fun mbedtls-ssl-ticket-contextp/set-private-f-rng(s: mbedtls-ssl-ticket-contextp, private-f-rng: c-pointer<intptr_t>): ()
-  s.mbedtls-ssl-ticket-context-ptrraw/set-private-f-rng(private-f-rng)
-
-pub inline fun mbedtls-ssl-ticket-contextc/set-private-f-rng(^s: mbedtls-ssl-ticket-contextc<s::S>, private-f-rng: c-pointer<intptr_t>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-ticket-contextp/set-private-f-rng(private-f-rng))
-
-pub inline fun mbedtls-ssl-ticket-contextcb/set-private-f-rng(^s: mbedtls-ssl-ticket-contextcb<s::S>, private-f-rng: c-pointer<intptr_t>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-ticket-contextp/set-private-f-rng(private-f-rng))
-
-pub inline extern mbedtls-ssl-ticket-context-ptrraw/private-p-rng(s: intptr_t): c-pointer<()>
-  c inline "(intptr_t)(((struct mbedtls_ssl_ticket_context*)#1)->private_p_rng)"
-
-pub inline fun mbedtls-ssl-ticket-contextp/private-p-rng(s: mbedtls-ssl-ticket-contextp): <> c-pointer<()>
-  s.cextern/c-pointer/ptr.mbedtls-ssl-ticket-context-ptrraw/private-p-rng
-
-pub inline fun mbedtls-ssl-ticket-contextc/private-p-rng(^s: mbedtls-ssl-ticket-contextc<s::S>): <> c-pointer<()>
-  s.with-ptr(mbedtls-ssl-ticket-contextp/private-p-rng)
-
-pub inline fun mbedtls-ssl-ticket-contextcb/private-p-rng(^s: mbedtls-ssl-ticket-contextcb<s::S>): <> c-pointer<()>
-  s.with-ptr(mbedtls-ssl-ticket-contextp/private-p-rng)
-
-pub inline extern mbedtls-ssl-ticket-context-ptrraw/set-private-p-rng(s: intptr_t, private-p-rng: c-pointer<()>): ()
-  c inline "((struct mbedtls_ssl_ticket_context*)#1)->private_p_rng = (void*)#2"
-
-pub inline fun mbedtls-ssl-ticket-contextp/set-private-p-rng(s: mbedtls-ssl-ticket-contextp, private-p-rng: c-pointer<()>): ()
-  s.mbedtls-ssl-ticket-context-ptrraw/set-private-p-rng(private-p-rng)
-
-pub inline fun mbedtls-ssl-ticket-contextc/set-private-p-rng(^s: mbedtls-ssl-ticket-contextc<s::S>, private-p-rng: c-pointer<()>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-ticket-contextp/set-private-p-rng(private-p-rng))
-
-pub inline fun mbedtls-ssl-ticket-contextcb/set-private-p-rng(^s: mbedtls-ssl-ticket-contextcb<s::S>, private-p-rng: c-pointer<()>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-ticket-contextp/set-private-p-rng(private-p-rng))
-
-// \brief Cache context
-pub value struct mbedtls-ssl-cache-context
-  // !< start of the chain
-  private-chain: mbedtls-ssl-cache-entry-c
-  // !< cache entry timeout
-  private-timeout: int
-  // !< maximum entries
-  private-max-entries: int
-
-pub type mbedtls-ssl-cache-context-c
-pub alias mbedtls-ssl-cache-contextp = c-pointer<mbedtls-ssl-cache-context-c>
-pub alias mbedtls-ssl-cache-contextc = owned-c<mbedtls-ssl-cache-context-c>
-pub alias mbedtls-ssl-cache-contextcb<s::S> = borrowed-c<s,mbedtls-ssl-cache-context-c>
-pub alias mbedtls-ssl-cache-contextca = owned-c<c-array<mbedtls-ssl-cache-context-c>>
-
-pub extern mbedtls-ssl-cache-context/size-of(c: c-null<mbedtls-ssl-cache-context-c>): int32
-  c inline "sizeof(struct mbedtls_ssl_cache_context)"
-
-pub fun mbedtls-ssl-cache-contextc(): mbedtls-ssl-cache-contextc
-  malloc(?size-of=mbedtls-ssl-cache-context/size-of)
-
-pub fun mbedtls-ssl-cache-contextc-calloc(): mbedtls-ssl-cache-contextc
-  malloc-c(?size-of=mbedtls-ssl-cache-context/size-of)
-
-pub fun mbedtls-ssl-cache-contextc-array(n: int): mbedtls-ssl-cache-contextca
-  malloc(n.int32, ?size-of=mbedtls-ssl-cache-context/size-of)
-
-pub fun mbedtls-ssl-cache-contextc-array-calloc(n: int): mbedtls-ssl-cache-contextca
-  malloc-c(n.int32, ?size-of=mbedtls-ssl-cache-context/size-of)
-
-pub inline extern mbedtls-ssl-cache-context-ptrraw/private-chain(s: intptr_t): c-pointer<mbedtls-ssl-cache-entry-c>
-  c inline "(intptr_t)(((struct mbedtls_ssl_cache_context*)#1)->private_chain)"
-
-pub inline fun mbedtls-ssl-cache-contextp/private-chain(s: mbedtls-ssl-cache-contextp): <> c-pointer<mbedtls-ssl-cache-entry-c>
-  s.cextern/c-pointer/ptr.mbedtls-ssl-cache-context-ptrraw/private-chain
-
-pub inline fun mbedtls-ssl-cache-contextc/private-chain(^s: mbedtls-ssl-cache-contextc): <> c-pointer<mbedtls-ssl-cache-entry-c>
-  s.with-ptr(mbedtls-ssl-cache-contextp/private-chain)
-
-pub inline fun mbedtls-ssl-cache-contextcb/private-chain(^s: mbedtls-ssl-cache-contextcb<s::S>): <> c-pointer<mbedtls-ssl-cache-entry-c>
-  s.with-ptr(mbedtls-ssl-cache-contextp/private-chain)
-
-pub inline extern mbedtls-ssl-cache-context-ptrraw/set-private-chain(s: intptr_t, private-chain: c-pointer<mbedtls-ssl-cache-entry-c>): ()
-  c inline "((struct mbedtls_ssl_cache_context*)#1)->private_chain = (struct mbedtls_ssl_cache_entry*)#2"
-
-pub inline fun mbedtls-ssl-cache-contextp/set-private-chain(s: mbedtls-ssl-cache-contextp, private-chain: c-pointer<mbedtls-ssl-cache-entry-c>): ()
-  s.mbedtls-ssl-cache-context-ptrraw/set-private-chain(private-chain)
-
-pub inline fun mbedtls-ssl-cache-contextc/set-private-chain(^s: mbedtls-ssl-cache-contextc, private-chain: c-pointer<mbedtls-ssl-cache-entry-c>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-cache-contextp/set-private-chain(private-chain))
-
-pub inline fun mbedtls-ssl-cache-contextcb/set-private-chain(^s: mbedtls-ssl-cache-contextcb<s::S>, private-chain: c-pointer<mbedtls-ssl-cache-entry-c>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-cache-contextp/set-private-chain(private-chain))
-
-pub inline extern mbedtls-ssl-cache-context-ptrraw/private-timeout(s: intptr_t): int32
-  c inline "(int)(((struct mbedtls_ssl_cache_context*)#1)->private_timeout)"
-
-pub inline fun mbedtls-ssl-cache-contextp/private-timeout(s: mbedtls-ssl-cache-contextp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-ssl-cache-context-ptrraw/private-timeout.int
-
-pub inline fun mbedtls-ssl-cache-contextc/private-timeout(^s: mbedtls-ssl-cache-contextc): <> int
-  s.with-ptr(mbedtls-ssl-cache-contextp/private-timeout)
-
-pub inline fun mbedtls-ssl-cache-contextcb/private-timeout(^s: mbedtls-ssl-cache-contextcb<s::S>): <> int
-  s.with-ptr(mbedtls-ssl-cache-contextp/private-timeout)
-
-pub inline extern mbedtls-ssl-cache-context-ptrraw/set-private-timeout(s: intptr_t, private-timeout: int32): ()
-  c inline "((struct mbedtls_ssl_cache_context*)#1)->private_timeout = (int)#2"
-
-pub inline fun mbedtls-ssl-cache-contextp/set-private-timeout(s: mbedtls-ssl-cache-contextp, private-timeout: int): ()
-  s.mbedtls-ssl-cache-context-ptrraw/set-private-timeout(private-timeout.int32)
-
-pub inline fun mbedtls-ssl-cache-contextc/set-private-timeout(^s: mbedtls-ssl-cache-contextc, private-timeout: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-cache-contextp/set-private-timeout(private-timeout))
-
-pub inline fun mbedtls-ssl-cache-contextcb/set-private-timeout(^s: mbedtls-ssl-cache-contextcb<s::S>, private-timeout: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-cache-contextp/set-private-timeout(private-timeout))
-
-pub inline extern mbedtls-ssl-cache-context-ptrraw/private-max-entries(s: intptr_t): int32
-  c inline "(int)(((struct mbedtls_ssl_cache_context*)#1)->private_max_entries)"
-
-pub inline fun mbedtls-ssl-cache-contextp/private-max-entries(s: mbedtls-ssl-cache-contextp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-ssl-cache-context-ptrraw/private-max-entries.int
-
-pub inline fun mbedtls-ssl-cache-contextc/private-max-entries(^s: mbedtls-ssl-cache-contextc): <> int
-  s.with-ptr(mbedtls-ssl-cache-contextp/private-max-entries)
-
-pub inline fun mbedtls-ssl-cache-contextcb/private-max-entries(^s: mbedtls-ssl-cache-contextcb<s::S>): <> int
-  s.with-ptr(mbedtls-ssl-cache-contextp/private-max-entries)
-
-pub inline extern mbedtls-ssl-cache-context-ptrraw/set-private-max-entries(s: intptr_t, private-max-entries: int32): ()
-  c inline "((struct mbedtls_ssl_cache_context*)#1)->private_max_entries = (int)#2"
-
-pub inline fun mbedtls-ssl-cache-contextp/set-private-max-entries(s: mbedtls-ssl-cache-contextp, private-max-entries: int): ()
-  s.mbedtls-ssl-cache-context-ptrraw/set-private-max-entries(private-max-entries.int32)
-
-pub inline fun mbedtls-ssl-cache-contextc/set-private-max-entries(^s: mbedtls-ssl-cache-contextc, private-max-entries: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-cache-contextp/set-private-max-entries(private-max-entries))
-
-pub inline fun mbedtls-ssl-cache-contextcb/set-private-max-entries(^s: mbedtls-ssl-cache-contextcb<s::S>, private-max-entries: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-cache-contextp/set-private-max-entries(private-max-entries))
-
-// \brief   This structure is used for storing cache entries
-pub struct mbedtls-ssl-cache-entry
-pub type mbedtls-ssl-cache-entry-c
-pub alias mbedtls-ssl-cache-entryp = c-pointer<mbedtls-ssl-cache-entry-c>
-pub alias mbedtls-ssl-cache-entryc<s::S> = owned-c<mbedtls-ssl-cache-entry-c>
-pub alias mbedtls-ssl-cache-entrycb<s::S> = borrowed-c<s,mbedtls-ssl-cache-entry-c>
-pub alias mbedtls-ssl-cache-entryca<s::S> = owned-c<c-array<mbedtls-ssl-cache-entry-c>>
-
-pub extern mbedtls-ssl-cache-entry/size-of(c: c-null<mbedtls-ssl-cache-entry-c>): int32
-  c inline "sizeof(struct mbedtls_ssl_cache_entry)"
-
-pub fun mbedtls-ssl-cache-entryc(): mbedtls-ssl-cache-entryc<s::S>
-  malloc(?size-of=mbedtls-ssl-cache-entry/size-of)
-
-pub fun mbedtls-ssl-cache-entryc-calloc(): mbedtls-ssl-cache-entryc<s::S>
-  malloc-c(?size-of=mbedtls-ssl-cache-entry/size-of)
-
-pub fun mbedtls-ssl-cache-entryc-array(n: int): mbedtls-ssl-cache-entryca<s::S>
-  malloc(n.int32, ?size-of=mbedtls-ssl-cache-entry/size-of)
-
-pub fun mbedtls-ssl-cache-entryc-array-calloc(n: int): mbedtls-ssl-cache-entryca<s::S>
-  malloc-c(n.int32, ?size-of=mbedtls-ssl-cache-entry/size-of)
-
-pub inline extern mbedtls-ssl-cache-entry-ptrraw/private-timestamp(s: intptr_t): int64
-  c inline "(mbedtls_time_t)(((struct mbedtls_ssl_cache_entry*)#1)->private_timestamp)"
-
-pub inline fun mbedtls-ssl-cache-entryp/private-timestamp(s: mbedtls-ssl-cache-entryp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-ssl-cache-entry-ptrraw/private-timestamp.int
-
-pub inline fun mbedtls-ssl-cache-entryc/private-timestamp(^s: mbedtls-ssl-cache-entryc<s::S>): <> int
-  s.with-ptr(mbedtls-ssl-cache-entryp/private-timestamp)
-
-pub inline fun mbedtls-ssl-cache-entrycb/private-timestamp(^s: mbedtls-ssl-cache-entrycb<s::S>): <> int
-  s.with-ptr(mbedtls-ssl-cache-entryp/private-timestamp)
-
-pub inline extern mbedtls-ssl-cache-entry-ptrraw/set-private-timestamp(s: intptr_t, private-timestamp: int64): ()
-  c inline "((struct mbedtls_ssl_cache_entry*)#1)->private_timestamp = (mbedtls_time_t)#2"
-
-pub inline fun mbedtls-ssl-cache-entryp/set-private-timestamp(s: mbedtls-ssl-cache-entryp, private-timestamp: int): ()
-  s.mbedtls-ssl-cache-entry-ptrraw/set-private-timestamp(private-timestamp.int64)
-
-pub inline fun mbedtls-ssl-cache-entryc/set-private-timestamp(^s: mbedtls-ssl-cache-entryc<s::S>, private-timestamp: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-cache-entryp/set-private-timestamp(private-timestamp))
-
-pub inline fun mbedtls-ssl-cache-entrycb/set-private-timestamp(^s: mbedtls-ssl-cache-entrycb<s::S>, private-timestamp: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-cache-entryp/set-private-timestamp(private-timestamp))
-
-pub inline extern mbedtls-ssl-cache-entry-ptrraw/private-session-id(s: intptr_t): c-pointer<int>
-  c inline "(intptr_t)(((struct mbedtls_ssl_cache_entry*)#1)->private_session_id)"
-
-pub inline fun mbedtls-ssl-cache-entryp/private-session-id(s: mbedtls-ssl-cache-entryp): <> c-array<int>
-  s.cextern/c-pointer/ptr.mbedtls-ssl-cache-entry-ptrraw/private-session-id.cextern/ptr/carray
-
-pub inline fun mbedtls-ssl-cache-entryc/private-session-id(^s: mbedtls-ssl-cache-entryc<s::S>): <> c-array<int>
-  s.with-ptr(mbedtls-ssl-cache-entryp/private-session-id)
-
-pub inline fun mbedtls-ssl-cache-entrycb/private-session-id(^s: mbedtls-ssl-cache-entrycb<s::S>): <> c-array<int>
-  s.with-ptr(mbedtls-ssl-cache-entryp/private-session-id)
-
-pub inline extern mbedtls-ssl-cache-entry-ptrraw/set-private-session-id(s: intptr_t, private-session-id: c-pointer<int>): ()
-  c inline "((struct mbedtls_ssl_cache_entry*)#1)->private_session_id = (unsigned char*)#2"
-
-pub inline fun mbedtls-ssl-cache-entryp/set-private-session-id(s: mbedtls-ssl-cache-entryp, private-session-id: c-array<int>): ()
-  s.mbedtls-ssl-cache-entry-ptrraw/set-private-session-id(private-session-id.cextern/carray/ptr)
-
-pub inline fun mbedtls-ssl-cache-entryc/set-private-session-id(^s: mbedtls-ssl-cache-entryc<s::S>, private-session-id: c-array<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-cache-entryp/set-private-session-id(private-session-id))
-
-pub inline fun mbedtls-ssl-cache-entrycb/set-private-session-id(^s: mbedtls-ssl-cache-entrycb<s::S>, private-session-id: c-array<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-cache-entryp/set-private-session-id(private-session-id))
-
-pub inline extern mbedtls-ssl-cache-entry-ptrraw/private-session-id-len(s: intptr_t): ssize_t
-  c inline "(size_t)(((struct mbedtls_ssl_cache_entry*)#1)->private_session_id_len)"
-
-pub inline fun mbedtls-ssl-cache-entryp/private-session-id-len(s: mbedtls-ssl-cache-entryp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-ssl-cache-entry-ptrraw/private-session-id-len.int
-
-pub inline fun mbedtls-ssl-cache-entryc/private-session-id-len(^s: mbedtls-ssl-cache-entryc<s::S>): <> int
-  s.with-ptr(mbedtls-ssl-cache-entryp/private-session-id-len)
-
-pub inline fun mbedtls-ssl-cache-entrycb/private-session-id-len(^s: mbedtls-ssl-cache-entrycb<s::S>): <> int
-  s.with-ptr(mbedtls-ssl-cache-entryp/private-session-id-len)
-
-pub inline extern mbedtls-ssl-cache-entry-ptrraw/set-private-session-id-len(s: intptr_t, private-session-id-len: ssize_t): ()
-  c inline "((struct mbedtls_ssl_cache_entry*)#1)->private_session_id_len = (size_t)#2"
-
-pub inline fun mbedtls-ssl-cache-entryp/set-private-session-id-len(s: mbedtls-ssl-cache-entryp, private-session-id-len: int): ()
-  s.mbedtls-ssl-cache-entry-ptrraw/set-private-session-id-len(private-session-id-len.ssize_t)
-
-pub inline fun mbedtls-ssl-cache-entryc/set-private-session-id-len(^s: mbedtls-ssl-cache-entryc<s::S>, private-session-id-len: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-cache-entryp/set-private-session-id-len(private-session-id-len))
-
-pub inline fun mbedtls-ssl-cache-entrycb/set-private-session-id-len(^s: mbedtls-ssl-cache-entrycb<s::S>, private-session-id-len: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-cache-entryp/set-private-session-id-len(private-session-id-len))
-
-pub inline extern mbedtls-ssl-cache-entry-ptrraw/private-session(s: intptr_t): c-pointer<int>
-  c inline "(intptr_t)(((struct mbedtls_ssl_cache_entry*)#1)->private_session)"
-
-pub inline fun mbedtls-ssl-cache-entryp/private-session(s: mbedtls-ssl-cache-entryp): <> c-pointer<int>
-  s.cextern/c-pointer/ptr.mbedtls-ssl-cache-entry-ptrraw/private-session
-
-pub inline fun mbedtls-ssl-cache-entryc/private-session(^s: mbedtls-ssl-cache-entryc<s::S>): <> c-pointer<int>
-  s.with-ptr(mbedtls-ssl-cache-entryp/private-session)
-
-pub inline fun mbedtls-ssl-cache-entrycb/private-session(^s: mbedtls-ssl-cache-entrycb<s::S>): <> c-pointer<int>
-  s.with-ptr(mbedtls-ssl-cache-entryp/private-session)
-
-pub inline extern mbedtls-ssl-cache-entry-ptrraw/set-private-session(s: intptr_t, private-session: c-pointer<int>): ()
-  c inline "((struct mbedtls_ssl_cache_entry*)#1)->private_session = (unsigned char*)#2"
-
-pub inline fun mbedtls-ssl-cache-entryp/set-private-session(s: mbedtls-ssl-cache-entryp, private-session: c-pointer<int>): ()
-  s.mbedtls-ssl-cache-entry-ptrraw/set-private-session(private-session)
-
-pub inline fun mbedtls-ssl-cache-entryc/set-private-session(^s: mbedtls-ssl-cache-entryc<s::S>, private-session: c-pointer<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-cache-entryp/set-private-session(private-session))
-
-pub inline fun mbedtls-ssl-cache-entrycb/set-private-session(^s: mbedtls-ssl-cache-entrycb<s::S>, private-session: c-pointer<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-cache-entryp/set-private-session(private-session))
-
-pub inline extern mbedtls-ssl-cache-entry-ptrraw/private-session-len(s: intptr_t): ssize_t
-  c inline "(size_t)(((struct mbedtls_ssl_cache_entry*)#1)->private_session_len)"
-
-pub inline fun mbedtls-ssl-cache-entryp/private-session-len(s: mbedtls-ssl-cache-entryp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-ssl-cache-entry-ptrraw/private-session-len.int
-
-pub inline fun mbedtls-ssl-cache-entryc/private-session-len(^s: mbedtls-ssl-cache-entryc<s::S>): <> int
-  s.with-ptr(mbedtls-ssl-cache-entryp/private-session-len)
-
-pub inline fun mbedtls-ssl-cache-entrycb/private-session-len(^s: mbedtls-ssl-cache-entrycb<s::S>): <> int
-  s.with-ptr(mbedtls-ssl-cache-entryp/private-session-len)
-
-pub inline extern mbedtls-ssl-cache-entry-ptrraw/set-private-session-len(s: intptr_t, private-session-len: ssize_t): ()
-  c inline "((struct mbedtls_ssl_cache_entry*)#1)->private_session_len = (size_t)#2"
-
-pub inline fun mbedtls-ssl-cache-entryp/set-private-session-len(s: mbedtls-ssl-cache-entryp, private-session-len: int): ()
-  s.mbedtls-ssl-cache-entry-ptrraw/set-private-session-len(private-session-len.ssize_t)
-
-pub inline fun mbedtls-ssl-cache-entryc/set-private-session-len(^s: mbedtls-ssl-cache-entryc<s::S>, private-session-len: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-cache-entryp/set-private-session-len(private-session-len))
-
-pub inline fun mbedtls-ssl-cache-entrycb/set-private-session-len(^s: mbedtls-ssl-cache-entrycb<s::S>, private-session-len: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-cache-entryp/set-private-session-len(private-session-len))
-
-pub inline extern mbedtls-ssl-cache-entry-ptrraw/private-next(s: intptr_t): c-pointer<mbedtls-ssl-cache-entry-c>
-  c inline "(intptr_t)(((struct mbedtls_ssl_cache_entry*)#1)->private_next)"
-
-pub inline fun mbedtls-ssl-cache-entryp/private-next(s: mbedtls-ssl-cache-entryp): <> c-pointer<mbedtls-ssl-cache-entry-c>
-  s.cextern/c-pointer/ptr.mbedtls-ssl-cache-entry-ptrraw/private-next
-
-pub inline fun mbedtls-ssl-cache-entryc/private-next(^s: mbedtls-ssl-cache-entryc<s::S>): <> c-pointer<mbedtls-ssl-cache-entry-c>
-  s.with-ptr(mbedtls-ssl-cache-entryp/private-next)
-
-pub inline fun mbedtls-ssl-cache-entrycb/private-next(^s: mbedtls-ssl-cache-entrycb<s::S>): <> c-pointer<mbedtls-ssl-cache-entry-c>
-  s.with-ptr(mbedtls-ssl-cache-entryp/private-next)
-
-pub inline extern mbedtls-ssl-cache-entry-ptrraw/set-private-next(s: intptr_t, private-next: c-pointer<mbedtls-ssl-cache-entry-c>): ()
-  c inline "((struct mbedtls_ssl_cache_entry*)#1)->private_next = (struct mbedtls_ssl_cache_entry*)#2"
-
-pub inline fun mbedtls-ssl-cache-entryp/set-private-next(s: mbedtls-ssl-cache-entryp, private-next: c-pointer<mbedtls-ssl-cache-entry-c>): ()
-  s.mbedtls-ssl-cache-entry-ptrraw/set-private-next(private-next)
-
-pub inline fun mbedtls-ssl-cache-entryc/set-private-next(^s: mbedtls-ssl-cache-entryc<s::S>, private-next: c-pointer<mbedtls-ssl-cache-entry-c>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-cache-entryp/set-private-next(private-next))
-
-pub inline fun mbedtls-ssl-cache-entrycb/set-private-next(^s: mbedtls-ssl-cache-entrycb<s::S>, private-next: c-pointer<mbedtls-ssl-cache-entry-c>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-ssl-cache-entryp/set-private-next(private-next))
-
-// \brief   The platform context structure.
-// 
-// \note    This structure may be used to assist platform-specific
-// setup or teardown operations.
-pub value struct mbedtls-platform-context
-  // < A placeholder member, as empty structs are not portable.
-  private-dummy: int
-
-pub type mbedtls-platform-context-c
-pub alias mbedtls-platform-contextp = c-pointer<mbedtls-platform-context-c>
-pub alias mbedtls-platform-contextc = owned-c<mbedtls-platform-context-c>
-pub alias mbedtls-platform-contextcb<s::S> = borrowed-c<s,mbedtls-platform-context-c>
-pub alias mbedtls-platform-contextca = owned-c<c-array<mbedtls-platform-context-c>>
-
-pub extern mbedtls-platform-context/size-of(c: c-null<mbedtls-platform-context-c>): int32
-  c inline "sizeof(struct mbedtls_platform_context)"
-
-pub fun mbedtls-platform-contextc(): mbedtls-platform-contextc
-  malloc(?size-of=mbedtls-platform-context/size-of)
-
-pub fun mbedtls-platform-contextc-calloc(): mbedtls-platform-contextc
-  malloc-c(?size-of=mbedtls-platform-context/size-of)
-
-pub fun mbedtls-platform-contextc-array(n: int): mbedtls-platform-contextca
-  malloc(n.int32, ?size-of=mbedtls-platform-context/size-of)
-
-pub fun mbedtls-platform-contextc-array-calloc(n: int): mbedtls-platform-contextca
-  malloc-c(n.int32, ?size-of=mbedtls-platform-context/size-of)
-
-pub inline extern mbedtls-platform-context-ptrraw/private-dummy(s: intptr_t): int8
-  c inline "(char)(((struct mbedtls_platform_context*)#1)->private_dummy)"
-
-pub inline fun mbedtls-platform-contextp/private-dummy(s: mbedtls-platform-contextp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-platform-context-ptrraw/private-dummy.int
-
-pub inline fun mbedtls-platform-contextc/private-dummy(^s: mbedtls-platform-contextc): <> int
-  s.with-ptr(mbedtls-platform-contextp/private-dummy)
-
-pub inline fun mbedtls-platform-contextcb/private-dummy(^s: mbedtls-platform-contextcb<s::S>): <> int
-  s.with-ptr(mbedtls-platform-contextp/private-dummy)
-
-pub inline extern mbedtls-platform-context-ptrraw/set-private-dummy(s: intptr_t, private-dummy: int8): ()
-  c inline "((struct mbedtls_platform_context*)#1)->private_dummy = (char)#2"
-
-pub inline fun mbedtls-platform-contextp/set-private-dummy(s: mbedtls-platform-contextp, private-dummy: int): ()
-  s.mbedtls-platform-context-ptrraw/set-private-dummy(private-dummy.int8)
-
-pub inline fun mbedtls-platform-contextc/set-private-dummy(^s: mbedtls-platform-contextc, private-dummy: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-platform-contextp/set-private-dummy(private-dummy))
-
-pub inline fun mbedtls-platform-contextcb/set-private-dummy(^s: mbedtls-platform-contextcb<s::S>, private-dummy: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-platform-contextp/set-private-dummy(private-dummy))
-
-// The Identifier of the LMS parameter set, as per
-// https://www.iana.org/assignments/leighton-micali-signatures/leighton-micali-signatures.xhtml
-// We are only implementing a subset of the types, particularly H10, for the sake of simplicity.
-type mbedtls-lms-algorithm-type-t
-  MBEDTLS_LMS_SHA256_M32_H10
-
-pub fun mbedtls-lms-algorithm-type-t/int(i: mbedtls-lms-algorithm-type-t): int32
-  match i
-    MBEDTLS_LMS_SHA256_M32_H10 -> 6.int32
-
-pub fun int/mbedtls-lms-algorithm-type-t(i: int32): exn mbedtls-lms-algorithm-type-t
-  match i.int
-    6 -> MBEDTLS_LMS_SHA256_M32_H10
-
-// The Identifier of the LMOTS parameter set, as per
-// https://www.iana.org/assignments/leighton-micali-signatures/leighton-micali-signatures.xhtml.
-// We are only implementing a subset of the types, particularly N32_W8, for the sake of simplicity.
-type mbedtls-lmots-algorithm-type-t
-  MBEDTLS_LMOTS_SHA256_N32_W8
-
-pub fun mbedtls-lmots-algorithm-type-t/int(i: mbedtls-lmots-algorithm-type-t): int32
-  match i
-    MBEDTLS_LMOTS_SHA256_N32_W8 -> 4.int32
-
-pub fun int/mbedtls-lmots-algorithm-type-t(i: int32): exn mbedtls-lmots-algorithm-type-t
-  match i.int
-    4 -> MBEDTLS_LMOTS_SHA256_N32_W8
-
-// LMOTS parameters structure.
-// 
-// This contains the metadata associated with an LMOTS key, detailing the
-// algorithm type, the key ID, and the leaf identifier should be key be part of
-// a LMS key.
-pub struct mbedtls-lmots-parameters-t
-pub type mbedtls-lmots-parameters-t-c
-pub alias mbedtls-lmots-parameters-tp = c-pointer<mbedtls-lmots-parameters-t-c>
-pub alias mbedtls-lmots-parameters-tc<s::S> = owned-c<mbedtls-lmots-parameters-t-c>
-pub alias mbedtls-lmots-parameters-tcb<s::S> = borrowed-c<s,mbedtls-lmots-parameters-t-c>
-pub alias mbedtls-lmots-parameters-tca<s::S> = owned-c<c-array<mbedtls-lmots-parameters-t-c>>
-
-pub extern mbedtls-lmots-parameters-t/size-of(c: c-null<mbedtls-lmots-parameters-t-c>): int32
-  c inline "sizeof(mbedtls_lmots_parameters_t)"
-
-pub fun mbedtls-lmots-parameters-tc(): mbedtls-lmots-parameters-tc<s::S>
-  malloc(?size-of=mbedtls-lmots-parameters-t/size-of)
-
-pub fun mbedtls-lmots-parameters-tc-calloc(): mbedtls-lmots-parameters-tc<s::S>
-  malloc-c(?size-of=mbedtls-lmots-parameters-t/size-of)
-
-pub fun mbedtls-lmots-parameters-tc-array(n: int): mbedtls-lmots-parameters-tca<s::S>
-  malloc(n.int32, ?size-of=mbedtls-lmots-parameters-t/size-of)
-
-pub fun mbedtls-lmots-parameters-tc-array-calloc(n: int): mbedtls-lmots-parameters-tca<s::S>
-  malloc-c(n.int32, ?size-of=mbedtls-lmots-parameters-t/size-of)
-
-pub inline extern mbedtls-lmots-parameters-t-ptrraw/private-i-key-identifier(s: intptr_t): c-pointer<int>
-  c inline "(intptr_t)(((mbedtls_lmots_parameters_t*)#1)->private_I_key_identifier)"
-
-pub inline fun mbedtls-lmots-parameters-tp/private-i-key-identifier(s: mbedtls-lmots-parameters-tp): <> c-array<int>
-  s.cextern/c-pointer/ptr.mbedtls-lmots-parameters-t-ptrraw/private-i-key-identifier.cextern/ptr/carray
-
-pub inline fun mbedtls-lmots-parameters-tc/private-i-key-identifier(^s: mbedtls-lmots-parameters-tc<s::S>): <> c-array<int>
-  s.with-ptr(mbedtls-lmots-parameters-tp/private-i-key-identifier)
-
-pub inline fun mbedtls-lmots-parameters-tcb/private-i-key-identifier(^s: mbedtls-lmots-parameters-tcb<s::S>): <> c-array<int>
-  s.with-ptr(mbedtls-lmots-parameters-tp/private-i-key-identifier)
-
-pub inline extern mbedtls-lmots-parameters-t-ptrraw/set-private-i-key-identifier(s: intptr_t, private-i-key-identifier: c-pointer<int>): ()
-  c inline "((mbedtls_lmots_parameters_t*)#1)->private_I_key_identifier = (unsigned char*)#2"
-
-pub inline fun mbedtls-lmots-parameters-tp/set-private-i-key-identifier(s: mbedtls-lmots-parameters-tp, private-i-key-identifier: c-array<int>): ()
-  s.mbedtls-lmots-parameters-t-ptrraw/set-private-i-key-identifier(private-i-key-identifier.cextern/carray/ptr)
-
-pub inline fun mbedtls-lmots-parameters-tc/set-private-i-key-identifier(^s: mbedtls-lmots-parameters-tc<s::S>, private-i-key-identifier: c-array<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-lmots-parameters-tp/set-private-i-key-identifier(private-i-key-identifier))
-
-pub inline fun mbedtls-lmots-parameters-tcb/set-private-i-key-identifier(^s: mbedtls-lmots-parameters-tcb<s::S>, private-i-key-identifier: c-array<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-lmots-parameters-tp/set-private-i-key-identifier(private-i-key-identifier))
-
-pub inline extern mbedtls-lmots-parameters-t-ptrraw/private-q-leaf-identifier(s: intptr_t): c-pointer<int>
-  c inline "(intptr_t)(((mbedtls_lmots_parameters_t*)#1)->private_q_leaf_identifier)"
-
-pub inline fun mbedtls-lmots-parameters-tp/private-q-leaf-identifier(s: mbedtls-lmots-parameters-tp): <> c-array<int>
-  s.cextern/c-pointer/ptr.mbedtls-lmots-parameters-t-ptrraw/private-q-leaf-identifier.cextern/ptr/carray
-
-pub inline fun mbedtls-lmots-parameters-tc/private-q-leaf-identifier(^s: mbedtls-lmots-parameters-tc<s::S>): <> c-array<int>
-  s.with-ptr(mbedtls-lmots-parameters-tp/private-q-leaf-identifier)
-
-pub inline fun mbedtls-lmots-parameters-tcb/private-q-leaf-identifier(^s: mbedtls-lmots-parameters-tcb<s::S>): <> c-array<int>
-  s.with-ptr(mbedtls-lmots-parameters-tp/private-q-leaf-identifier)
-
-pub inline extern mbedtls-lmots-parameters-t-ptrraw/set-private-q-leaf-identifier(s: intptr_t, private-q-leaf-identifier: c-pointer<int>): ()
-  c inline "((mbedtls_lmots_parameters_t*)#1)->private_q_leaf_identifier = (unsigned char*)#2"
-
-pub inline fun mbedtls-lmots-parameters-tp/set-private-q-leaf-identifier(s: mbedtls-lmots-parameters-tp, private-q-leaf-identifier: c-array<int>): ()
-  s.mbedtls-lmots-parameters-t-ptrraw/set-private-q-leaf-identifier(private-q-leaf-identifier.cextern/carray/ptr)
-
-pub inline fun mbedtls-lmots-parameters-tc/set-private-q-leaf-identifier(^s: mbedtls-lmots-parameters-tc<s::S>, private-q-leaf-identifier: c-array<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-lmots-parameters-tp/set-private-q-leaf-identifier(private-q-leaf-identifier))
-
-pub inline fun mbedtls-lmots-parameters-tcb/set-private-q-leaf-identifier(^s: mbedtls-lmots-parameters-tcb<s::S>, private-q-leaf-identifier: c-array<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-lmots-parameters-tp/set-private-q-leaf-identifier(private-q-leaf-identifier))
-
-pub inline extern mbedtls-lmots-parameters-t-ptrraw/private-type(s: intptr_t): int32
-  c inline "(int32_t)(((mbedtls_lmots_parameters_t*)#1)->private_type)"
-
-pub inline fun mbedtls-lmots-parameters-tp/private-type(s: mbedtls-lmots-parameters-tp): <exn> mbedtls-lmots-algorithm-type-t
-  s.cextern/c-pointer/ptr.mbedtls-lmots-parameters-t-ptrraw/private-type.int/mbedtls-lmots-algorithm-type-t
-
-pub inline fun mbedtls-lmots-parameters-tc/private-type(^s: mbedtls-lmots-parameters-tc<s::S>): <exn> mbedtls-lmots-algorithm-type-t
-  s.with-ptr(mbedtls-lmots-parameters-tp/private-type)
-
-pub inline fun mbedtls-lmots-parameters-tcb/private-type(^s: mbedtls-lmots-parameters-tcb<s::S>): <exn> mbedtls-lmots-algorithm-type-t
-  s.with-ptr(mbedtls-lmots-parameters-tp/private-type)
-
-pub inline extern mbedtls-lmots-parameters-t-ptrraw/set-private-type(s: intptr_t, private-type: int32): ()
-  c inline "((mbedtls_lmots_parameters_t*)#1)->private_type = (int32_t)#2"
-
-pub inline fun mbedtls-lmots-parameters-tp/set-private-type(s: mbedtls-lmots-parameters-tp, private-type: mbedtls-lmots-algorithm-type-t): ()
-  s.mbedtls-lmots-parameters-t-ptrraw/set-private-type(private-type.mbedtls-lmots-algorithm-type-t/int)
-
-pub inline fun mbedtls-lmots-parameters-tc/set-private-type(^s: mbedtls-lmots-parameters-tc<s::S>, private-type: mbedtls-lmots-algorithm-type-t): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-lmots-parameters-tp/set-private-type(private-type))
-
-pub inline fun mbedtls-lmots-parameters-tcb/set-private-type(^s: mbedtls-lmots-parameters-tcb<s::S>, private-type: mbedtls-lmots-algorithm-type-t): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-lmots-parameters-tp/set-private-type(private-type))
-
-// LMOTS public context structure.
-// 
-// A LMOTS public key is a hash output, and the applicable parameter set.
-// 
-// The context must be initialized before it is used. A public key must either
-// be imported or generated from a private context.
-// 
-// \dot
-// digraph lmots_public_t {
-// UNINITIALIZED -> INIT [label="init"];
-// HAVE_PUBLIC_KEY -> INIT [label="free"];
-// INIT -> HAVE_PUBLIC_KEY [label="import_public_key"];
-// INIT -> HAVE_PUBLIC_KEY [label="calculate_public_key from private key"];
-// HAVE_PUBLIC_KEY -> HAVE_PUBLIC_KEY [label="export_public_key"];
-// }
-// \enddot
-pub struct mbedtls-lmots-public-t
-pub type mbedtls-lmots-public-t-c
-pub alias mbedtls-lmots-public-tp = c-pointer<mbedtls-lmots-public-t-c>
-pub alias mbedtls-lmots-public-tc<s::S> = owned-c<mbedtls-lmots-public-t-c>
-pub alias mbedtls-lmots-public-tcb<s::S> = borrowed-c<s,mbedtls-lmots-public-t-c>
-pub alias mbedtls-lmots-public-tca<s::S> = owned-c<c-array<mbedtls-lmots-public-t-c>>
-
-pub extern mbedtls-lmots-public-t/size-of(c: c-null<mbedtls-lmots-public-t-c>): int32
-  c inline "sizeof(mbedtls_lmots_public_t)"
-
-pub fun mbedtls-lmots-public-tc(): mbedtls-lmots-public-tc<s::S>
-  malloc(?size-of=mbedtls-lmots-public-t/size-of)
-
-pub fun mbedtls-lmots-public-tc-calloc(): mbedtls-lmots-public-tc<s::S>
-  malloc-c(?size-of=mbedtls-lmots-public-t/size-of)
-
-pub fun mbedtls-lmots-public-tc-array(n: int): mbedtls-lmots-public-tca<s::S>
-  malloc(n.int32, ?size-of=mbedtls-lmots-public-t/size-of)
-
-pub fun mbedtls-lmots-public-tc-array-calloc(n: int): mbedtls-lmots-public-tca<s::S>
-  malloc-c(n.int32, ?size-of=mbedtls-lmots-public-t/size-of)
-
-pub inline extern mbedtls-lmots-public-t-ptrraw/private-public-key(s: intptr_t): c-pointer<int>
-  c inline "(intptr_t)(((mbedtls_lmots_public_t*)#1)->private_public_key)"
-
-pub inline fun mbedtls-lmots-public-tp/private-public-key(s: mbedtls-lmots-public-tp): <> c-array<int>
-  s.cextern/c-pointer/ptr.mbedtls-lmots-public-t-ptrraw/private-public-key.cextern/ptr/carray
-
-pub inline fun mbedtls-lmots-public-tc/private-public-key(^s: mbedtls-lmots-public-tc<s::S>): <> c-array<int>
-  s.with-ptr(mbedtls-lmots-public-tp/private-public-key)
-
-pub inline fun mbedtls-lmots-public-tcb/private-public-key(^s: mbedtls-lmots-public-tcb<s::S>): <> c-array<int>
-  s.with-ptr(mbedtls-lmots-public-tp/private-public-key)
-
-pub inline extern mbedtls-lmots-public-t-ptrraw/set-private-public-key(s: intptr_t, private-public-key: c-pointer<int>): ()
-  c inline "((mbedtls_lmots_public_t*)#1)->private_public_key = (unsigned char*)#2"
-
-pub inline fun mbedtls-lmots-public-tp/set-private-public-key(s: mbedtls-lmots-public-tp, private-public-key: c-array<int>): ()
-  s.mbedtls-lmots-public-t-ptrraw/set-private-public-key(private-public-key.cextern/carray/ptr)
-
-pub inline fun mbedtls-lmots-public-tc/set-private-public-key(^s: mbedtls-lmots-public-tc<s::S>, private-public-key: c-array<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-lmots-public-tp/set-private-public-key(private-public-key))
-
-pub inline fun mbedtls-lmots-public-tcb/set-private-public-key(^s: mbedtls-lmots-public-tcb<s::S>, private-public-key: c-array<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-lmots-public-tp/set-private-public-key(private-public-key))
-
-pub inline extern mbedtls-lmots-public-t-ptrraw/private-have-public-key(s: intptr_t): int8
-  c inline "(unsigned char)(((mbedtls_lmots_public_t*)#1)->private_have_public_key)"
-
-pub inline fun mbedtls-lmots-public-tp/private-have-public-key(s: mbedtls-lmots-public-tp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-lmots-public-t-ptrraw/private-have-public-key.int
-
-pub inline fun mbedtls-lmots-public-tc/private-have-public-key(^s: mbedtls-lmots-public-tc<s::S>): <> int
-  s.with-ptr(mbedtls-lmots-public-tp/private-have-public-key)
-
-pub inline fun mbedtls-lmots-public-tcb/private-have-public-key(^s: mbedtls-lmots-public-tcb<s::S>): <> int
-  s.with-ptr(mbedtls-lmots-public-tp/private-have-public-key)
-
-pub inline extern mbedtls-lmots-public-t-ptrraw/set-private-have-public-key(s: intptr_t, private-have-public-key: int8): ()
-  c inline "((mbedtls_lmots_public_t*)#1)->private_have_public_key = (unsigned char)#2"
-
-pub inline fun mbedtls-lmots-public-tp/set-private-have-public-key(s: mbedtls-lmots-public-tp, private-have-public-key: int): ()
-  s.mbedtls-lmots-public-t-ptrraw/set-private-have-public-key(private-have-public-key.int8)
-
-pub inline fun mbedtls-lmots-public-tc/set-private-have-public-key(^s: mbedtls-lmots-public-tc<s::S>, private-have-public-key: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-lmots-public-tp/set-private-have-public-key(private-have-public-key))
-
-pub inline fun mbedtls-lmots-public-tcb/set-private-have-public-key(^s: mbedtls-lmots-public-tcb<s::S>, private-have-public-key: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-lmots-public-tp/set-private-have-public-key(private-have-public-key))
-
-// LMS parameters structure.
-// 
-// This contains the metadata associated with an LMS key, detailing the
-// algorithm type, the type of the underlying OTS algorithm, and the key ID.
-pub struct mbedtls-lms-parameters-t
-pub type mbedtls-lms-parameters-t-c
-pub alias mbedtls-lms-parameters-tp = c-pointer<mbedtls-lms-parameters-t-c>
-pub alias mbedtls-lms-parameters-tc<s::S> = owned-c<mbedtls-lms-parameters-t-c>
-pub alias mbedtls-lms-parameters-tcb<s::S> = borrowed-c<s,mbedtls-lms-parameters-t-c>
-pub alias mbedtls-lms-parameters-tca<s::S> = owned-c<c-array<mbedtls-lms-parameters-t-c>>
-
-pub extern mbedtls-lms-parameters-t/size-of(c: c-null<mbedtls-lms-parameters-t-c>): int32
-  c inline "sizeof(mbedtls_lms_parameters_t)"
-
-pub fun mbedtls-lms-parameters-tc(): mbedtls-lms-parameters-tc<s::S>
-  malloc(?size-of=mbedtls-lms-parameters-t/size-of)
-
-pub fun mbedtls-lms-parameters-tc-calloc(): mbedtls-lms-parameters-tc<s::S>
-  malloc-c(?size-of=mbedtls-lms-parameters-t/size-of)
-
-pub fun mbedtls-lms-parameters-tc-array(n: int): mbedtls-lms-parameters-tca<s::S>
-  malloc(n.int32, ?size-of=mbedtls-lms-parameters-t/size-of)
-
-pub fun mbedtls-lms-parameters-tc-array-calloc(n: int): mbedtls-lms-parameters-tca<s::S>
-  malloc-c(n.int32, ?size-of=mbedtls-lms-parameters-t/size-of)
-
-pub inline extern mbedtls-lms-parameters-t-ptrraw/private-i-key-identifier(s: intptr_t): c-pointer<int>
-  c inline "(intptr_t)(((mbedtls_lms_parameters_t*)#1)->private_I_key_identifier)"
-
-pub inline fun mbedtls-lms-parameters-tp/private-i-key-identifier(s: mbedtls-lms-parameters-tp): <> c-array<int>
-  s.cextern/c-pointer/ptr.mbedtls-lms-parameters-t-ptrraw/private-i-key-identifier.cextern/ptr/carray
-
-pub inline fun mbedtls-lms-parameters-tc/private-i-key-identifier(^s: mbedtls-lms-parameters-tc<s::S>): <> c-array<int>
-  s.with-ptr(mbedtls-lms-parameters-tp/private-i-key-identifier)
-
-pub inline fun mbedtls-lms-parameters-tcb/private-i-key-identifier(^s: mbedtls-lms-parameters-tcb<s::S>): <> c-array<int>
-  s.with-ptr(mbedtls-lms-parameters-tp/private-i-key-identifier)
-
-pub inline extern mbedtls-lms-parameters-t-ptrraw/set-private-i-key-identifier(s: intptr_t, private-i-key-identifier: c-pointer<int>): ()
-  c inline "((mbedtls_lms_parameters_t*)#1)->private_I_key_identifier = (unsigned char*)#2"
-
-pub inline fun mbedtls-lms-parameters-tp/set-private-i-key-identifier(s: mbedtls-lms-parameters-tp, private-i-key-identifier: c-array<int>): ()
-  s.mbedtls-lms-parameters-t-ptrraw/set-private-i-key-identifier(private-i-key-identifier.cextern/carray/ptr)
-
-pub inline fun mbedtls-lms-parameters-tc/set-private-i-key-identifier(^s: mbedtls-lms-parameters-tc<s::S>, private-i-key-identifier: c-array<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-lms-parameters-tp/set-private-i-key-identifier(private-i-key-identifier))
-
-pub inline fun mbedtls-lms-parameters-tcb/set-private-i-key-identifier(^s: mbedtls-lms-parameters-tcb<s::S>, private-i-key-identifier: c-array<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-lms-parameters-tp/set-private-i-key-identifier(private-i-key-identifier))
-
-pub inline extern mbedtls-lms-parameters-t-ptrraw/private-otstype(s: intptr_t): int32
-  c inline "(int32_t)(((mbedtls_lms_parameters_t*)#1)->private_otstype)"
-
-pub inline fun mbedtls-lms-parameters-tp/private-otstype(s: mbedtls-lms-parameters-tp): <exn> mbedtls-lmots-algorithm-type-t
-  s.cextern/c-pointer/ptr.mbedtls-lms-parameters-t-ptrraw/private-otstype.int/mbedtls-lmots-algorithm-type-t
-
-pub inline fun mbedtls-lms-parameters-tc/private-otstype(^s: mbedtls-lms-parameters-tc<s::S>): <exn> mbedtls-lmots-algorithm-type-t
-  s.with-ptr(mbedtls-lms-parameters-tp/private-otstype)
-
-pub inline fun mbedtls-lms-parameters-tcb/private-otstype(^s: mbedtls-lms-parameters-tcb<s::S>): <exn> mbedtls-lmots-algorithm-type-t
-  s.with-ptr(mbedtls-lms-parameters-tp/private-otstype)
-
-pub inline extern mbedtls-lms-parameters-t-ptrraw/set-private-otstype(s: intptr_t, private-otstype: int32): ()
-  c inline "((mbedtls_lms_parameters_t*)#1)->private_otstype = (int32_t)#2"
-
-pub inline fun mbedtls-lms-parameters-tp/set-private-otstype(s: mbedtls-lms-parameters-tp, private-otstype: mbedtls-lmots-algorithm-type-t): ()
-  s.mbedtls-lms-parameters-t-ptrraw/set-private-otstype(private-otstype.mbedtls-lmots-algorithm-type-t/int)
-
-pub inline fun mbedtls-lms-parameters-tc/set-private-otstype(^s: mbedtls-lms-parameters-tc<s::S>, private-otstype: mbedtls-lmots-algorithm-type-t): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-lms-parameters-tp/set-private-otstype(private-otstype))
-
-pub inline fun mbedtls-lms-parameters-tcb/set-private-otstype(^s: mbedtls-lms-parameters-tcb<s::S>, private-otstype: mbedtls-lmots-algorithm-type-t): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-lms-parameters-tp/set-private-otstype(private-otstype))
-
-pub inline extern mbedtls-lms-parameters-t-ptrraw/private-type(s: intptr_t): int32
-  c inline "(int32_t)(((mbedtls_lms_parameters_t*)#1)->private_type)"
-
-pub inline fun mbedtls-lms-parameters-tp/private-type(s: mbedtls-lms-parameters-tp): <exn> mbedtls-lms-algorithm-type-t
-  s.cextern/c-pointer/ptr.mbedtls-lms-parameters-t-ptrraw/private-type.int/mbedtls-lms-algorithm-type-t
-
-pub inline fun mbedtls-lms-parameters-tc/private-type(^s: mbedtls-lms-parameters-tc<s::S>): <exn> mbedtls-lms-algorithm-type-t
-  s.with-ptr(mbedtls-lms-parameters-tp/private-type)
-
-pub inline fun mbedtls-lms-parameters-tcb/private-type(^s: mbedtls-lms-parameters-tcb<s::S>): <exn> mbedtls-lms-algorithm-type-t
-  s.with-ptr(mbedtls-lms-parameters-tp/private-type)
-
-pub inline extern mbedtls-lms-parameters-t-ptrraw/set-private-type(s: intptr_t, private-type: int32): ()
-  c inline "((mbedtls_lms_parameters_t*)#1)->private_type = (int32_t)#2"
-
-pub inline fun mbedtls-lms-parameters-tp/set-private-type(s: mbedtls-lms-parameters-tp, private-type: mbedtls-lms-algorithm-type-t): ()
-  s.mbedtls-lms-parameters-t-ptrraw/set-private-type(private-type.mbedtls-lms-algorithm-type-t/int)
-
-pub inline fun mbedtls-lms-parameters-tc/set-private-type(^s: mbedtls-lms-parameters-tc<s::S>, private-type: mbedtls-lms-algorithm-type-t): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-lms-parameters-tp/set-private-type(private-type))
-
-pub inline fun mbedtls-lms-parameters-tcb/set-private-type(^s: mbedtls-lms-parameters-tcb<s::S>, private-type: mbedtls-lms-algorithm-type-t): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-lms-parameters-tp/set-private-type(private-type))
-
-// LMS public context structure.
-// 
-// A LMS public key is the hash output that is the root of the Merkle tree, and
-// the applicable parameter set
-// 
-// The context must be initialized before it is used. A public key must either
-// be imported or generated from a private context.
-// 
-// \dot
-// digraph lms_public_t {
-// UNINITIALIZED -> INIT [label="init"];
-// HAVE_PUBLIC_KEY -> INIT [label="free"];
-// INIT -> HAVE_PUBLIC_KEY [label="import_public_key"];
-// INIT -> HAVE_PUBLIC_KEY [label="calculate_public_key from private key"];
-// HAVE_PUBLIC_KEY -> HAVE_PUBLIC_KEY [label="export_public_key"];
-// }
-// \enddot
-pub struct mbedtls-lms-public-t
-pub type mbedtls-lms-public-t-c
-pub alias mbedtls-lms-public-tp = c-pointer<mbedtls-lms-public-t-c>
-pub alias mbedtls-lms-public-tc<s::S> = owned-c<mbedtls-lms-public-t-c>
-pub alias mbedtls-lms-public-tcb<s::S> = borrowed-c<s,mbedtls-lms-public-t-c>
-pub alias mbedtls-lms-public-tca<s::S> = owned-c<c-array<mbedtls-lms-public-t-c>>
-
-pub extern mbedtls-lms-public-t/size-of(c: c-null<mbedtls-lms-public-t-c>): int32
-  c inline "sizeof(mbedtls_lms_public_t)"
-
-pub fun mbedtls-lms-public-tc(): mbedtls-lms-public-tc<s::S>
-  malloc(?size-of=mbedtls-lms-public-t/size-of)
-
-pub fun mbedtls-lms-public-tc-calloc(): mbedtls-lms-public-tc<s::S>
-  malloc-c(?size-of=mbedtls-lms-public-t/size-of)
-
-pub fun mbedtls-lms-public-tc-array(n: int): mbedtls-lms-public-tca<s::S>
-  malloc(n.int32, ?size-of=mbedtls-lms-public-t/size-of)
-
-pub fun mbedtls-lms-public-tc-array-calloc(n: int): mbedtls-lms-public-tca<s::S>
-  malloc-c(n.int32, ?size-of=mbedtls-lms-public-t/size-of)
-
-pub inline extern mbedtls-lms-public-t-ptrraw/private-t-1-pub-key(s: intptr_t): c-pointer<int>
-  c inline "(intptr_t)(((mbedtls_lms_public_t*)#1)->private_T_1_pub_key)"
-
-pub inline fun mbedtls-lms-public-tp/private-t-1-pub-key(s: mbedtls-lms-public-tp): <> c-array<int>
-  s.cextern/c-pointer/ptr.mbedtls-lms-public-t-ptrraw/private-t-1-pub-key.cextern/ptr/carray
-
-pub inline fun mbedtls-lms-public-tc/private-t-1-pub-key(^s: mbedtls-lms-public-tc<s::S>): <> c-array<int>
-  s.with-ptr(mbedtls-lms-public-tp/private-t-1-pub-key)
-
-pub inline fun mbedtls-lms-public-tcb/private-t-1-pub-key(^s: mbedtls-lms-public-tcb<s::S>): <> c-array<int>
-  s.with-ptr(mbedtls-lms-public-tp/private-t-1-pub-key)
-
-pub inline extern mbedtls-lms-public-t-ptrraw/set-private-t-1-pub-key(s: intptr_t, private-t-1-pub-key: c-pointer<int>): ()
-  c inline "((mbedtls_lms_public_t*)#1)->private_T_1_pub_key = (unsigned char*)#2"
-
-pub inline fun mbedtls-lms-public-tp/set-private-t-1-pub-key(s: mbedtls-lms-public-tp, private-t-1-pub-key: c-array<int>): ()
-  s.mbedtls-lms-public-t-ptrraw/set-private-t-1-pub-key(private-t-1-pub-key.cextern/carray/ptr)
-
-pub inline fun mbedtls-lms-public-tc/set-private-t-1-pub-key(^s: mbedtls-lms-public-tc<s::S>, private-t-1-pub-key: c-array<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-lms-public-tp/set-private-t-1-pub-key(private-t-1-pub-key))
-
-pub inline fun mbedtls-lms-public-tcb/set-private-t-1-pub-key(^s: mbedtls-lms-public-tcb<s::S>, private-t-1-pub-key: c-array<int>): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-lms-public-tp/set-private-t-1-pub-key(private-t-1-pub-key))
-
-pub inline extern mbedtls-lms-public-t-ptrraw/private-have-public-key(s: intptr_t): int8
-  c inline "(unsigned char)(((mbedtls_lms_public_t*)#1)->private_have_public_key)"
-
-pub inline fun mbedtls-lms-public-tp/private-have-public-key(s: mbedtls-lms-public-tp): <> int
-  s.cextern/c-pointer/ptr.mbedtls-lms-public-t-ptrraw/private-have-public-key.int
-
-pub inline fun mbedtls-lms-public-tc/private-have-public-key(^s: mbedtls-lms-public-tc<s::S>): <> int
-  s.with-ptr(mbedtls-lms-public-tp/private-have-public-key)
-
-pub inline fun mbedtls-lms-public-tcb/private-have-public-key(^s: mbedtls-lms-public-tcb<s::S>): <> int
-  s.with-ptr(mbedtls-lms-public-tp/private-have-public-key)
-
-pub inline extern mbedtls-lms-public-t-ptrraw/set-private-have-public-key(s: intptr_t, private-have-public-key: int8): ()
-  c inline "((mbedtls_lms_public_t*)#1)->private_have_public_key = (unsigned char)#2"
-
-pub inline fun mbedtls-lms-public-tp/set-private-have-public-key(s: mbedtls-lms-public-tp, private-have-public-key: int): ()
-  s.mbedtls-lms-public-t-ptrraw/set-private-have-public-key(private-have-public-key.int8)
-
-pub inline fun mbedtls-lms-public-tc/set-private-have-public-key(^s: mbedtls-lms-public-tc<s::S>, private-have-public-key: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-lms-public-tp/set-private-have-public-key(private-have-public-key))
-
-pub inline fun mbedtls-lms-public-tcb/set-private-have-public-key(^s: mbedtls-lms-public-tcb<s::S>, private-have-public-key: int): ()
-  s.with-ptr(fn(kk-internal-ptr) kk-internal-ptr.mbedtls-lms-public-tp/set-private-have-public-key(private-have-public-key))
 
 pub val kmbedtls-key-length-none: int = 0
 

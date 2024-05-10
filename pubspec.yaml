@@ -23,7 +23,12 @@ ffigen:
     - '-I/usr/local/opt/llvm/lib/clang/18/include'
   headers:
     entry-points:
-      - 'deps/mbedtls/include/mbedtls/*.h'
+      - 'deps/mbedtls/include/mbedtls/ssl.h'
+      - 'deps/mbedtls/include/mbedtls/net.h'
+      - 'deps/mbedtls/include/mbedtls/error.h'
+      - 'deps/mbedtls/include/mbedtls/entropy.h'
+      - 'deps/mbedtls/include/mbedtls/ctr_drbg.h'
+      - 'deps/mbedtls/include/mbedtls/debug.h'
     include-directives:
       - '**/mbedtls/*.h'
       - '**/psa/*.h'
