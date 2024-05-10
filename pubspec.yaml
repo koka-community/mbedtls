@@ -15,21 +15,25 @@ dev_dependencies:
 ffigen:
   name: mbedtls
   ffi-native:
-    assetId: "c { library=\"mbedtls\" }"
+    assetId: 'c { vcpkg="mbedtls" }'
   description: Bindings to `mbedtls.h`.
   output: 'mbedtls/generated.kk'
+  compiler-opts:
+    - '-Ideps/mbedtls/include'
+    - '-I/usr/local/opt/llvm/lib/clang/18/include'
   headers:
     entry-points:
       - 'deps/mbedtls/include/mbedtls/*.h'
     include-directives:
       - '**/mbedtls/*.h'
       - '**/psa/*.h'
+  compiler-opts-automatic:
+    macos:
+      include-c-standard-library: false
   preamble: |
     // Copyright (c) 2020, the Koka-Community authors. All rights reserved. 
     // Use of this source code is governed by a
     // MIT-style license that can be found in the LICENSE file.
-  compiler-opts:
-    - '-Ideps/mbedtls/include'
   functions:
     include:
       - "mbedtls*"
